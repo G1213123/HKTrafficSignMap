@@ -27,6 +27,17 @@ rows = 21
 cols = 5
 # start_id is now determined dynamically per file
 
+# Special Grids Configuration
+SPECIAL_GRIDS = {
+    "(TS 601 - 700)_page1.svg": {
+        "cols": 6,
+        "col_start_x": 56.655,
+        "col_width": 56.67,
+        "col_stride": 109.11,
+        "double_row_ids": {636, 639, 649, 651, 653, 659, 660, 691, 694}
+    }
+}
+
 NS = {
     'svg': 'http://www.w3.org/2000/svg',
     'xlink': 'http://www.w3.org/1999/xlink',
@@ -557,23 +568,55 @@ def process_svg_file(input_svg_path, output_dir_path, start_id):
     if not os.path.exists(output_dir_path):
         os.makedirs(output_dir_path)
 
+    # Determine Grid Parameters
+    basename = os.path.basename(input_svg_path)
+    
+    current_cols = cols
+    current_col_start_x = col_start_x
+    current_col_width = col_width
+    current_col_stride = col_stride
+    
+    if basename in SPECIAL_GRIDS:
+        print(f"Using separate grid configuration for {basename}")
+        config = SPECIAL_GRIDS[basename]
+        current_cols = config.get("cols", current_cols)
+        current_col_start_x = config.get("col_start_x", current_col_start_x)
+        current_col_width = config.get("col_width", current_col_width)
+        current_col_stride = config.get("col_stride", current_col_stride)
+        current_double_rows = config.get("double_row_ids", set())
+    else:
+        current_double_rows = set()
+
     # 1. Setup Tiles
     tiles = []
     current_id = start_id
-    for c in range(cols):
+    pending_L_id = None
+    
+    for c in range(current_cols):
         for r in range(rows):
-            x = col_start_x + (c * col_stride)
+            x = current_col_start_x + (c * current_col_stride)
             y = row_start_y + (r * row_stride)
-            w = col_width
+            w = current_col_width
             h = row_height
+            
+            if pending_L_id is not None:
+                tile_id_str = f"{pending_L_id}L"
+                pending_L_id = None
+            elif current_id in current_double_rows:
+                tile_id_str = f"{current_id}R"
+                pending_L_id = current_id
+                current_id += 1
+            else:
+                tile_id_str = str(current_id)
+                current_id += 1
+            
             tiles.append({
-                'id': current_id,
+                'id': tile_id_str,
                 'box': (x, y, x+w, y+h),
                 'viewBox': f"{x:.3f} {y:.3f} {w:.3f} {h:.3f}",
                 'w': w,
                 'h': h
             })
-            current_id += 1
             
     # 2. Assign Elements (One Pass)
     print("Assigning elements to tiles...")
@@ -667,12 +710,16 @@ def process_svg_file(input_svg_path, output_dir_path, start_id):
     print(f"Done processing {input_svg_path}.")
 
 if __name__ == "__main__":
-    search_pattern = os.path.join("whole_pdf_svg", "(TS*.svg")
+    search_pattern = os.path.join("data", "whole_pdf_svg", "(TS*.svg")
     files = glob.glob(search_pattern)
     files.sort()
     
+    # Filter for the specific file just for verification
+    target_file = "(TS 601 - 700)"
+    files = [f for f in files if target_file in f]
+    
     if not files:
-        print(f"No files found for pattern: {search_pattern}")
+        print(f"No files found for pattern: {search_pattern} matching {target_file}")
     
     for f in files:
         basename = os.path.basename(f)
