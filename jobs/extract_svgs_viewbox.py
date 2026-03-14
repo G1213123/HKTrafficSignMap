@@ -825,8 +825,12 @@ if __name__ == "__main__":
     files = glob.glob(search_pattern)
     files.sort()
     
+    # Filter for the specific file just for verification
+    target_file = "(TS 601 - 700)"
+    files = [f for f in files if target_file in f]
+    
     if not files:
-        print(f"No files found for pattern: {search_pattern}")
+        print(f"No files found for pattern: {search_pattern} matching {target_file}")
     
     for f in files:
         basename = os.path.basename(f)
