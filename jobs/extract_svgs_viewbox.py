@@ -66,6 +66,17 @@ SPECIAL_GRIDS = {
 }
 
 
+# Special Grids Configuration
+SPECIAL_GRIDS = {
+    "(TS 601 - 700)_page1.svg": {
+        "cols": 6,
+        "col_start_x": 56.655,
+        "col_width": 56.67,
+        "col_stride": 109.11,
+        "double_row_ids": {636, 639, 649, 651, 653, 659, 660, 691, 694}
+    }
+}
+
 NS = {
     'svg': 'http://www.w3.org/2000/svg',
     'xlink': 'http://www.w3.org/1999/xlink',
@@ -821,7 +832,7 @@ def generate_sign_list(svg_dir, output_file):
 
 
 if __name__ == "__main__":
-    search_pattern = os.path.join(BASE_DIR, "data", "whole_pdf_svg", "(TS*.svg")
+    search_pattern = os.path.join(BASE_DIR, "data", "data", "whole_pdf_svg", "(TS*.svg")
     files = glob.glob(search_pattern)
     files.sort()
     
