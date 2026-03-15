@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 
 // Lazy image component that only sets src when in view
-const LazyImage = ({ src, alt, className }) => {
+const LazyImage = ({ src, alt, className, style }) => {
   const [inView, setInView] = useState(false);
   const imgRef = useRef(null);
 
@@ -33,7 +33,7 @@ const LazyImage = ({ src, alt, className }) => {
   }, []);
 
   return (
-    <div ref={imgRef} className="sign-image-wrapper">
+    <div ref={imgRef} className="sign-image-wrapper" style={style}>
       {inView ? (
         <img 
           src={src} 
@@ -51,6 +51,41 @@ export default function SignGallery() {
   const [signs, setSigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedSign, setSelectedSign] = useState(null);
+  const [gridWidth, setGridWidth] = useState(200); // Default card width
+  const [searchQuery, setSearchQuery] = useState('');
+  const [highlightedSignId, setHighlightedSignId] = useState(null);
+
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleGoto = (e) => {
+    e.preventDefault();
+    const signNum = e.target.elements.signNumber.value.trim();
+    if (!signNum) return;
+
+    // Find sign
+    const targetSign = signs.find(s => s.signNumber.toString() === signNum);
+
+    if (targetSign) {
+      // Clear search to show the sign if it was hidden
+      if (searchQuery) setSearchQuery('');
+
+      setHighlightedSignId(targetSign.filename);
+
+      // Wait for render cycle if search was cleared and list re-rendered
+      setTimeout(() => {
+        const element = document.getElementById(`sign-${targetSign.filename}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // Remove highlight after animation (2.4s)
+          setTimeout(() => setHighlightedSignId(null), 2500);
+        }
+      }, 100);
+    } else {
+      alert('Sign not found!');
+    }
+  };
 
   useEffect(() => {
     fetch('/data/signs.json')
@@ -91,35 +126,140 @@ export default function SignGallery() {
     return <div className="text-center p-4">Loading signs data...</div>;
   }
 
+  // Filter signs based on search query
+  const filteredSigns = signs.filter(sign => {
+    if (!searchQuery) return true;
+    const lowerQuery = searchQuery.toLowerCase();
+    return (
+      sign.signNumber.toString().toLowerCase().includes(lowerQuery) ||
+      sign.filename.toLowerCase().includes(lowerQuery)
+    );
+  });
+
+  // Group signs by hundred series
+  const groupedSigns = filteredSigns.reduce((acc, sign) => {
+    const match = sign.signNumber.toString().match(/^(\d+)/);
+    if (match) {
+      const num = parseInt(match[1], 10);
+      // Logic adjusted: 101-200 => 100 series, 201-300 => 200 series
+      // Formula: floor((num - 1) / 100) * 100 + 1 (if starting at 101)
+      const seriesStart = Math.floor((num - 1) / 100) * 100;
+      const key = `${seriesStart + 1} - ${seriesStart + 100}`;
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(sign);
+    } else {
+      if (!acc['Others']) acc['Others'] = [];
+      acc['Others'].push(sign);
+    }
+    return acc;
+  }, {});
+
+  const sortedCategories = Object.keys(groupedSigns).sort((a, b) => {
+    const numA = parseInt(a);
+    const numB = parseInt(b);
+    if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+    if (a === 'Others') return 1;
+    if (b === 'Others') return -1;
+    return a.localeCompare(b);
+  });
+
   return (
     <>
-      <div className="gallery-header" style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-         <p>Total Signs: {signs.length}</p>
+      <div className="gallery-header">
+         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+           <p style={{ margin: 0 }}>Total Signs: {filteredSigns.length}</p>
+         </div>
+         
          <div className="gallery-controls">
+           <div className="gallery-controls-group">
+             <input 
+               type="text" 
+               placeholder="Search..." 
+               value={searchQuery}
+               onChange={handleSearch}
+               style={{ padding: '0.4rem', borderRadius: '4px', border: '1px solid #ccc' }}
+             />
+           </div>
+
+           <form onSubmit={handleGoto} className="gallery-controls-group">
+             <input 
+               name="signNumber"
+               type="text" 
+               placeholder="Go to #" 
+               style={{ width: '80px', padding: '0.4rem', borderRadius: '4px', border: '1px solid #ccc' }}
+             />
+             <button type="submit" className="btn btn-primary" style={{ padding: '0.4rem 0.8rem' }}>Go</button>
+           </form>
+
+           <div className="gallery-controls-group">
+             <label htmlFor="grid-size-slider">Size:</label>
+             <input 
+               id="grid-size-slider"
+               type="range" 
+               min="100" 
+               max="400" 
+               value={gridWidth} 
+               onChange={(e) => setGridWidth(Number(e.target.value))}
+             />
+           </div>
+           
            <button onClick={openRandomSign} className="btn btn-primary">
              Shuffle 🔀
            </button>
          </div>
       </div>
 
-      <div className="catalogue-grid">
-        {signs.map((sign) => (
-          <div 
-            key={sign.filename} 
-            className="sign-card"
-            onClick={() => openModal(sign)}
-          >
-            <LazyImage 
-              src={sign.imageUrl} 
-              alt={`Traffic Sign ${sign.signNumber}`}
-              className="sign-image"
-            />
-            <div className="sign-info">
-              <div className="sign-number">{sign.signNumber}</div>
-              <div className="sign-name">{sign.filename}</div>
+      <div className="gallery-container">
+        {/* Sidebar Navigation */}
+        <nav className="sidebar">
+          <h3>Categories</h3>
+          <ul>
+            {sortedCategories.map(category => (
+              <li key={category}>
+                <a href={`#category-${category.replace(/\s+/g, '-')}`}>{category}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        {/* Main Content Area */}
+        <div className="main-content">
+          {sortedCategories.map(category => (
+            <div key={category} id={`category-${category.replace(/\s+/g, '-')}`} className="category-section">
+              <h2 className="category-title">{category}</h2>
+              <div 
+                className="catalogue-grid"
+                style={{ 
+                  gridTemplateColumns: `repeat(auto-fill, minmax(${gridWidth}px, 1fr))`,
+                  gap: `${Math.max(0.5, gridWidth / 150)}rem`
+                }}
+              >
+                {groupedSigns[category].map((sign) => (
+                  <div 
+                    key={sign.filename} 
+                    id={`sign-${sign.filename}`}
+                    className={`sign-card ${highlightedSignId === sign.filename ? 'highlight-flash' : ''}`}
+                    onClick={() => openModal(sign)}
+                  >
+                    <LazyImage 
+                      src={sign.imageUrl} 
+                      alt={`Traffic Sign ${sign.signNumber}`}
+                      className="sign-image"
+                      style={{ 
+                        padding: `${Math.max(0.2, gridWidth / 200)}rem`,
+                        aspectRatio: '1.6/1'
+                      }}
+                    />
+                    <div className="sign-info">
+                      <div className="sign-number" style={{ fontSize: `${Math.max(0.8, gridWidth / 200)}rem` }}>{sign.signNumber}</div>
+                      <div className="sign-name" style={{ fontSize: `${Math.max(0.7, gridWidth / 250)}rem` }}>{sign.filename}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       {selectedSign && (
