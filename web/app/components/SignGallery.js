@@ -59,7 +59,7 @@ export default function SignGallery() {
         // Construct imageUrl here since JSON only has filename and mtime
         const processedSigns = data.map(sign => ({
           ...sign,
-          imageUrl: `/api/svg/${sign.filename}?v=${sign.mtime}`
+          imageUrl: `/data/svgs/${sign.filename}?v=${sign.mtime}`
         }));
         setSigns(processedSigns);
         setLoading(false);

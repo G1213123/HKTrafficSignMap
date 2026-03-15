@@ -10,7 +10,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Parameters
 # input_svg_path is now determined dynamically in __main__
-output_dir = os.path.join(BASE_DIR, "data", "svgs")
+output_dir = os.path.join(BASE_DIR, "web", "public", "data", "svgs")
 DEBUG = False
 SCALE_FACTOR = 10.0 # Scaling 10x as requested ("1- times")
 
@@ -63,18 +63,6 @@ SPECIAL_GRIDS = {
         "col_width": 56.67,
         "col_stride": 109.11,
     },
-}
-
-
-# Special Grids Configuration
-SPECIAL_GRIDS = {
-    "(TS 601 - 700)_page1.svg": {
-        "cols": 6,
-        "col_start_x": 56.655,
-        "col_width": 56.67,
-        "col_stride": 109.11,
-        "double_row_ids": {636, 639, 649, 651, 653, 659, 660, 691, 694}
-    }
 }
 
 NS = {
@@ -831,17 +819,14 @@ def generate_sign_list(svg_dir, output_file):
     print(f"Saved to: {output_file}")
 
 
-if __name__ == "__main__":
-    search_pattern = os.path.join(BASE_DIR, "data", "data", "whole_pdf_svg", "(TS*.svg")
+def process_all_svgs():
+    search_pattern = os.path.join(BASE_DIR, "data", "whole_pdf_svg", "*.svg")
     files = glob.glob(search_pattern)
     files.sort()
     
-    # Filter for the specific file just for verification
-    target_file = "(TS 601 - 700)"
-    files = [f for f in files if target_file in f]
-    
     if not files:
-        print(f"No files found for pattern: {search_pattern} matching {target_file}")
+        print(f"No files found for pattern: {search_pattern}")
+        return
     
     for f in files:
         basename = os.path.basename(f)
@@ -861,3 +846,6 @@ if __name__ == "__main__":
          generate_sign_list(output_dir, output_json_path)
     else:
          print(f"Warning: Web public directory not found at {os.path.dirname(output_json_path)}. Skipping JSON generation.")
+
+if __name__ == "__main__":
+    process_all_svgs()
