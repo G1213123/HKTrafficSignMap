@@ -1,4 +1,5 @@
 import "./globals.css";
+import "./homepage.css";
 
 export const metadata = {
   title: "Road Sign Factory - Professional Traffic Sign Designer",

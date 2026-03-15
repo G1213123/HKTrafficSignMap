@@ -6,24 +6,11 @@ import { usePathname } from 'next/navigation';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [theme, setTheme] = useState(() => {
-    if (typeof window === 'undefined') return 'light';
-    const saved = window.localStorage.getItem('theme');
-    if (saved) return saved;
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  });
   const pathname = usePathname();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-
-  useEffect(() => {
-    if (typeof document !== 'undefined') {
-      document.documentElement.classList.toggle('theme-dark', theme === 'dark');
-      try { window.localStorage.setItem('theme', theme); } catch (e) {}
-    }
-  }, [theme]);
 
   const isActive = (path) => pathname === path ? 'active' : '';
 
@@ -47,14 +34,6 @@ export default function Navbar() {
             <button id="lang-en" className="lang-btn" aria-label="English">EN</button>
             <button id="lang-zh" className="lang-btn" aria-label="中文">中</button>
           </div>
-          <button
-            className="theme-toggle"
-            aria-label="Toggle theme"
-            onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
-            style={{ marginLeft: '0.5rem', padding: '6px 10px', borderRadius: 6, border: '1px solid var(--card-border)', background: 'transparent' }}
-          >
-            {theme === 'dark' ? '🌙' : '☀️'}
-          </button>
         </div>
         <div className="nav-toggle" onClick={toggleMenu}>
           <span></span>

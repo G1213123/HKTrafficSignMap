@@ -1,7 +1,7 @@
 :root {
   --background: #f0f2f5;
   --foreground: #1c1e21;
-  --card-bg: #ffffff;
+  --card-bg: #f7faff;
   --card-border: #dfe3e8;
   --primary: #007bff;
   --primary-hover: #0056b3;
@@ -13,7 +13,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #18191a;
+    --background: #3a3a3a;
     --foreground: #e4e6eb;
     --card-bg: #242526;
     --card-border: #3e4042;
@@ -22,18 +22,6 @@
   }
 }
 
-/* Theme override when user explicitly selects dark mode */
-.theme-dark {
-  --background: #18191a;
-  --foreground: #e4e6eb;
-  --card-bg: #242526;
-  --card-border: #3e4042;
-  --primary: #3b82f6;
-  --primary-hover: #2563eb;
-  --secondary: #9aa0a6;
-  --shadow: 0 2px 8px rgba(0,0,0,0.28);
-  --shadow-hover: 0 8px 24px rgba(0,0,0,0.36);
-}
 
 body {
   color: var(--foreground);
@@ -91,7 +79,7 @@ body {
 }
 
 .sign-image-wrapper {
-  background: #ffffff; /* Always white for traffic signs */
+  background: var(--background); /* Always white for traffic signs */
   padding: 1.5rem;
   display: flex;
   justify-content: center;

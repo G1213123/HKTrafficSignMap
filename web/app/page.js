@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import './homepage.css';
+// import './homepage.css'; - Moved to layout.js for global scope
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -81,7 +81,11 @@ export default function Home() {
   return (
     <>
       {showMigrationNotice && (
-        <div id="migrationNotice" className="migration-notice">
+        <div id="migrationNotice" className="migration-notice" onClick={(e) => {
+            if (e.target === e.currentTarget) {
+                setShowMigrationNotice(false);
+            }
+        }}>
             <div className="migration-content">
                 <button className="migration-close" onClick={() => setShowMigrationNotice(false)}>&times;</button>
                 <img src="/images/diversion-sign.svg" alt="Diversion Sign" className="migration-sign" onError={(e) => e.target.style.display='none'} />
