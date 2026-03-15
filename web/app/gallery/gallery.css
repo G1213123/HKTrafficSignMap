@@ -1,0 +1,50 @@
+/* Minimal gallery page styles to match site layout */
+.gallery-page .page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.gallery-container {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.gallery-container .sidebar {
+  width: 220px;
+  background: var(--card-bg, #fff);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.06));
+  height: calc(100vh - 320px);
+  overflow: auto;
+}
+
+.gallery-container .main-content {
+  flex: 1;
+}
+
+.catalogue-grid {
+  display: grid;
+  align-items: start;
+}
+
+.sign-card {
+  background: var(--card-bg, #fff);
+  border-radius: 6px;
+  padding: 0.5rem;
+  box-shadow: var(--shadow-xs, 0 1px 2px rgba(0,0,0,0.04));
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.sign-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-sm, 0 6px 12px rgba(0,0,0,0.08)); }
+
+.sign-image { width: 100%; height: auto; display: block; }
+
+.modal-overlay { z-index: 9999; }
+
+@media (max-width: 900px) {
+  .gallery-container { flex-direction: column; }
+  .gallery-container .sidebar { width: 100%; height: auto; }
+}

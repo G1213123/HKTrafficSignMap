@@ -22,6 +22,19 @@
   }
 }
 
+/* Theme override when user explicitly selects dark mode */
+.theme-dark {
+  --background: #18191a;
+  --foreground: #e4e6eb;
+  --card-bg: #242526;
+  --card-border: #3e4042;
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --secondary: #9aa0a6;
+  --shadow: 0 2px 8px rgba(0,0,0,0.28);
+  --shadow-hover: 0 8px 24px rgba(0,0,0,0.36);
+}
+
 body {
   color: var(--foreground);
   background: var(--background);
