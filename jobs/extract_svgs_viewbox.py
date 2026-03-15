@@ -5,6 +5,19 @@ import glob
 import json
 from lxml import etree
 import math
+import fitz # PyMuPDF
+try:
+    from PIL import Image
+    import pytesseract
+    import io
+    # Add Tesseract path
+    tesseract_dir = r"C:\Program Files\Tesseract-OCR"
+    if os.path.exists(tesseract_dir):
+        os.environ['PATH'] += os.pathsep + tesseract_dir
+        pytesseract.pytesseract.tesseract_cmd = os.path.join(tesseract_dir, "tesseract.exe")
+except ImportError:
+    print("Warning: PIL or pytesseract not installed. OCR will be skipped.")
+    Image, pytesseract, io = None, None, None
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -44,12 +57,15 @@ SPECIAL_GRIDS = {
         "col_start_x": 56.655,
         "col_width": 56.67,
         "col_stride": 109.11,
+        "double_row_ids": {2629, 2663, 2668, 2674, 2679, 2684, 2691},
+        "triple_row_ids": {2701}
     },
     "(TS 3601 - 3705)_page1.svg": {
         "cols": 6,
         "col_start_x": 56.655,
         "col_width": 56.67,
         "col_stride": 109.11,
+        "double_row_ids": {3643, 3649, 3650, 3651},
     },
     "(TS 3811 - 3936)_page1.svg": {
         "cols": 6,
@@ -604,6 +620,15 @@ def process_svg_file(input_svg_path, output_dir_path, start_id):
         print(f"Error: Could not open {input_svg_path}")
         return
 
+    # Open PDF for OCR (or just the SVG if we can rasterize it, but better to use the SVG with fitz)
+    # Actually, fitz can open SVG files directly as vector graphics and render to pixmap.
+    doc_ocr = None
+    if pytesseract and os.path.exists(input_svg_path):
+        try:
+            doc_ocr = fitz.open(input_svg_path)
+        except Exception as e:
+            print(f"OCR Init Failed for {input_svg_path}: {e}")
+
     if not os.path.exists(output_dir_path):
         os.makedirs(output_dir_path)
 
@@ -623,14 +648,26 @@ def process_svg_file(input_svg_path, output_dir_path, start_id):
         current_col_width = config.get("col_width", current_col_width)
         current_col_stride = config.get("col_stride", current_col_stride)
         current_double_rows = config.get("double_row_ids", set())
+        current_triple_rows = config.get("triple_row_ids", set())
     else:
         current_double_rows = set()
+        current_triple_rows = set()
 
     # 1. Setup Tiles
     tiles = []
     current_id = start_id
-    pending_L_id = None
     
+    # Logic for multi-row signs:
+    # If a sign spans multiple rows, we queue up suffixes for subsequent iterations.
+    pending_base_id = None
+    pending_suffixes = [] 
+    
+    # NEW: Store batch description to reuse for multi-row signs
+    batch_description = None
+
+    # Store description texts
+    descriptions_data = {} # { "101": "Description Text", ... }
+
     for c in range(current_cols):
         for r in range(rows):
             x = current_col_start_x + (c * current_col_stride)
@@ -638,16 +675,88 @@ def process_svg_file(input_svg_path, output_dir_path, start_id):
             w = current_col_width
             h = row_height
             
-            if pending_L_id is not None:
-                tile_id_str = f"{pending_L_id}L"
-                pending_L_id = None
-            elif current_id in current_double_rows:
-                tile_id_str = f"{current_id}R"
-                pending_L_id = current_id
+            # Description Column Logic
+            # User says description is "half the image box width".
+            # Image box width is w.
+            desc_x = x + w # Start immediately to the right of the sign
+            desc_rect_width = w * 0.5 # Half of the sign width
+            
+            # Determine capture height and OCR flag
+            desc_h = h   # Default single row height
+            do_ocr = True 
+
+            if pending_suffixes:
+                # We are processing the subsequent parts of a multi-row sign
+                suffix = pending_suffixes.pop(0)
+                tile_id_str = f"{pending_base_id}{suffix}"
+                
+                # Reuse the description captured from the first part
+                do_ocr = False
+                if batch_description:
+                    descriptions_data[tile_id_str] = batch_description
+
+                # If we exhausted the suffixes, reset pending base
+                if not pending_suffixes:
+                    pending_base_id = None
+                    batch_description = None
+
+            elif current_id in current_triple_rows:
+                # Triple row logic: URBAN, NT, LANTAU
+                base = current_id
+                tile_id_str = f"{base}-URBAN"
+                pending_base_id = base
+                pending_suffixes = ["-NT", "-LANTAU"]
                 current_id += 1
+                
+                # Capture 3 rows for description
+                desc_h = h * 3 
+
+            elif current_id in current_double_rows:
+                # Double row logic: R, L
+                base = current_id
+                tile_id_str = f"{base}R"
+                pending_base_id = base
+                pending_suffixes = ["L"]
+                current_id += 1
+                
+                # Capture 2 rows for description
+                desc_h = h * 2 
             else:
                 tile_id_str = str(current_id)
                 current_id += 1
+            
+            # Refined Description Rect
+            desc_rect = fitz.Rect(desc_x, y, desc_x + desc_rect_width, y + desc_h)
+            
+            # --- Perform OCR code block ---
+            if doc_ocr and do_ocr:
+                try:
+                    # Render the description area
+                    # Page 0 of the SVG
+                    page = doc_ocr[0]
+                    # Render at high DPI for OCR
+                    pix = page.get_pixmap(clip=desc_rect, dpi=600)
+                    if pix.width > 10 and pix.height > 10: # Ensure valid image
+                        img_data = pix.tobytes("png")
+                        pil_img = Image.open(io.BytesIO(img_data))
+                        # OCR with Chinese/English if possible
+                        try:
+                           langs = pytesseract.get_languages()
+                           lang = 'eng+chi_tra' if 'chi_tra' in langs else 'eng'
+                        except:
+                           lang = 'eng'
+
+                        text = pytesseract.image_to_string(pil_img, lang=lang)
+                        clean_text = text.strip()
+                        if clean_text:
+                            descriptions_data[tile_id_str] = clean_text
+                            
+                            # Cache description if we are starting a multi-row batch
+                            if pending_suffixes:
+                                batch_description = clean_text
+                except Exception as e:
+                    # Ignore OCR errors efficiently
+                    pass
             
             tiles.append({
                 'id': tile_id_str,
@@ -657,6 +766,26 @@ def process_svg_file(input_svg_path, output_dir_path, start_id):
                 'h': h
             })
             
+    # Save descriptions to separate JSON
+    desc_json_path = os.path.join(BASE_DIR, "web", "public", "data", "descriptions.json")
+    
+    current_descriptions = {}
+    if os.path.exists(desc_json_path):
+        try:
+            with open(desc_json_path, 'r', encoding='utf-8') as f:
+                current_descriptions = json.load(f)
+        except:
+             current_descriptions = {}
+    
+    # Update with new data
+    for tid, desc in descriptions_data.items():
+         current_descriptions[tid] = desc
+
+    with open(desc_json_path, 'w', encoding='utf-8') as f:
+        json.dump(current_descriptions, f, indent=2, ensure_ascii=False)
+
+    doc_ocr = None # Clean up
+
     # 2. Assign Elements (One Pass)
     print("Assigning elements to tiles...")
     assigner = TileAssigner(tiles)
@@ -779,6 +908,17 @@ def generate_sign_list(svg_dir, output_file):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir, exist_ok=True)
 
+    # Need to preserve existing descriptions!
+    existing_signs_map = {}
+    if os.path.exists(output_file):
+        try:
+            with open(output_file, "r", encoding="utf-8") as f:
+                existing_data = json.load(f)
+                for item in existing_data:
+                    existing_signs_map[item['filename']] = item
+        except:
+             pass
+
     svg_files = [f for f in os.listdir(svg_dir) if f.endswith(".svg")]
     signs = []
     
@@ -794,11 +934,19 @@ def generate_sign_list(svg_dir, output_file):
         try:
              # Get file modification time for cache busting (ms)
              mtime = int(os.path.getmtime(filepath) * 1000)
-             signs.append({
+             
+             # Create entry
+             entry = {
                  "filename": filename,
                  "signNumber": sign_number,
                  "mtime": mtime
-             })
+             }
+             
+             # Restore description if exists
+             if filename in existing_signs_map and 'description' in existing_signs_map[filename]:
+                 entry['description'] = existing_signs_map[filename]['description']
+                 
+             signs.append(entry)
         except OSError as e:
              print(f"Error accessing {filepath}: {e}")
 
