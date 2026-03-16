@@ -1,9 +1,15 @@
-/* Minimal gallery page styles to match site layout */
+/* Minimal gallery page styles to match site layout (copied for Sign Index) */
 .gallery-page .page-header {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
   margin-bottom: 1.5rem;
+}
+
+/* Add horizontal padding so content inside the header isn't flush to edges */
+.gallery-header {
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 .gallery-container {

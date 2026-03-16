@@ -100,6 +100,29 @@ body {
   transform: scale(1.05);
 }
 
+/* Superseded / deprecated sign styling */
+.sign-card.superseded {
+  filter: grayscale(100%);
+  opacity: 0.68;
+}
+.sign-card.superseded .sign-number {
+  text-decoration: line-through;
+  color: var(--secondary);
+}
+.superseded-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #b02a37; /* muted red */
+  color: #fff;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  z-index: 6;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
 .sign-info {
   padding: 1rem;
   text-align: center;
@@ -207,6 +230,35 @@ body {
   max-height: 100%;
   object-fit: contain;
   filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+}
+
+/* Superseded stamp shown over modal image (does not change image color) */
+.superseded-stamp {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--secondary);
+  color: #fff;
+  padding: 0.35rem 1rem;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  z-index: 30;
+  pointer-events: none;
+  width: calc(100% - 4rem);
+  max-width: 720px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .superseded-stamp {
+    font-size: 0.9rem;
+    padding: 0.3rem 0.8rem;
+    width: calc(100% - 3rem);
+  }
 }
 
 .modal-details {
@@ -506,7 +558,6 @@ body {
 .download-container {
   position: relative;
   display: inline-block;
-  width: 100%;
 }
 .download-container .btn {
   width: 100%;

@@ -55,6 +55,8 @@ export default function SignGallery() {
   const [searchQuery, setSearchQuery] = useState('');
   const [highlightedSignId, setHighlightedSignId] = useState(null);
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
+  const [supersededSet, setSupersededSet] = useState(new Set());
+  const downloadRef = useRef(null);
   const headerRef = useRef(null);
 
   useEffect(() => {
@@ -160,16 +162,20 @@ export default function SignGallery() {
   useEffect(() => {
     Promise.all([
       fetch('/data/signs.json').then(res => res.json()),
-      fetch('/data/descriptions.json').then(res => res.json()).catch(() => ({})) // Fail gracefully
+      fetch('/data/descriptions.json').then(res => res.json()).catch(() => ({})), // Fail gracefully
+      fetch('/data/superseded.json').then(res => res.json()).catch(() => ([])) // Optional list of superseded sign numbers
     ])
-      .then(([signsData, descriptionsData]) => {
+      .then(([signsData, descriptionsData, supersededData]) => {
+        const supSet = new Set((supersededData || []).map(String));
         // Construct imageUrl since JSON only has filename and mtime
         const processedSigns = signsData.map(sign => ({
           ...sign,
           imageUrl: `/data/svgs/${sign.filename}?v=${sign.mtime}`,
-          description: descriptionsData[sign.signNumber] || sign.description || ''
+          description: descriptionsData[sign.signNumber] || sign.description || '',
+          superseded: supSet.has(String(sign.signNumber))
         }));
         setSigns(processedSigns);
+        setSupersededSet(supSet);
         setLoading(false);
 
         // Check if there is a 'sign' URL parameter to open immediately
@@ -208,6 +214,18 @@ export default function SignGallery() {
       openModal(signs[randomIndex]);
     }
   };
+
+  // Close download menu when clicking outside the download container
+  useEffect(() => {
+    if (!showDownloadMenu) return;
+    const onDocClick = (e) => {
+      if (downloadRef.current && !downloadRef.current.contains(e.target)) {
+        setShowDownloadMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', onDocClick);
+    return () => document.removeEventListener('mousedown', onDocClick);
+  }, [showDownloadMenu]);
 
   if (loading) {
     return <div className="text-center p-4">Loading signs data...</div>;
@@ -326,7 +344,7 @@ export default function SignGallery() {
                   <div
                     key={sign.filename}
                     id={`sign-${sign.filename}`}
-                    className={`sign-card ${highlightedSignId === sign.filename ? 'highlight-flash' : ''}`}
+                    className={`sign-card ${highlightedSignId === sign.filename ? 'highlight-flash' : ''} ${sign.superseded ? 'superseded' : ''}`}
                     onClick={() => openModal(sign)}
                   >
                     <LazyImage
@@ -338,6 +356,9 @@ export default function SignGallery() {
                         aspectRatio: '1.6/1'
                       }}
                     />
+                    {sign.superseded && (
+                      <span className="superseded-badge">Superseded</span>
+                    )}
                     <div className="sign-info">
                       <div className="sign-number" style={{ fontSize: `${Math.max(0.8, gridWidth / 200)}rem` }}>{sign.signNumber}</div>
                       <div className="sign-name" style={{ fontSize: `${Math.max(0.7, gridWidth / 250)}rem` }}>{sign.description || sign.filename}</div>
@@ -362,6 +383,9 @@ export default function SignGallery() {
                   alt={`Traffic Sign ${selectedSign.signNumber}`}
                   className="modal-image"
                 />
+                {selectedSign.superseded && (
+                  <div className="superseded-stamp" aria-hidden="true">Superseded</div>
+                )}
               </div>
 
               <div className="modal-details">
@@ -382,7 +406,7 @@ export default function SignGallery() {
                     alert('Link copied to clipboard');
                   }}>Share</button>
 
-                  <div className="download-container">
+                  <div className="download-container" ref={downloadRef}>
                     <button
                       className="btn btn-secondary"
                       onClick={() => setShowDownloadMenu(!showDownloadMenu)}
