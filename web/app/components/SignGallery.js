@@ -57,6 +57,9 @@ export default function SignGallery() {
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
   const [supersededSet, setSupersededSet] = useState(new Set());
   const downloadRef = useRef(null);
+  const [viewMode, setViewMode] = useState('signs'); // 'signs' | 'roadmarking'
+  const [roadMarkings, setRoadMarkings] = useState(null);
+  const [rmLoading, setRmLoading] = useState(false);
   const headerRef = useRef(null);
 
   useEffect(() => {
@@ -81,6 +84,22 @@ export default function SignGallery() {
       window.removeEventListener('load', applyHeaderOffset);
     };
   }, []);
+
+  // Lazy-load road marking dataset when switching to that view
+  useEffect(() => {
+    if (viewMode !== 'roadmarking' || roadMarkings !== null) return;
+    setRmLoading(true);
+    fetch('/data/roadmarkings.json')
+      .then(res => res.json())
+      .then(data => {
+        setRoadMarkings(data || []);
+        setRmLoading(false);
+      })
+      .catch(() => {
+        setRoadMarkings([]);
+        setRmLoading(false);
+      });
+  }, [viewMode, roadMarkings]);
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
@@ -272,11 +291,16 @@ export default function SignGallery() {
   return (
     <>
       <div className="gallery-header" ref={headerRef}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <p style={{ margin: 0 }}>Total Signs: {filteredSigns.length}</p>
-        </div>
-
+          <div className="view-tabs">
+            <button className={`view-tab ${viewMode === 'signs' ? 'active' : ''}`} onClick={() => setViewMode('signs')}>
+              Signs <span className="tab-count">{filteredSigns.length}</span>
+            </button>
+            <button className={`view-tab ${viewMode === 'roadmarking' ? 'active' : ''}`} onClick={() => setViewMode('roadmarking')}>
+              Road Marking <span className="tab-count">{roadMarkings ? roadMarkings.length : 0}</span>
+            </button>
+          </div>
         <div className="gallery-controls">
+
           <div className="gallery-controls-group">
             <input
               type="text"
@@ -313,6 +337,7 @@ export default function SignGallery() {
             Shuffle 🔀
           </button>
         </div>
+        
       </div>
 
       <div className="gallery-container">
@@ -330,44 +355,73 @@ export default function SignGallery() {
 
         {/* Main Content Area */}
         <div className="main-content">
-          {sortedCategories.map(category => (
-            <div key={category} id={`category-${category.replace(/\s+/g, '-')}`} className="category-section">
-              <h2 className="category-title">{category}</h2>
-              <div
-                className="catalogue-grid"
-                style={{
-                  gridTemplateColumns: `repeat(auto-fill, minmax(${gridWidth}px, 1fr))`,
-                  gap: `${Math.max(0.5, gridWidth / 150)}rem`
-                }}
-              >
-                {groupedSigns[category].map((sign) => (
-                  <div
-                    key={sign.filename}
-                    id={`sign-${sign.filename}`}
-                    className={`sign-card ${highlightedSignId === sign.filename ? 'highlight-flash' : ''} ${sign.superseded ? 'superseded' : ''}`}
-                    onClick={() => openModal(sign)}
-                  >
-                    <LazyImage
-                      src={sign.imageUrl}
-                      alt={`Traffic Sign ${sign.signNumber}`}
-                      className="sign-image"
-                      style={{
-                        padding: `${Math.max(0.2, gridWidth / 200)}rem`,
-                        aspectRatio: '1.6/1'
-                      }}
-                    />
-                    {sign.superseded && (
-                      <span className="superseded-badge">Superseded</span>
-                    )}
-                    <div className="sign-info">
-                      <div className="sign-number" style={{ fontSize: `${Math.max(0.8, gridWidth / 200)}rem` }}>{sign.signNumber}</div>
-                      <div className="sign-name" style={{ fontSize: `${Math.max(0.7, gridWidth / 250)}rem` }}>{sign.description || sign.filename}</div>
+          {viewMode === 'signs' ? (
+            sortedCategories.map(category => (
+              <div key={category} id={`category-${category.replace(/\s+/g, '-')}`} className="category-section">
+                <h2 className="category-title">{category}</h2>
+                <div
+                  className="catalogue-grid"
+                  style={{
+                    gridTemplateColumns: `repeat(auto-fill, minmax(${gridWidth}px, 1fr))`,
+                    gap: `${Math.max(0.5, gridWidth / 150)}rem`
+                  }}
+                >
+                  {groupedSigns[category].map((sign) => (
+                    <div
+                      key={sign.filename}
+                      id={`sign-${sign.filename}`}
+                      className={`sign-card ${highlightedSignId === sign.filename ? 'highlight-flash' : ''} ${sign.superseded ? 'superseded' : ''}`}
+                      onClick={() => openModal(sign)}
+                    >
+                      <LazyImage
+                        src={sign.imageUrl}
+                        alt={`Traffic Sign ${sign.signNumber}`}
+                        className="sign-image"
+                        style={{
+                          padding: `${Math.max(0.2, gridWidth / 200)}rem`,
+                          aspectRatio: '1.6/1'
+                        }}
+                      />
+                      {sign.superseded && (
+                        <span className="superseded-badge">Superseded</span>
+                      )}
+                      <div className="sign-info">
+                        <div className="sign-number" style={{ fontSize: `${Math.max(0.8, gridWidth / 200)}rem` }}>{sign.signNumber}</div>
+                        <div className="sign-name" style={{ fontSize: `${Math.max(0.7, gridWidth / 250)}rem` }}>{sign.description || sign.filename}</div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            rmLoading ? (
+              <div className="text-center p-4">Loading road marking data...</div>
+            ) : (roadMarkings && roadMarkings.length > 0) ? (
+              <div className="category-section">
+                <h2 className="category-title">Road Markings</h2>
+                <div
+                  className="catalogue-grid"
+                  style={{
+                    gridTemplateColumns: `repeat(auto-fill, minmax(${gridWidth}px, 1fr))`,
+                    gap: `${Math.max(0.5, gridWidth / 150)}rem`
+                  }}
+                >
+                  {roadMarkings.map((rm) => (
+                    <div key={rm.id || rm.filename} className="sign-card">
+                      <LazyImage src={rm.imageUrl || ''} alt={rm.name || rm.id || 'Road Marking'} className="sign-image" style={{ padding: `${Math.max(0.2, gridWidth / 200)}rem`, aspectRatio: '1.6/1' }} />
+                      <div className="sign-info">
+                        <div className="sign-number" style={{ fontSize: `${Math.max(0.8, gridWidth / 200)}rem` }}>{rm.id || ''}</div>
+                        <div className="sign-name" style={{ fontSize: `${Math.max(0.7, gridWidth / 250)}rem` }}>{rm.name || rm.filename || ''}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="text-center p-4">Road marking dataset not available yet.</div>
+            )
+          )}
         </div>
       </div>
 
