@@ -664,6 +664,9 @@ def process_svg_file(input_svg_path, output_dir_path, start_id):
     
     # NEW: Store batch description to reuse for multi-row signs
     batch_description = None
+    batch_desc_rect = None
+    batch_base_key = None
+    batch_needs_capture = False
 
     # Store description texts
     descriptions_data = {} # { "101": "Description Text", ... }
@@ -692,8 +695,13 @@ def process_svg_file(input_svg_path, output_dir_path, start_id):
                 
                 # Reuse the description captured from the first part
                 do_ocr = False
+                # Ensure we always create an entry for suffix tiles.
+                # If we captured text in the first part, reuse it; otherwise store empty string (but we'll try to OCR the combined rect below).
+                descriptions_data[tile_id_str] = batch_description if batch_description else ""
                 if batch_description:
-                    descriptions_data[tile_id_str] = batch_description
+                    print(f"PROPAGATE: copied description to {tile_id_str}")
+                else:
+                    print(f"PROPAGATE: created empty description for {tile_id_str} (will retry combined OCR if available)")
 
                 # If we exhausted the suffixes, reset pending base
                 if not pending_suffixes:
@@ -703,13 +711,16 @@ def process_svg_file(input_svg_path, output_dir_path, start_id):
             elif current_id in current_triple_rows:
                 # Triple row logic: URBAN, NT, LANTAU
                 base = current_id
-                tile_id_str = f"{base}-URBAN"
+                tile_id_str = f"{base}-U"
                 pending_base_id = base
-                pending_suffixes = ["-NT", "-LANTAU"]
+                pending_suffixes = ["-N", "-L"]
                 current_id += 1
                 
                 # Capture 3 rows for description
                 desc_h = h * 3 
+                # Mark that we need to capture the combined rect for this batch once desc_rect is computed
+                batch_needs_capture = True
+                batch_base_key = tile_id_str
 
             elif current_id in current_double_rows:
                 # Double row logic: R, L
@@ -721,12 +732,19 @@ def process_svg_file(input_svg_path, output_dir_path, start_id):
                 
                 # Capture 2 rows for description
                 desc_h = h * 2 
+                # Mark that we need to capture the combined rect for this batch once desc_rect is computed
+                batch_needs_capture = True
+                batch_base_key = tile_id_str
             else:
                 tile_id_str = str(current_id)
                 current_id += 1
             
             # Refined Description Rect
             desc_rect = fitz.Rect(desc_x, y, desc_x + desc_rect_width, y + desc_h)
+            # If this iteration just started a multi-row batch, remember the combined rect
+            if batch_needs_capture:
+                batch_desc_rect = desc_rect
+                batch_needs_capture = False
             
             # --- Perform OCR code block ---
             if doc_ocr and do_ocr:
@@ -750,13 +768,43 @@ def process_svg_file(input_svg_path, output_dir_path, start_id):
                         clean_text = text.strip()
                         if clean_text:
                             descriptions_data[tile_id_str] = clean_text
-                            
                             # Cache description if we are starting a multi-row batch
                             if pending_suffixes:
                                 batch_description = clean_text
+                            print(f"OCR: saved desc for {tile_id_str} (len={len(clean_text)}) rect={desc_rect} pix={pix.width}x{pix.height}")
+                        else:
+                            print(f"OCR: no text for {tile_id_str} rect={desc_rect} pix={pix.width}x{pix.height}")
                 except Exception as e:
                     # Ignore OCR errors efficiently
                     pass
+            else:
+                # No OCR performed for this tile (e.g., pending suffix). Log for debug.
+                if pending_suffixes:
+                    print(f"OCR: skipped OCR for suffix tile {tile_id_str} (pending) rect={desc_rect})")
+                    # If base OCR previously failed and we have the combined rect, try OCR now on that combined rect
+                    if batch_description is None and batch_desc_rect and doc_ocr:
+                        try:
+                            page = doc_ocr[0]
+                            pix2 = page.get_pixmap(clip=batch_desc_rect, dpi=600)
+                            if pix2.width > 10 and pix2.height > 10:
+                                img_data2 = pix2.tobytes("png")
+                                pil_img2 = Image.open(io.BytesIO(img_data2))
+                                try:
+                                    langs = pytesseract.get_languages()
+                                    lang2 = 'eng+chi_tra' if 'chi_tra' in langs else 'eng'
+                                except:
+                                    lang2 = 'eng'
+                                text2 = pytesseract.image_to_string(pil_img2, lang=lang2)
+                                clean2 = text2.strip()
+                                if clean2:
+                                    batch_description = clean2
+                                    # assign to base and this suffix
+                                    if batch_base_key:
+                                        descriptions_data[batch_base_key] = clean2
+                                    descriptions_data[tile_id_str] = clean2
+                                    print(f"OCR-RETRY: captured combined desc for batch {batch_base_key} -> {clean2[:40]!r}")
+                        except Exception:
+                            pass
             
             tiles.append({
                 'id': tile_id_str,

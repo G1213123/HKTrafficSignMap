@@ -46,5 +46,5 @@
 
 @media (max-width: 900px) {
   .gallery-container { flex-direction: column; }
-  .gallery-container .sidebar { width: 100%; height: auto; }
+  .gallery-container .sidebar { width: 100%; height: auto; position: relative; }
 }

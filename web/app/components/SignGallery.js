@@ -55,6 +55,30 @@ export default function SignGallery() {
   const [searchQuery, setSearchQuery] = useState('');
   const [highlightedSignId, setHighlightedSignId] = useState(null);
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
+  const headerRef = useRef(null);
+
+  useEffect(() => {
+    // Make gallery header sticky and offset by navbar height
+    const applyHeaderOffset = () => {
+      const headerEl = headerRef.current;
+      const navbar = document.querySelector('.navbar');
+      const navHeight = navbar ? navbar.offsetHeight : 71; // Default to ~71px if not loaded
+      if (headerEl) {
+        headerEl.style.position = 'sticky';
+        headerEl.style.top = `${navHeight}px`;
+        headerEl.style.zIndex = '900'; // Make sure it's above other elements but below navbar (1000)
+        headerEl.style.background = headerEl.style.background || 'var(--background, #fff)';
+      }
+    };
+
+    applyHeaderOffset();
+    window.addEventListener('resize', applyHeaderOffset);
+    window.addEventListener('load', applyHeaderOffset);
+    return () => {
+      window.removeEventListener('resize', applyHeaderOffset);
+      window.removeEventListener('load', applyHeaderOffset);
+    };
+  }, []);
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
@@ -147,6 +171,19 @@ export default function SignGallery() {
         }));
         setSigns(processedSigns);
         setLoading(false);
+
+        // Check if there is a 'sign' URL parameter to open immediately
+        if (typeof window !== 'undefined') {
+          const params = new URLSearchParams(window.location.search);
+          const signParam = params.get('sign');
+          if (signParam) {
+            const targetSign = processedSigns.find(s => s.signNumber.toString() === signParam);
+            if (targetSign) {
+              setSelectedSign(targetSign);
+              document.body.style.overflow = 'hidden';
+            }
+          }
+        }
       })
       .catch(err => {
         console.error('Failed to load signs or descriptions:', err);
@@ -216,7 +253,7 @@ export default function SignGallery() {
 
   return (
     <>
-      <div className="gallery-header">
+      <div className="gallery-header" ref={headerRef}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <p style={{ margin: 0 }}>Total Signs: {filteredSigns.length}</p>
         </div>
@@ -242,7 +279,7 @@ export default function SignGallery() {
             <button type="submit" className="btn btn-primary" style={{ padding: '0.4rem 0.8rem' }}>Go</button>
           </form>
 
-          <div className="gallery-controls-group">
+          <div className="gallery-controls-group hide-on-mobile">
             <label htmlFor="grid-size-slider">Size:</label>
             <input
               id="grid-size-slider"
@@ -254,7 +291,7 @@ export default function SignGallery() {
             />
           </div>
 
-          <button onClick={openRandomSign} className="btn btn-primary">
+          <button onClick={openRandomSign} className="btn btn-primary hide-on-mobile">
             Shuffle 🔀
           </button>
         </div>
@@ -333,19 +370,17 @@ export default function SignGallery() {
 
                 <div className="modal-info-section">
                   <h3>Description</h3>
-                  <p>
-                    {selectedSign.description || 'No description available.'}
-                  </p>
+                  <p>{selectedSign.description || 'No description available.'}</p>
 
                   <h3>Reference No.</h3>
                   <p>{selectedSign.signNumber}</p>
-
-                  {/* <h3>External Link</h3>
-                  <a href="#" className="modal-link">View Official Documentation</a> */}
                 </div>
 
                 <div className="modal-actions">
-                  <button className="btn btn-primary">Share</button>
+                  <button className="btn btn-primary" onClick={() => {
+                    navigator.clipboard.writeText(window.location.host + window.location.pathname + '?sign=' + selectedSign.signNumber);
+                    alert('Link copied to clipboard');
+                  }}>Share</button>
 
                   <div className="download-container">
                     <button
@@ -371,6 +406,15 @@ export default function SignGallery() {
           </div>
         </div>
       )}
+
+      {/* Back to top button - visible mainly on mobile */}
+      <button 
+        className="back-to-top" 
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        aria-label="Back to top"
+      >
+        ↑
+      </button>
     </>
   );
 }
