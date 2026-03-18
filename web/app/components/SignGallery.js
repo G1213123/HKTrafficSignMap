@@ -86,24 +86,43 @@ export default function SignGallery() {
   }, []);
 
   // Lazy-load road marking dataset when switching to that view
-  useEffect(() => {
-    if (viewMode !== 'roadmarking' || roadMarkings !== null) return;
-    setRmLoading(true);
-    fetch('/data/roadmarkings.json')
-      .then(res => res.json())
-      .then(data => {
-        const processedRm = (data || []).map(rm => ({
-          ...rm,
-          imageUrl: `/data/svgs/${rm.filename}?v=${rm.mtime || ''}`
-        }));
-        setRoadMarkings(processedRm);
-        setRmLoading(false);
-      })
-      .catch(() => {
-        setRoadMarkings([]);
-        setRmLoading(false);
-      });
-  }, [viewMode, roadMarkings]);
+  // useEffect(() => {
+  //   if (viewMode !== 'roadmarking' || roadMarkings !== null) return;
+  //   setRmLoading(true);
+  //   fetch('/data/roadmarkings.json')
+  //     .then(res => res.json())
+  //     .then(data => {
+  //       const processedRm = (data || []).map(rm => ({
+  //         ...rm,
+  //         imageUrl: `/data/svgs/${rm.filename}?v=${rm.mtime || ''}`
+  //       }));
+  //       setRoadMarkings(processedRm);
+  //       setRmLoading(false);
+  //     })
+  //     .catch(() => {
+  //       setRoadMarkings([]);
+  //       setRmLoading(false);
+  //     });
+  // }, [viewMode, roadMarkings]);
+
+  // Handle deep linking for Road Markings once loaded
+  // useEffect(() => {
+  //   if (!roadMarkings || roadMarkings.length === 0) return;
+    
+  //   if (typeof window !== 'undefined' && !selectedSign) {
+  //     const params = new URLSearchParams(window.location.search);
+  //     const signParam = params.get('sign');
+  //     if (signParam) {
+  //       const targetRm = roadMarkings.find(rm => String(rm.signNumber || rm.id) === signParam);
+  //       if (targetRm) {
+  //         setSelectedSign(targetRm);
+  //         document.body.style.overflow = 'hidden';
+  //       }
+  //     }
+  //   }
+  //   // Only run when roadMarkings data becomes available
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [roadMarkings]);
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
@@ -159,26 +178,52 @@ export default function SignGallery() {
     const signNum = e.target.elements.signNumber.value.trim();
     if (!signNum) return;
 
-    // Find sign
-    const targetSign = signs.find(s => s.signNumber.toString() === signNum);
-
-    if (targetSign) {
+    const navigateToItem = (item, type) => {
       // Clear search to show the sign if it was hidden
       if (searchQuery) setSearchQuery('');
+      
+      const id = item.filename || item.id;
+      setHighlightedSignId(id);
+      
+      // If we need to switch views
+      if (type === 'signs' && viewMode !== 'signs') {
+        setViewMode('signs');
+      } else if (type === 'roadmarking' && viewMode !== 'roadmarking') {
+        setViewMode('roadmarking');
+      }
 
-      setHighlightedSignId(targetSign.filename);
-
-      // Wait for render cycle if search was cleared and list re-rendered
+      // Wait for render cycle if search was cleared or view changed
       setTimeout(() => {
-        const element = document.getElementById(`sign-${targetSign.filename}`);
+        const element = document.getElementById(`sign-${id}`);
         if (element) {
           element.scrollIntoView({ behavior: 'smooth', block: 'center' });
           // Remove highlight after animation (2.4s)
           setTimeout(() => setHighlightedSignId(null), 2500);
         }
-      }, 100);
-    } else {
-      alert('Sign not found!');
+      }, 150);
+    };
+
+    // Find in both lists
+    const targetSign = signs.find(s => s.signNumber.toString() === signNum);
+    const targetRm = roadMarkings ? roadMarkings.find(rm => String(rm.signNumber || rm.id) === signNum) : null;
+
+    // Prioritize current view
+    if (viewMode === 'signs') {
+      if (targetSign) {
+        navigateToItem(targetSign, 'signs');
+      } else if (targetRm) {
+        navigateToItem(targetRm, 'roadmarking');
+      } else {
+        alert('Sign or Road Marking not found!');
+      }
+    } else { // roadmarking
+      if (targetRm) {
+        navigateToItem(targetRm, 'roadmarking');
+      } else if (targetSign) {
+        navigateToItem(targetSign, 'signs');
+      } else {
+        alert('Sign or Road Marking not found!');
+      }
     }
   };
 
@@ -186,9 +231,10 @@ export default function SignGallery() {
     Promise.all([
       fetch('/data/signs.json').then(res => res.json()),
       fetch('/data/descriptions.json').then(res => res.json()).catch(() => ({})), // Fail gracefully
-      fetch('/data/superseded.json').then(res => res.json()).catch(() => ([])) // Optional list of superseded sign numbers
+      fetch('/data/superseded.json').then(res => res.json()).catch(() => ([])), // Optional list of superseded sign numbers
+      fetch('/data/roadmarkings.json').then(res => res.json()).catch(() => ([])) // Load road markings initially
     ])
-      .then(([signsData, descriptionsData, supersededData]) => {
+      .then(([signsData, descriptionsData, supersededData, rmData]) => {
         const supSet = new Set((supersededData || []).map(String));
         // Construct imageUrl since JSON only has filename and mtime
         const processedSigns = signsData.map(sign => ({
@@ -197,7 +243,15 @@ export default function SignGallery() {
           description: descriptionsData[sign.signNumber] || sign.description || '',
           superseded: supSet.has(String(sign.signNumber))
         }));
+
+        // Process Road Markings
+        const processedRm = (rmData || []).map(rm => ({
+          ...rm,
+          imageUrl: `/data/svgs/${rm.filename}?v=${rm.mtime || ''}`
+        }));
+        
         setSigns(processedSigns);
+        setRoadMarkings(processedRm);
         setSupersededSet(supSet);
         setLoading(false);
 
@@ -210,6 +264,14 @@ export default function SignGallery() {
             if (targetSign) {
               setSelectedSign(targetSign);
               document.body.style.overflow = 'hidden';
+            } else {
+              // Try switching to road markings to see if it exists there
+              const targetRm = processedRm.find(rm => String(rm.signNumber || rm.id) === signParam);
+              if (targetRm) {
+                 setViewMode('roadmarking');
+                 setSelectedSign(targetRm);
+                 document.body.style.overflow = 'hidden';
+              }
             }
           }
         }
@@ -259,31 +321,47 @@ export default function SignGallery() {
     if (!searchQuery) return true;
     const lowerQuery = searchQuery.toLowerCase();
     return (
-      sign.signNumber.toString().toLowerCase().includes(lowerQuery) ||
-      sign.filename.toLowerCase().includes(lowerQuery) ||
-      (sign.description && sign.description.toLowerCase().includes(lowerQuery))
+      (sign.signNumber || '').toString().toLowerCase().includes(lowerQuery) ||
+      (sign.filename || '').toLowerCase().includes(lowerQuery) ||
+      (sign.description && (sign.description || '').toLowerCase().includes(lowerQuery))
     );
   });
 
-  // Group signs by hundred series
-  const groupedSigns = filteredSigns.reduce((acc, sign) => {
-    const match = sign.signNumber.toString().match(/^(\d+)/);
-    if (match) {
-      const num = parseInt(match[1], 10);
-      // Logic adjusted: 101-200 => 100 series, 201-300 => 200 series
-      // Formula: floor((num - 1) / 100) * 100 + 1 (if starting at 101)
-      const seriesStart = Math.floor((num - 1) / 100) * 100;
-      const key = `${seriesStart + 1} - ${seriesStart + 100}`;
-      if (!acc[key]) acc[key] = [];
-      acc[key].push(sign);
-    } else {
-      if (!acc['Others']) acc['Others'] = [];
-      acc['Others'].push(sign);
-    }
-    return acc;
-  }, {});
+  const groupCollection = (list) => {
+    return list.reduce((acc, item) => {
+      const match = (item.signNumber || item.id || '').toString().match(/^(\d+)/);
+      if (match) {
+        const num = parseInt(match[1], 10);
+        // Logic adjusted: 101-200 => 100 series, 201-300 => 200 series
+        const seriesStart = Math.floor((num - 1) / 100) * 100;
+        const key = `${seriesStart + 1} - ${seriesStart + 100}`;
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(item);
+      } else {
+        if (!acc['Others']) acc['Others'] = [];
+        acc['Others'].push(item);
+      }
+      return acc;
+    }, {});
+  };
 
-  const sortedCategories = Object.keys(groupedSigns).sort((a, b) => {
+  const groupedSigns = groupCollection(filteredSigns);
+
+  const filteredRoadMarkings = (roadMarkings || []).filter(rm => {
+    if (!searchQuery) return true;
+    const lowerQuery = searchQuery.toLowerCase();
+    return (
+      (rm.signNumber || rm.id || '').toString().toLowerCase().includes(lowerQuery) ||
+      (rm.filename || '').toLowerCase().includes(lowerQuery) ||
+      (rm.description || rm.name || '').toLowerCase().includes(lowerQuery)
+    );
+  });
+
+  const groupedRoadMarkings = groupCollection(filteredRoadMarkings);
+
+  const currentGrouped = viewMode === 'signs' ? groupedSigns : groupedRoadMarkings;
+
+  const sortedCategories = Object.keys(currentGrouped).sort((a, b) => {
     const numA = parseInt(a);
     const numB = parseInt(b);
     if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
@@ -413,29 +491,33 @@ export default function SignGallery() {
           ) : (
             rmLoading ? (
               <div className="text-center p-4">Loading road marking data...</div>
-            ) : (roadMarkings && roadMarkings.length > 0) ? (
-              <div className="category-section">
-                <h2 className="category-title">Road Markings</h2>
-                <div
-                  className="catalogue-grid"
-                  style={{
-                    gridTemplateColumns: `repeat(auto-fill, minmax(${gridWidth}px, 1fr))`,
-                    gap: `${Math.max(0.5, gridWidth / 150)}rem`
-                  }}
-                >
-                  {roadMarkings.map((rm) => (
-                    <div key={rm.id || rm.filename} className="sign-card rm-card" onClick={() => openModal(rm)}>
-                      <LazyImage src={rm.imageUrl || ''} alt={rm.name || rm.id || 'Road Marking'} className="sign-image rm-image" style={{ padding: `${Math.max(0.2, gridWidth / 200)}rem`, aspectRatio: '1.6/1' }} />
-                      <div className="sign-info">
-                        <div className="sign-number" style={{ fontSize: `${Math.max(0.8, gridWidth / 200)}rem` }}>{rm.signNumber || rm.id || ''}</div>
-                        <div className="sign-name" style={{ fontSize: `${Math.max(0.7, gridWidth / 250)}rem` }}>{rm.description || rm.name || rm.filename || ''}</div>
+            ) : (sortedCategories.length > 0) ? (
+              sortedCategories.map(category => (
+                <div key={category} id={`category-${category.replace(/\s+/g, '-')}`} className="category-section">
+                  <h2 className="category-title">{category}</h2>
+                  <div
+                    className="catalogue-grid"
+                    style={{
+                      gridTemplateColumns: `repeat(auto-fill, minmax(${gridWidth}px, 1fr))`,
+                      gap: `${Math.max(0.5, gridWidth / 150)}rem`
+                    }}
+                  >
+                    {groupedRoadMarkings[category].map((rm) => (
+                      <div key={rm.id || rm.filename} id={`sign-${rm.filename || rm.id}`} className={`sign-card rm-card ${highlightedSignId === (rm.filename || rm.id) ? 'highlight-flash' : ''}`} onClick={() => openModal(rm)}>
+                        <LazyImage src={rm.imageUrl || ''} alt={rm.name || rm.id || 'Road Marking'} className="sign-image rm-image" style={{ padding: `${Math.max(0.2, gridWidth / 200)}rem`, aspectRatio: '1.6/1' }} />
+                        <div className="sign-info">
+                          <div className="sign-number" style={{ fontSize: `${Math.max(0.8, gridWidth / 200)}rem` }}>{rm.signNumber || rm.id || ''}</div>
+                          <div className="sign-name" style={{ fontSize: `${Math.max(0.7, gridWidth / 250)}rem` }}>{rm.description || rm.name || rm.filename || ''}</div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ))
             ) : (
-              <div className="text-center p-4">Road marking dataset not available yet.</div>
+              <div className="text-center p-4">
+                {roadMarkings ? 'No matching road markings found.' : 'Road marking dataset not available yet.'}
+              </div>
             )
           )}
         </div>
@@ -450,7 +532,7 @@ export default function SignGallery() {
               <div className="modal-image-container">
                 <img
                   src={selectedSign.imageUrl}
-                  alt={`Traffic Sign ${selectedSign.signNumber || selectedSign.id}`}
+                  alt={`${(selectedSign.filename || '').startsWith('RM') ? 'Road Marking' : 'Traffic Sign'} ${selectedSign.signNumber || selectedSign.id}`}
                   className="modal-image"
                 />
                 {selectedSign.superseded && (
@@ -459,7 +541,7 @@ export default function SignGallery() {
               </div>
 
               <div className="modal-details">
-                <h2 className="modal-title">Traffic Sign {selectedSign.signNumber}</h2>
+                <h2 className="modal-title">{(selectedSign.filename || '').startsWith('RM') ? 'Road Marking' : 'Traffic Sign'} {selectedSign.signNumber}</h2>
                 <p className="modal-subtitle">{selectedSign.filename}</p>
 
                 <div className="modal-info-section">
