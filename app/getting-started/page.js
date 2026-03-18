@@ -118,11 +118,6 @@ export default function GettingStarted() {
       {/* Hero Section */}
       <section className="getting-started-hero">
         <div className="container">
-          <div className="breadcrumb">
-            <Link href="/" data-i18n="Home">Home</Link>
-            <span>›</span>
-            <span data-i18n="Getting Started">Getting Started</span>
-          </div>
           <h1 style={{ fontSize: '3rem', fontWeight: 700, marginBottom: '1rem' }} data-i18n="Getting Started Guide">Getting Started Guide</h1>
           <p style={{ fontSize: '1.25rem', marginBottom: '2rem', opacity: 0.9 }} data-i18n="Learn how to create professional traffic signs with our powerful design tool">Learn how to create professional traffic signs with our powerful design tool</p>
           <a href="/design.html" className="btn btn-outline" style={{ background: 'white', color: 'var(--primary-color)' }}>

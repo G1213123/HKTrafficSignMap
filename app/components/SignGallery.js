@@ -247,7 +247,9 @@ export default function SignGallery() {
         // Process Road Markings
         const processedRm = (rmData || []).map(rm => ({
           ...rm,
-          imageUrl: `/data/svgs/${rm.filename}?v=${rm.mtime || ''}`
+          imageUrl: `/data/svgs/${rm.filename}?v=${rm.mtime || ''}`,
+          description: descriptionsData[rm.signNumber] || descriptionsData[rm.id] || rm.description || '',
+          superseded: supSet.has(String(rm.signNumber || rm.id))
         }));
         
         setSigns(processedSigns);

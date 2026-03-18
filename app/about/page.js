@@ -18,7 +18,7 @@ export default function About() {
         <div className="container">
           <div className="about-content">
             <div className="about-text">
-              <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem', color: 'var(--text-primary)' }} data-i18n="About Road Sign Factory">About Road Sign Factory</h1>
+              <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem', color: 'var(--primary)' }} data-i18n="About Road Sign Factory">About Road Sign Factory</h1>
               <div className="intro-text">
                 <p data-i18n="About Intro Text">Road Sign Factory provides traffic engineers, designers, and enthusiasts with a standards-compliant tool for creating professional road signage. It is a web service built and served to meet the modern needs for generating quality designs.</p>
               </div>
@@ -59,7 +59,7 @@ export default function About() {
                 </div>
 
                 <div className="intro-image">
-                  <img src="/images/about-illustration.svg" alt="Professional sign design illustration" loading="lazy" />
+                  <img src="/images/about-illustration.svg" alt="Professional sign design illustration" loading="lazy" className="invert-in-dark" />
                 </div>
               </div>
 
@@ -77,7 +77,7 @@ export default function About() {
                     <div className="timeline-icon">
                       <i className="fas fa-lightbulb"></i>
                     </div>
-                    <div className="timeline-content timeline-left">
+                    <div className="timeline-content timeline-content-dir">
                       <div className="timeline-year">April 2022
                         <span className="timeline-status status-concept" data-i18n="Initial Idea">Initial Idea</span>
                       </div>
@@ -93,7 +93,7 @@ export default function About() {
                     <div className="timeline-icon">
                       <i className="fas fa-search"></i>
                     </div>
-                    <div className="timeline-content timeline-left">
+                    <div className="timeline-content timeline-content-dir">
                       <div className="timeline-year">May 2024
                         <span className="timeline-status status-research" data-i18n="TPDM Release">TPDM Release</span>
                       </div>
@@ -106,7 +106,7 @@ export default function About() {
                     <div className="timeline-icon">
                       <i className="fas fa-code"></i>
                     </div>
-                    <div className="timeline-content timeline-right">
+                    <div className="timeline-content timeline-content-dir">
                       <div className="timeline-year">January 2025
                         <span className="timeline-status status-development" data-i18n="Restart">Restart</span>
                       </div>
@@ -119,7 +119,7 @@ export default function About() {
                     <div className="timeline-icon">
                       <i className="fas fa-robot"></i>
                     </div>
-                    <div className="timeline-content timeline-left">
+                    <div className="timeline-content timeline-content-dir">
                       <div className="timeline-year">February 2025
                         <span className="timeline-status status-innovation" data-i18n="AI Boom">AI Boom</span>
                       </div>
@@ -132,7 +132,7 @@ export default function About() {
                     <div className="timeline-icon">
                       <i className="fas fa-rocket"></i>
                     </div>
-                    <div className="timeline-content timeline-left">
+                    <div className="timeline-content timeline-content-dir">
                       <div className="timeline-year">May 2025
                         <span className="timeline-status status-beta" data-i18n="Public Prototype">Public Prototype</span>
                       </div>
@@ -148,7 +148,7 @@ export default function About() {
                     <div className="timeline-icon">
                       <i className="fas fa-infinity"></i>
                     </div>
-                    <div className="timeline-content timeline-left">
+                    <div className="timeline-content timeline-content-dir">
                       <div className="timeline-year" data-i18n="Future">Future
                         <span className="timeline-status status-future" data-i18n="Ongoing">Ongoing</span>
                       </div>
