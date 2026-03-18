@@ -79,6 +79,26 @@ SPECIAL_GRIDS = {
         "col_width": 56.67,
         "col_stride": 109.11,
     },
+    "(RM 1001 - 1080)_page1.svg": {
+        "cols": 4,
+        "rows": 20,
+        "col_start_x": 43.185,
+        "col_width": 39.66,
+        "col_stride": 172.89,
+        "row_start_y": 18.345,
+        "row_height": 28.35,
+        "row_stride": 28.35,
+    },
+    "(RM 1101 - 1180)_page1.svg": {
+        "cols": 4,
+        "rows": 20,
+        "col_start_x": 43.185,
+        "col_width": 39.66,
+        "col_stride": 172.89,
+        "row_start_y": 18.345,
+        "row_height": 28.35,
+        "row_stride": 28.35,
+    },
 }
 
 NS = {
@@ -611,8 +631,8 @@ def prune_by_id(node, allowed_ids):
     
     return False
 
-def process_svg_file(input_svg_path, output_dir_path, start_id):
-    print(f"Reading {input_svg_path} (Start ID: {start_id})...")
+def process_svg_file(input_svg_path, output_dir_path, start_id, prefix="TS"):
+    print(f"Reading {input_svg_path} (Start ID: {start_id}, Prefix: {prefix})...")
     parser = etree.XMLParser(remove_blank_text=True)
     try:
         tree = etree.parse(input_svg_path, parser)
@@ -636,17 +656,26 @@ def process_svg_file(input_svg_path, output_dir_path, start_id):
     basename = os.path.basename(input_svg_path)
     
     current_cols = cols
+    current_rows = rows
     current_col_start_x = col_start_x
     current_col_width = col_width
     current_col_stride = col_stride
+    current_row_start_y = row_start_y
+    current_row_height = row_height
+    current_row_stride = row_stride
+
     
     if basename in SPECIAL_GRIDS:
         print(f"Using separate grid configuration for {basename}")
         config = SPECIAL_GRIDS[basename]
         current_cols = config.get("cols", current_cols)
+        current_rows = config.get("rows", current_rows)
         current_col_start_x = config.get("col_start_x", current_col_start_x)
         current_col_width = config.get("col_width", current_col_width)
         current_col_stride = config.get("col_stride", current_col_stride)
+        current_row_start_y = config.get("row_start_y", current_row_start_y)
+        current_row_height = config.get("row_height", current_row_height)
+        current_row_stride = config.get("row_stride", current_row_stride)
         current_double_rows = config.get("double_row_ids", set())
         current_triple_rows = config.get("triple_row_ids", set())
     else:
@@ -672,17 +701,21 @@ def process_svg_file(input_svg_path, output_dir_path, start_id):
     descriptions_data = {} # { "101": "Description Text", ... }
 
     for c in range(current_cols):
-        for r in range(rows):
+        for r in range(current_rows):
             x = current_col_start_x + (c * current_col_stride)
-            y = row_start_y + (r * row_stride)
+            y = current_row_start_y + (r * current_row_stride)
             w = current_col_width
-            h = row_height
+            h = current_row_height
             
             # Description Column Logic
             # User says description is "half the image box width".
             # Image box width is w.
             desc_x = x + w # Start immediately to the right of the sign
-            desc_rect_width = w * 0.5 # Half of the sign width
+            if "RM" in basename:
+                # RM files description text is from 82.845 to 125.385 -> width = 42.54
+                desc_rect_width = 42.54
+            else:
+                desc_rect_width = w * 0.5 # Half of the sign width
             
             # Determine capture height and OCR flag
             desc_h = h   # Default single row height
@@ -911,7 +944,7 @@ def process_svg_file(input_svg_path, output_dir_path, start_id):
         if not has_renderable_content(transform_group):
             # If the group only contains defs/clipPath, or invisible elements, skip
             # Also ensure output file is removed if it existed (from previous run)
-            filename = f"TS_{tile['id']}.svg"
+            filename = f"{prefix}_{tile['id']}.svg"
             out_path = os.path.join(output_dir_path, filename)
             
             if os.path.exists(out_path):
@@ -934,7 +967,7 @@ def process_svg_file(input_svg_path, output_dir_path, start_id):
         tile_root.set('height', f"{scaled_h:.3f}")
             
         # Save
-        filename = f"TS_{tile['id']}.svg"
+        filename = f"{prefix}_{tile['id']}.svg"
         out_path = os.path.join(output_dir_path, filename)
         tile_tree.write(out_path, encoding='utf-8', xml_declaration=True)
         
@@ -944,8 +977,8 @@ def process_svg_file(input_svg_path, output_dir_path, start_id):
     print(f"Done processing {input_svg_path}.")
 
 
-def generate_sign_list(svg_dir, output_file):
-    print("Generating sign list...")
+def generate_sign_list(svg_dir, output_file, prefix_filter=None):
+    print(f"Generating sign list for {prefix_filter or 'all'}...")
     print(f"Reading from: {svg_dir}")
     
     if not os.path.exists(svg_dir):
@@ -971,10 +1004,13 @@ def generate_sign_list(svg_dir, output_file):
     signs = []
     
     for filename in svg_files:
-        # Extract number from TS_XXXX.svg
-        match = re.search(r"^TS_(\d+[A-Za-z]*)", filename)
+        if prefix_filter and not filename.startswith(prefix_filter + "_"):
+            continue
+
+        # Extract number from TS_XXXX.svg or RM_XXXX.svg
+        match = re.search(r"^(TS|RM)_(\d+[A-Za-z]*)", filename)
         if match:
-             sign_number = match.group(1)
+             sign_number = match.group(2)
         else:
              sign_number = filename.replace(".svg", "")
         
@@ -1026,20 +1062,24 @@ def process_all_svgs():
     
     for f in files:
         basename = os.path.basename(f)
-        # Extract ID from filename like "(TS 123 - ...).svg"
-        match = re.search(r"\(TS\s*(\d+)", basename)
+        # Extract ID from filename like "(TS 123 - ...) or (RM 1001 - ...)"
+        match = re.search(r"\((TS|RM)\s*(\d+)", basename)
         if match:
-            start_seq_id = int(match.group(1))
-            process_svg_file(f, output_dir, start_seq_id)
+            sign_prefix = match.group(1)
+            start_seq_id = int(match.group(2))
+            process_svg_file(f, output_dir, start_seq_id, prefix=sign_prefix)
         else:
             print(f"Skipping {f}: Could not determine Start ID from filename.")
             
     # Generate sign list after processing
     # output_dir is "data/svgs"
-    # Target output: web/public/data/signs.json
+    # Target output: web/public/data/signs.json and web/public/data/roadmarkings.json
     output_json_path = os.path.join(BASE_DIR, "web", "public", "data", "signs.json")
+    rm_output_json_path = os.path.join(BASE_DIR, "web", "public", "data", "roadmarkings.json")
+    
     if os.path.exists(os.path.dirname(output_json_path)):
-         generate_sign_list(output_dir, output_json_path)
+         generate_sign_list(output_dir, output_json_path, prefix_filter="TS")
+         generate_sign_list(output_dir, rm_output_json_path, prefix_filter="RM")
     else:
          print(f"Warning: Web public directory not found at {os.path.dirname(output_json_path)}. Skipping JSON generation.")
 

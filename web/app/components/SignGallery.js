@@ -92,7 +92,11 @@ export default function SignGallery() {
     fetch('/data/roadmarkings.json')
       .then(res => res.json())
       .then(data => {
-        setRoadMarkings(data || []);
+        const processedRm = (data || []).map(rm => ({
+          ...rm,
+          imageUrl: `/data/svgs/${rm.filename}?v=${rm.mtime || ''}`
+        }));
+        setRoadMarkings(processedRm);
         setRmLoading(false);
       })
       .catch(() => {
@@ -290,6 +294,18 @@ export default function SignGallery() {
 
   return (
     <>
+      <svg style={{ position: 'absolute', width: 0, height: 0 }} aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="dark-rm-matrix" colorInterpolationFilters="sRGB">
+            <feColorMatrix type="matrix" values="
+               0  0 -1  0  1
+              -1  1 -1  0  1
+              -1  0  0  0  1
+               0  0  0  1  0" 
+            />
+          </filter>
+        </defs>
+      </svg>
       <div className="gallery-header" ref={headerRef}>
           <div className="view-tabs">
             <button className={`view-tab ${viewMode === 'signs' ? 'active' : ''}`} onClick={() => setViewMode('signs')}>
@@ -408,11 +424,11 @@ export default function SignGallery() {
                   }}
                 >
                   {roadMarkings.map((rm) => (
-                    <div key={rm.id || rm.filename} className="sign-card">
-                      <LazyImage src={rm.imageUrl || ''} alt={rm.name || rm.id || 'Road Marking'} className="sign-image" style={{ padding: `${Math.max(0.2, gridWidth / 200)}rem`, aspectRatio: '1.6/1' }} />
+                    <div key={rm.id || rm.filename} className="sign-card rm-card" onClick={() => openModal(rm)}>
+                      <LazyImage src={rm.imageUrl || ''} alt={rm.name || rm.id || 'Road Marking'} className="sign-image rm-image" style={{ padding: `${Math.max(0.2, gridWidth / 200)}rem`, aspectRatio: '1.6/1' }} />
                       <div className="sign-info">
-                        <div className="sign-number" style={{ fontSize: `${Math.max(0.8, gridWidth / 200)}rem` }}>{rm.id || ''}</div>
-                        <div className="sign-name" style={{ fontSize: `${Math.max(0.7, gridWidth / 250)}rem` }}>{rm.name || rm.filename || ''}</div>
+                        <div className="sign-number" style={{ fontSize: `${Math.max(0.8, gridWidth / 200)}rem` }}>{rm.signNumber || rm.id || ''}</div>
+                        <div className="sign-name" style={{ fontSize: `${Math.max(0.7, gridWidth / 250)}rem` }}>{rm.description || rm.name || rm.filename || ''}</div>
                       </div>
                     </div>
                   ))}
@@ -434,7 +450,7 @@ export default function SignGallery() {
               <div className="modal-image-container">
                 <img
                   src={selectedSign.imageUrl}
-                  alt={`Traffic Sign ${selectedSign.signNumber}`}
+                  alt={`Traffic Sign ${selectedSign.signNumber || selectedSign.id}`}
                   className="modal-image"
                 />
                 {selectedSign.superseded && (

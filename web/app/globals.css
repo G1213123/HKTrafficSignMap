@@ -469,3 +469,9 @@ body {
 .download-item:hover {
   background-color: #f0f0f0;
 }
+@media (prefers-color-scheme: dark) {
+  .rm-image {
+    /* Custom SVG filter defined in SignGallery.js to turn Black to White while preserving Yellow/Orange/Red */
+    filter: url(#dark-rm-matrix);
+  }
+}
