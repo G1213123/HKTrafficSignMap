@@ -3,13 +3,106 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import { DemoCanvas } from './demo/demo-canvas';
 // import './homepage.css'; - Moved to layout.js for global scope
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showMigrationNotice, setShowMigrationNotice] = useState(true);
 
-  // Stats animation
+  // Demo state
+  const [demoStage, setDemoStage] = useState(0);
+  const [executedStages, setExecutedStages] = useState(new Set());
+  const demoStages = ['symbol', 'text', 'snap', 'border'];
+
+  // Initialize Demo Canvas
+  useEffect(() => {
+    const initCanvas = () => {
+        if (typeof window !== 'undefined' && window.fabric) {
+            DemoCanvas.init();
+        } else {
+            setTimeout(initCanvas, 100);
+        }
+    };
+    initCanvas();
+
+    return () => {
+        // Cleanup on unmount
+        if (typeof window !== 'undefined' && window.fabric) {
+             DemoCanvas.reset();
+        }
+    };
+  }, []);
+
+  const executeDemoAction = (type) => {
+      switch (type) {
+          case 'symbol':
+              DemoCanvas.createSymbol();
+              break;
+          case 'text':
+              DemoCanvas.createText();
+              break;
+          case 'snap':
+              DemoCanvas.simulateSnap();
+              break;
+          case 'border':
+              DemoCanvas.createBorder();
+              break;
+      }
+  };
+
+  const handleDemoClick = (type) => {
+      if (type === 'reset') {
+          DemoCanvas.reset();
+          setDemoStage(0);
+          setExecutedStages(new Set());
+          return;
+      }
+
+      const requestedStageIndex = demoStages.indexOf(type);
+      
+      // If requesting a stage that's already completed, re-execute it
+      if (requestedStageIndex < demoStage) {
+          executeDemoAction(type);
+          return;
+      }
+
+      // If requesting the current stage, execute it and advance
+      if (requestedStageIndex === demoStage) {
+          executeDemoAction(type);
+          
+          const newExecuted = new Set(executedStages);
+          newExecuted.add(type);
+          setExecutedStages(newExecuted);
+
+          // Advance stage
+          // Special case for border/snap interaction from original code:
+          // If we are at 'border' stage, and we have objects, try automated snap? 
+          // For now, simple progression
+          setDemoStage(prev => prev + 1);
+      }
+  };
+
+  const getButtonClass = (type) => {
+      if (type === 'reset') return 'demo-btn';
+      
+      const stageIndex = demoStages.indexOf(type);
+      let classes = 'demo-btn';
+      
+      if (stageIndex < demoStage) {
+          classes += ' completed';
+      } else if (stageIndex === demoStage) {
+          if (executedStages.has(type)) {
+              classes += ' active';
+          } else {
+              classes += ' current';
+          }
+      } else {
+          classes += ' disabled';
+      }
+      return classes;
+  };
+
   useEffect(() => {
     const stats = document.querySelectorAll('.stat-number');
     const animateCounter = (element, target) => {
@@ -248,23 +341,43 @@ export default function Home() {
 
                 {/* Demo Controls */}
                 <div className="demo-controls">
-                    <button className="demo-btn" data-demo="symbol">
+                    <button 
+                        className={getButtonClass('symbol')} 
+                        onClick={() => handleDemoClick('symbol')}
+                        data-demo="symbol"
+                    >
                         <i className="fas fa-plus-circle"></i>
                         <span>Add Symbol</span>
                     </button>
-                    <button className="demo-btn" data-demo="text">
+                    <button 
+                        className={getButtonClass('text')} 
+                        onClick={() => handleDemoClick('text')}
+                        data-demo="text"
+                    >
                         <i className="fas fa-font"></i>
                         <span>Add Text</span>
                     </button>
-                    <button className="demo-btn" data-demo="snap">
+                    <button 
+                        className={getButtonClass('snap')} 
+                        onClick={() => handleDemoClick('snap')}
+                        data-demo="snap"
+                    >
                         <i className="fas fa-arrows-alt"></i>
                         <span>Drag &amp; Snap</span>
                     </button>
-                    <button className="demo-btn" data-demo="border">
+                    <button 
+                        className={getButtonClass('border')} 
+                        onClick={() => handleDemoClick('border')}
+                        data-demo="border"
+                    >
                         <i className="fas fa-border-style"></i>
                         <span>Add Border</span>
                     </button>
-                    <button className="demo-btn" data-demo="reset">
+                    <button 
+                        className="demo-btn" 
+                        onClick={() => handleDemoClick('reset')}
+                        data-demo="reset"
+                    >
                         <i className="fas fa-undo"></i>
                         <span>Reset</span>
                     </button>
