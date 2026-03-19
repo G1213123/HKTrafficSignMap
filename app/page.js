@@ -16,7 +16,8 @@ export default function Home() {
     const [activeHeroIndex, setActiveHeroIndex] = useState(0);
     const heroImages = [
         "/images/hero-preview.svg",
-        "/images/hero-preview2.png"
+        "/images/hero-preview2.svg",
+        "/images/hero-preview3.svg",
     ];
 
     useEffect(() => {
@@ -305,16 +306,16 @@ export default function Home() {
                                     Open Full App
                                 </a>
                             </div>
+                        </div>
 
-                            <div className="hero-dots">
-                                {heroImages.map((_, index) => (
-                                    <div 
-                                        key={index}
-                                        className={`hero-dot ${activeHeroIndex === index ? 'active' : ''}`}
-                                        onClick={() => setActiveHeroIndex(index)}
-                                    />
-                                ))}
-                            </div>
+                        <div className="hero-dots">
+                            {heroImages.map((_, index) => (
+                                <div 
+                                    key={index}
+                                    className={`hero-dot ${activeHeroIndex === index ? 'active' : ''}`}
+                                    onClick={() => setActiveHeroIndex(index)}
+                                />
+                            ))}
                         </div>
                     </div>
                 </div>
