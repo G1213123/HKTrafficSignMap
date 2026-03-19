@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import './about.css';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
