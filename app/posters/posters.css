@@ -56,6 +56,7 @@
     overflow: hidden;
     padding: 40px;
     position: relative;
+    cursor: pointer;
 }
 
 .poster-preview img {
@@ -115,6 +116,158 @@
     background-color: var(--primary-dark);
 }
 
+/* Modal Styling - Improved */
+.poster-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.85);
+    z-index: 5000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+    opacity: 1; /* Ensure opacity */
+    visibility: visible;
+}
+
+.poster-modal-content {
+    background: var(--background-color);
+    border-radius: 12px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    width: 95vw;
+    height: 95vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--border-color);
+    animation: slideUp 0.3s ease;
+}
+
+.poster-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--background-alt);
+}
+
+.poster-modal-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.poster-modal-close {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: color 0.2s, background-color 0.2s;
+}
+
+.poster-modal-close:hover {
+    color: var(--text-primary);
+    background-color: rgba(0,0,0,0.05);
+}
+
+.poster-modal-body {
+    flex: 1;
+    overflow: auto;
+    padding: 0;
+    background: var(--background-color);
+    display: block; /* changed from flex to allow scrolling */
+    position: relative;
+    text-align: center; /* Center image if smaller than width */
+}
+
+.poster-modal-image {
+    width: 100%;
+    height: auto;
+    max-height: none;
+    max-width: none;
+    object-fit: contain;
+    border-radius: 4px;
+    display: block;
+}
+
+.poster-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border-color);
+    background: var(--background-alt);
+}
+
+.btn-download-modal {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background-color: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    gap: 0.5rem;
+    transition: background-color 0.2s;
+}
+
+.btn-download-modal:hover {
+    background-color: var(--primary-dark);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Zoom Hint styles */
+.poster-zoom-hint {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.6);
+    color: white;
+    padding: 15px;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+}
+
+.poster-preview:hover .poster-zoom-hint {
+    opacity: 1;
+}
+
+.poster-zoom-hint i {
+    font-size: 24px;
+}
+
+/* Dark Mode Overrides */
 @media (prefers-color-scheme: dark) {
     .poster-card {
         background: var(--background-alt);
@@ -124,5 +277,9 @@
 
     .poster-preview img {
         box-shadow: 0 10px 30px rgba(255,255,255,0.02), var(--shadow-lg);
+    }
+
+    .poster-modal-close:hover {
+        background-color: rgba(255,255,255,0.1);
     }
 }

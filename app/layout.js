@@ -1,6 +1,7 @@
 import Script from "next/script";
 import "./globals.css";
 import "./homepage.css";
+import ScrollAnimation from "./components/ScrollAnimation";
 
 export const metadata = {
   title: "Road Sign Factory - Professional Traffic Sign Designer",
@@ -15,6 +16,7 @@ export default function RootLayout({ children }) {
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className="antialiased font-sans">
+        <ScrollAnimation />
         <Script src="https://cdn.jsdelivr.net/npm/fabric@6.4.3/dist/index.js"></Script>
         {children}
       </body>

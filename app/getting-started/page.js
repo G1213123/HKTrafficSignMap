@@ -1,13 +1,108 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import './getting-started.css';
 
+const TutorialBlock = ({ 
+  id, 
+  videoSrc, 
+  imageSrc, 
+  title, 
+  jsonId, 
+  jsonFile,
+  expandedJson,
+  toggleJsonDisplay,
+  copiedStates,
+  copyJsonToClipboard
+}) => {
+  const [jsonContent, setJsonContent] = useState('Loading...');
+
+  useEffect(() => {
+    if (jsonFile) {
+      fetch(`/images/${jsonFile}`)
+        .then(response => response.json())
+        .then(data => setJsonContent(JSON.stringify(data, null, 2)))
+        .catch(error => {
+          console.error('Error loading JSON:', error);
+          setJsonContent(`Error loading ${jsonFile}`);
+        });
+    }
+  }, [jsonFile]);
+  
+  return (
+    <div className="tutorial-section" style={{ marginBottom: '5rem' }}>
+      <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+             </div>
+      <div className="tutorial-grid">
+        {/* Video Column */}
+        <div>
+          <div 
+            className="video-placeholder"
+            data-tutorial={id}
+          >
+            <video controls style={{ width: '100%', maxWidth: '500px', borderRadius: '8px', boxShadow: 'var(--shadow-sm)' }}>
+              <source src={videoSrc} type="video/mp4" />
+              <p data-i18n="Your browser does not support the video tag.">Your browser does not support the video tag.</p>
+            </video>
+            <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+              <p><strong>{title} Tutorial</strong></p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Image Column */}
+        <div>
+          <div 
+            className="image-placeholder"
+            data-example={id}
+          >
+            <img src={imageSrc} alt={`${title} example`} />
+            <p><strong>{title} Example</strong></p>
+          </div>
+        </div>
+      </div>
+
+      {/* JSON Display Box */}
+      <div className="json-display-container">
+        <div className="json-display-header" onClick={() => toggleJsonDisplay(jsonId)}>
+          <div className="json-display-title">
+            <i className="fas fa-code"></i>
+            <span data-i18n="View JSON Template">View JSON Template</span>
+          </div>
+          <button className="json-display-toggle">
+            <i className={`fas fa-chevron-down ${expandedJson[jsonId] ? 'fa-rotate-180' : ''}`} id={`${jsonId}-icon`}></i>
+            <span data-i18n="Show Code">Show Code</span>
+          </button>
+        </div>
+        <div className={`json-display-content ${expandedJson[jsonId] ? 'expanded' : ''}`} id={jsonId}>
+          <div className="json-display-description">
+            <i className="fas fa-info-circle"></i>
+            <strong data-i18n="How to use:">How to use:</strong> <span data-i18n="Copy the JSON code below and paste it into the Road Sign Factory app using the Import function to load this example sign.">Copy the JSON code below and paste it into the Road Sign Factory app using the Import function to load this example sign.</span>
+          </div>
+          <div className="json-code-container">
+            <button 
+              className={`copy-json-btn ${copiedStates[jsonId] ? 'copied' : ''}`} 
+              onClick={() => copyJsonToClipboard(`${jsonId}-code`, jsonId)}
+            >
+              <i className="fas fa-copy"></i>
+              <span>{copiedStates[jsonId] ? 'Copied!' : 'Copy All'}</span>
+            </button>
+            <pre className="json-code" id={`${jsonId}-code`} data-json-file={jsonFile}>
+              <div className="json-loading">
+                 {jsonContent}
+              </div>
+            </pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function GettingStarted() {
-  const [activeTutorial, setActiveTutorial] = useState(null);
   const [expandedJson, setExpandedJson] = useState({});
   const [copiedStates, setCopiedStates] = useState({});
 
@@ -19,8 +114,6 @@ export default function GettingStarted() {
   };
 
   const copyJsonToClipboard = (elementId, jsonId) => {
-    // Mock copy functionality since we don't have the actual JSON data loaded yet
-    // In a real app, you'd fetch the JSON or have it available
     const codeElement = document.getElementById(elementId);
     if (codeElement) {
         navigator.clipboard.writeText(codeElement.innerText).then(() => {
@@ -30,85 +123,6 @@ export default function GettingStarted() {
             }, 2000);
         });
     }
-  };
-
-  const TutorialBlock = ({ id, videoSrc, imageSrc, title, description, jsonId, jsonFile }) => {
-    const isHovered = activeTutorial === id;
-    
-    return (
-      <div className="tutorial-section" style={{ marginBottom: '5rem' }}>
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h3 style={{ fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '1rem' }} data-i18n={`Example of ${title}`}>Example of {title}</h3>
-        </div>
-        <div className="tutorial-grid">
-          {/* Video Column */}
-          <div>
-            <div 
-              className={`video-placeholder ${isHovered ? 'active' : ''}`}
-              data-tutorial={id}
-              onMouseEnter={() => setActiveTutorial(id)}
-              onMouseLeave={() => setActiveTutorial(null)}
-            >
-              <video controls style={{ width: '100%', maxWidth: '500px', borderRadius: '8px', boxShadow: 'var(--shadow-sm)' }}>
-                <source src={videoSrc} type="video/mp4" />
-                <p data-i18n="Your browser does not support the video tag.">Your browser does not support the video tag.</p>
-              </video>
-              <div style={{ textAlign: 'center', marginTop: '1rem' }}>
-                <p><strong>{title} Tutorial</strong></p>
-              </div>
-            </div>
-          </div>
-          
-          {/* Image Column */}
-          <div>
-            <div 
-              className={`image-placeholder ${isHovered ? 'active' : ''}`}
-              data-example={id}
-              onMouseEnter={() => setActiveTutorial(id)}
-              onMouseLeave={() => setActiveTutorial(null)}
-            >
-              <img src={imageSrc} alt={`${title} example`} />
-              <p><strong>{title} Example</strong></p>
-            </div>
-          </div>
-        </div>
-
-        {/* JSON Display Box */}
-        <div className="json-display-container">
-          <div className="json-display-header" onClick={() => toggleJsonDisplay(jsonId)}>
-            <div className="json-display-title">
-              <i className="fas fa-code"></i>
-              <span data-i18n="View JSON Template">View JSON Template</span>
-            </div>
-            <button className="json-display-toggle">
-              <i className={`fas fa-chevron-down ${expandedJson[jsonId] ? 'fa-rotate-180' : ''}`} id={`${jsonId}-icon`}></i>
-              <span data-i18n="Show Code">Show Code</span>
-            </button>
-          </div>
-          <div className={`json-display-content ${expandedJson[jsonId] ? 'expanded' : ''}`} id={jsonId}>
-            <div className="json-display-description">
-              <i className="fas fa-info-circle"></i>
-              <strong data-i18n="How to use:">How to use:</strong> <span data-i18n="Copy the JSON code below and paste it into the Road Sign Factory app using the Import function to load this example sign.">Copy the JSON code below and paste it into the Road Sign Factory app using the Import function to load this example sign.</span>
-            </div>
-            <div className="json-code-container">
-              <button 
-                className={`copy-json-btn ${copiedStates[jsonId] ? 'copied' : ''}`} 
-                onClick={() => copyJsonToClipboard(`${jsonId}-code`, jsonId)}
-              >
-                <i className="fas fa-copy"></i>
-                <span>{copiedStates[jsonId] ? 'Copied!' : 'Copy All'}</span>
-              </button>
-              <pre className="json-code" id={`${jsonId}-code`} data-json-file={jsonFile}>
-                <div className="json-loading">
-                   {/* Placeholder for actual JSON content which would optionally be fetched */}
-                   {"{ \n  \"type\": \"sign\", \n  \"version\": \"1.0.0\", \n  \"elements\": [] \n}"} 
-                </div>
-              </pre>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
   };
 
   return (
@@ -209,6 +223,10 @@ export default function GettingStarted() {
              imageSrc="/images/example-sign-3.svg"
              jsonId="json-flag"
              jsonFile="example-sign-3.json"
+             expandedJson={expandedJson}
+             toggleJsonDisplay={toggleJsonDisplay}
+             copiedStates={copiedStates}
+             copyJsonToClipboard={copyJsonToClipboard}
           />
 
           <TutorialBlock 
@@ -218,6 +236,10 @@ export default function GettingStarted() {
              imageSrc="/images/example-sign-1.svg"
              jsonId="json-diverge"
              jsonFile="example-sign-1.json"
+             expandedJson={expandedJson}
+             toggleJsonDisplay={toggleJsonDisplay}
+             copiedStates={copiedStates}
+             copyJsonToClipboard={copyJsonToClipboard}
           />
 
           <TutorialBlock 
@@ -227,6 +249,10 @@ export default function GettingStarted() {
              imageSrc="/images/example-sign-2.svg"
              jsonId="json-roundabout"
              jsonFile="example-sign-2.json"
+             expandedJson={expandedJson}
+             toggleJsonDisplay={toggleJsonDisplay}
+             copiedStates={copiedStates}
+             copyJsonToClipboard={copyJsonToClipboard}
           />
 
           {/* Call to Action */}
@@ -253,3 +279,4 @@ export default function GettingStarted() {
     </>
   );
 }
+

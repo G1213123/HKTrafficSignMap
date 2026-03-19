@@ -121,10 +121,34 @@ export function getSnapClasses() {
                     console.log('Snap confirmed - cursor box elements not found');
                     resolve('0');
                     return;
-                }            // Show the prompt for the specific axis
+                }
+
+                // Check for mobile mode and setup Enter button
+                const isMobile = window.innerWidth < 768;
+                let enterButton = document.getElementById('demo-cursor-enter-btn');
+
+                if (isMobile) {
+                    if (!enterButton) {
+                        enterButton = document.createElement('button');
+                        enterButton.id = 'demo-cursor-enter-btn';
+                        enterButton.innerText = 'Enter';
+                        // Match style of answer box
+                        enterButton.className = 'demo-cursor-answer-box';
+                        enterButton.style.cursor = 'pointer';
+                        enterButton.style.textAlign = 'center';
+                        enterButton.style.width = '68%';
+                        enterButton.style.marginTop = '5px';
+                        container.appendChild(enterButton);
+                    }
+                    enterButton.style.display = 'block';
+                } else if (enterButton) {
+                    enterButton.style.display = 'none';
+                }
+
+                // Show the prompt for the specific axis
                 promptBox.innerText = `Enter spacing for ${axis} axis (in units):`;
                 answerBox.value = axis === 'X' ? '-2' : '1.2'; // Default value for Y axis
-                container.style.display = 'block';
+                container.style.display = 'block'; // Make sure container is visible
                 
                 // Use setTimeout to ensure the element is visible before focusing
                 setTimeout(() => {
@@ -132,9 +156,18 @@ export function getSnapClasses() {
                     answerBox.select();
                 }, 10);
 
+                const handleButtonClick = () => {
+                    const result = answerBox.value;
+                    resolve(result);
+                    cleanup();
+                };
+
                 const cleanup = () => {
                     container.style.display = 'none';
                     answerBox.removeEventListener('keydown', handleKeyDown);
+                    if (enterButton) {
+                        enterButton.removeEventListener('click', handleButtonClick);
+                    }
                 };
 
                 const handleKeyDown = (event) => {
@@ -149,6 +182,9 @@ export function getSnapClasses() {
                 };
 
                 answerBox.addEventListener('keydown', handleKeyDown);
+                if (isMobile && enterButton) {
+                    enterButton.addEventListener('click', handleButtonClick);
+                }
             });
         }    
 

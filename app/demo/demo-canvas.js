@@ -77,9 +77,6 @@ function initDemoCanvas() {
         };
         window.addEventListener('resize', debouncedResize);
 
-        // Set initial zoom similar to main app
-        demoCanvas.setZoom(0.4);
-
         // Center the canvas view
         demoCanvas.absolutePan({ x: -demoCanvas.width / 2, y: -demoCanvas.height / 2 });
 
@@ -203,6 +200,14 @@ function resizeDemoCanvas() {
             width: containerWidth,
             height: containerHeight
         });
+
+        // Responsive Zoom
+        // Shrink scale for smaller screens (mobile)
+        if (window.innerWidth < 768) {
+             demoCanvas.setZoom(0.25);
+        } else {
+             demoCanvas.setZoom(0.4);
+        }
 
         // Re-center the view
         demoCanvas.absolutePan({ x: -demoCanvas.width / 2, y: -demoCanvas.height / 2 });
