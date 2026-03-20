@@ -10,7 +10,9 @@ let demoSnapState = {
 };
 
 // Make snap state globally accessible for automated snap
-window.demoSnapState = demoSnapState;
+if (typeof window !== 'undefined') {
+    window.demoSnapState = demoSnapState;
+}
 
 function simulateDemoSnap(demoCanvas, demoCanvasObject) {
     if (!demoCanvas) {

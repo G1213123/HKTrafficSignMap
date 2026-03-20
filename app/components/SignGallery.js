@@ -237,9 +237,10 @@ export default function SignGallery() {
       .then(([signsData, descriptionsData, supersededData, rmData]) => {
         const supSet = new Set((supersededData || []).map(String));
         // Construct imageUrl since JSON only has filename and mtime
+        const svgBaseUrl = 'https://storage.googleapis.com/road-sign-factory-static/public/data/svgs';
         const processedSigns = signsData.map(sign => ({
           ...sign,
-          imageUrl: `/data/svgs/${sign.filename}?v=${sign.mtime}`,
+          imageUrl: `${svgBaseUrl}/${sign.filename}?v=${sign.mtime}`,
           description: descriptionsData[sign.signNumber] || sign.description || '',
           superseded: supSet.has(String(sign.signNumber))
         }));
@@ -247,7 +248,7 @@ export default function SignGallery() {
         // Process Road Markings
         const processedRm = (rmData || []).map(rm => ({
           ...rm,
-          imageUrl: `/data/svgs/${rm.filename}?v=${rm.mtime || ''}`,
+          imageUrl: `${svgBaseUrl}/${rm.filename}?v=${rm.mtime || ''}`,
           description: descriptionsData[rm.signNumber] || descriptionsData[rm.id] || rm.description || '',
           superseded: supSet.has(String(rm.signNumber || rm.id))
         }));

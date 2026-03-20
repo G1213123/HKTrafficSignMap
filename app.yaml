@@ -1,0 +1,24 @@
+runtime: nodejs22
+
+instance_class: F1
+
+automatic_scaling:
+  min_idle_instances: 0
+  max_idle_instances: 1
+  min_pending_latency: 3000ms
+  max_pending_latency: automatic
+
+handlers:
+  - url: /.*
+    script: auto
+    secure: always
+
+# include environment variables
+includes:
+- env_variables.yaml
+
+env_variables:
+  NODE_ENV: 'production'
+
+build_env_variables:
+  NEXT_PUBLIC_GOOGLE_ADS_CLIENT_ID: 'ca-pub-9252664921109550'

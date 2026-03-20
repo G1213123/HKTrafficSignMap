@@ -27,7 +27,7 @@ export default function Navbar() {
           <Link href="/about" className={`nav-link ${isActive('/about')}`} data-i18n="About">About</Link>
           <Link href="/changelog" className={`nav-link ${isActive('/changelog')}`} data-i18n="Changelog">Changelog</Link>
           <Link href="/posters" className={`nav-link ${isActive('/posters')}`} data-i18n="Posters">Posters</Link>
-          <Link href="/index" className={`nav-link ${isActive('/index')}`} data-i18n="Index">Index</Link>
+          <Link href="/sign-index" className={`nav-link ${isActive('/sign-index')}`} data-i18n="Index">Index</Link>
           <a href="https://github.com/G1213123/TrafficSign" className="nav-link" target="_blank" rel="noreferrer" data-i18n="GitHub">GitHub</a>
           <a href="/design.html" className="nav-button" data-i18n="Launch App">Launch App</a>
           <div className="nav-lang" aria-label="Language">
