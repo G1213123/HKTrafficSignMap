@@ -183,7 +183,7 @@ export default function Changelog() {
                   <a href="https://github.com/G1213123/TrafficSign" target="_blank" className="btn btn-primary">
                     <i className="fab fa-github"></i> <span data-i18n="Follow on GitHub">Follow on GitHub</span>
                   </a>
-                  <a href="/design.html" className="btn btn-secondary">
+                  <a href="/design" className="btn btn-secondary">
                     <i className="fas fa-rocket"></i> <span data-i18n="Try the App">Try the App</span>
                   </a>
                 </div>

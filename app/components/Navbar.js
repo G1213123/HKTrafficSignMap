@@ -29,7 +29,7 @@ export default function Navbar() {
           <Link href="/posters" className={`nav-link ${isActive('/posters')}`} data-i18n="Posters">Posters</Link>
           <Link href="/sign-index" className={`nav-link ${isActive('/sign-index')}`} data-i18n="Index">Index</Link>
           <a href="https://github.com/G1213123/TrafficSign" className="nav-link" target="_blank" rel="noreferrer" data-i18n="GitHub">GitHub</a>
-          <a href="/design.html" className="nav-button" data-i18n="Launch App">Launch App</a>
+          <a href="/design" className="nav-button" data-i18n="Launch App">Launch App</a>
           <div className="nav-lang" aria-label="Language">
             <button id="lang-en" className="lang-btn" aria-label="English">EN</button>
             <button id="lang-zh" className="lang-btn" aria-label="中文">中</button>

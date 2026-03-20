@@ -254,13 +254,13 @@ export default function Home() {
                         <div className="hero-buttons">
                             {/* Primary Action Group (Launch + Version) */}
                             <div className="primary-action-group">
-                                <a href="/design.html" className="btn btn-primary">
+                                <a href="/design" className="btn btn-primary">
                                     <i className="fas fa-play"></i>
                                     Launch Application
                                 </a>
                                 <div className="version-display">
                                     <span className="version-number">
-                                        v1.0.0
+                                        v1.4.1
                                     </span>
                                     <span className="version-label">Current Build</span>
                                 </div>
@@ -301,7 +301,7 @@ export default function Home() {
                             </div>
                             
                             <div className="preview-overlay">
-                                <a href="/design.html" className="preview-launch">
+                                <a href="/design" className="preview-launch">
                                     <i className="fas fa-external-link-alt"></i>
                                     Open Full App
                                 </a>

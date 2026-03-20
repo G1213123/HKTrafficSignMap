@@ -176,7 +176,7 @@ export default function About() {
                   <i className="fas fa-envelope"></i>
                   <span data-i18n="Contact Us">Contact Us</span>
                 </a>
-                <a href="/design.html" className="btn btn-primary">
+                <a href="/design" className="btn btn-primary">
                   <i className="fas fa-play"></i>
                   <span data-i18n="Launch Application">Launch Application</span>
                 </a>

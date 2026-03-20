@@ -134,7 +134,7 @@ export default function GettingStarted() {
         <div className="container">
           <h1 style={{ fontSize: '3rem', fontWeight: 700, marginBottom: '1rem' }} data-i18n="Getting Started Guide">Getting Started Guide</h1>
           <p style={{ fontSize: '1.25rem', marginBottom: '2rem', opacity: 0.9 }} data-i18n="Learn how to create professional traffic signs with our powerful design tool">Learn how to create professional traffic signs with our powerful design tool</p>
-          <a href="/design.html" className="btn btn-outline" style={{ background: 'white', color: 'var(--primary-color)' }}>
+          <a href="/design" className="btn btn-outline" style={{ background: 'white', color: 'var(--primary-color)' }}>
             <i className="fas fa-play"></i>
             <span data-i18n="Launch Application">Launch Application</span>
           </a>
@@ -262,7 +262,7 @@ export default function GettingStarted() {
               <span data-i18n="You've seen the tutorials and examples - now it's time to put your knowledge into practice! Launch the application and start designing professional traffic signs.">You've seen the tutorials and examples - now it's time to put your knowledge into practice! Launch the application and start designing professional traffic signs.</span>
             </p>
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <a href="/design.html" className="btn btn-primary btn-large">
+              <a href="/design" className="btn btn-primary btn-large">
                 <i className="fas fa-play"></i>
                 <span data-i18n="Launch Application">Launch Application</span>
               </a>

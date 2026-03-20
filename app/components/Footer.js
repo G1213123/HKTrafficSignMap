@@ -31,7 +31,7 @@ export default function Footer() {
               <li><Link href="/sign-index" data-i18n="Sign Index">Sign Index</Link></li>
               <li><Link href="/posters" data-i18n="Posters">Posters</Link></li>
               <li><a href="https://github.com/G1213123/TrafficSign" target="_blank" rel="noreferrer" data-i18n="GitHub">GitHub</a></li>
-              <li><a href="/design.html" className="footer-launch-link" data-i18n="Launch App">Launch App</a></li>
+              <li><a href="/design" className="footer-launch-link" data-i18n="Launch App">Launch App</a></li>
             </ul>
           </div>
 
