@@ -3,6 +3,7 @@ import Script from "next/script";
 import "./globals.css";
 import "./homepage.css";
 import ScrollAnimation from "./components/ScrollAnimation";
+import { I18nProvider } from "./components/I18nProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -144,9 +145,11 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className={`${inter.className} antialiased font-sans`}>
-        <ScrollAnimation />
-        <Script src="https://cdn.jsdelivr.net/npm/fabric@6.4.3/dist/index.js"></Script>
-        {children}
+        <I18nProvider>
+          <ScrollAnimation />
+          <Script src="https://cdn.jsdelivr.net/npm/fabric@6.4.3/dist/index.js"></Script>
+          {children}
+        </I18nProvider>
       </body>
     </html>
   );

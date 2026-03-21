@@ -1,8 +1,4 @@
-import Link from 'next/link';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import PosterGallery from './PosterGallery';
-import './posters.css';
+import PostersContent from './PostersContent';
 
 export const metadata = {
   title: 'Posters - Road Sign Factory',
@@ -11,22 +7,5 @@ export const metadata = {
 };
 
 export default function Posters() {
-  return (
-    <>
-      <Navbar />
-      
-      {/* Posters Section */}
-      <section className="posters-section">
-        <div className="posters-container">
-          <h1 className="section-title" data-i18n="Featured Posters">Featured Posters</h1>
-          <p className="section-subtitle" data-i18n="Browse our collection of traffic signs posters.">Browse our collection of traffic signs posters.</p>
-
-          <PosterGallery />
-
-        </div>
-      </section>
-
-      <Footer />
-    </>
-  );
+  return <PostersContent />;
 }

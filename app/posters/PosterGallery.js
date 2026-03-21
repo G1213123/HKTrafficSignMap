@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useI18n } from '../components/I18nProvider';
 
 const POSTERS = [
   {
@@ -20,6 +21,7 @@ const POSTERS = [
 ];
 
 export default function PosterGallery() {
+  const { t } = useI18n();
   const [selectedPoster, setSelectedPoster] = useState(null);
 
   const openPoster = (poster) => {
@@ -44,11 +46,11 @@ export default function PosterGallery() {
               </div>
             </div>
             <div className="poster-info">
-              <h3 className="poster-title" data-i18n={poster.title}>{poster.title}</h3>
-              <p className="poster-description" data-i18n={poster.description}>{poster.description}</p>
+              <h3 className="poster-title">{t(poster.title)}</h3>
+              <p className="poster-description">{t(poster.description)}</p>
               <div className="poster-actions">
-                <a href={poster.imageUrl} download className="btn-download" data-i18n="Download Full Size" onClick={(e) => e.stopPropagation()}>
-                  <i className="fas fa-download"></i> <span data-i18n="Download">Download</span>
+                <a href={poster.imageUrl} download className="btn-download" onClick={(e) => e.stopPropagation()}>
+                  <i className="fas fa-download"></i> <span>{t('Download')}</span>
                 </a>
               </div>
             </div>
@@ -61,7 +63,7 @@ export default function PosterGallery() {
         <div className="poster-modal" onClick={closePoster}>
           <div className="poster-modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="poster-modal-header">
-                <h3 className="poster-modal-title">{selectedPoster.title}</h3>
+                <h3 className="poster-modal-title">{t(selectedPoster.title)}</h3>
                 <button className="poster-modal-close" onClick={closePoster}>&times;</button>
             </div>
             <div className="poster-modal-body">
@@ -69,7 +71,7 @@ export default function PosterGallery() {
             </div>
             <div className="poster-modal-footer">
                 <a href={selectedPoster.imageUrl} download className="btn-download-modal">
-                    <i className="fas fa-download"></i> Download Original
+                    <i className="fas fa-download"></i> {t('Download Original')}
                 </a>
             </div>
           </div>

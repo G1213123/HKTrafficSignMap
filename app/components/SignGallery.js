@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useI18n } from './I18nProvider';
 
 // Lazy image component that only sets src when in view
 const LazyImage = ({ src, alt, className, style }) => {
@@ -48,6 +49,7 @@ const LazyImage = ({ src, alt, className, style }) => {
 };
 
 export default function SignGallery() {
+  const { t } = useI18n();
   const [signs, setSigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedSign, setSelectedSign] = useState(null);
@@ -390,10 +392,10 @@ export default function SignGallery() {
       <div className="gallery-header" ref={headerRef}>
           <div className="view-tabs">
             <button className={`view-tab ${viewMode === 'signs' ? 'active' : ''}`} onClick={() => setViewMode('signs')}>
-              Signs <span className="tab-count">{filteredSigns.length}</span>
+              {t('Traffic Signs')} <span className="tab-count">{filteredSigns.length}</span>
             </button>
             <button className={`view-tab ${viewMode === 'roadmarking' ? 'active' : ''}`} onClick={() => setViewMode('roadmarking')}>
-              Road Marking <span className="tab-count">{roadMarkings ? roadMarkings.length : 0}</span>
+              {t('Road Marking')} <span className="tab-count">{roadMarkings ? roadMarkings.length : 0}</span>
             </button>
           </div>
         <div className="gallery-controls">
@@ -401,7 +403,7 @@ export default function SignGallery() {
           <div className="gallery-controls-group">
             <input
               type="text"
-              placeholder="Search..."
+              placeholder={t('Search...')}
               value={searchQuery}
               onChange={handleSearch}
               style={{ padding: '0.4rem', borderRadius: '4px', border: '1px solid #ccc' }}
@@ -412,14 +414,14 @@ export default function SignGallery() {
             <input
               name="signNumber"
               type="text"
-              placeholder="Go to #"
+              placeholder={t('Go to #')}
               style={{ width: '80px', padding: '0.4rem', borderRadius: '4px', border: '1px solid #ccc' }}
             />
-            <button type="submit" className="btn btn-primary" style={{ padding: '0.4rem 0.8rem' }}>Go</button>
+            <button type="submit" className="btn btn-primary" style={{ padding: '0.4rem 0.8rem' }}>{t('Go')}</button>
           </form>
 
           <div className="gallery-controls-group hide-on-mobile">
-            <label htmlFor="grid-size-slider">Size:</label>
+            <label htmlFor="grid-size-slider">{t('Size:')}</label>
             <input
               id="grid-size-slider"
               type="range"
@@ -431,7 +433,7 @@ export default function SignGallery() {
           </div>
 
           <button onClick={openRandomSign} className="btn btn-primary hide-on-mobile">
-            Shuffle 🔀
+            {t('Shuffle 🔀')}
           </button>
         </div>
         
@@ -440,11 +442,11 @@ export default function SignGallery() {
       <div className="gallery-container">
         {/* Sidebar Navigation */}
         <nav className="sidebar">
-          <h3>Categories</h3>
+          <h3>{t('Categories')}</h3>
           <ul>
             {sortedCategories.map(category => (
               <li key={category}>
-                <a href={`#category-${category.replace(/\s+/g, '-')}`}>{category}</a>
+                <a href={`#category-${category.replace(/\s+/g, '-')}`}>{t(category)}</a>
               </li>
             ))}
           </ul>
@@ -455,7 +457,7 @@ export default function SignGallery() {
           {viewMode === 'signs' ? (
             sortedCategories.map(category => (
               <div key={category} id={`category-${category.replace(/\s+/g, '-')}`} className="category-section">
-                <h2 className="category-title">{category}</h2>
+                <h2 className="category-title">{t(category)}</h2>
                 <div
                   className="catalogue-grid"
                   style={{
@@ -497,7 +499,7 @@ export default function SignGallery() {
             ) : (sortedCategories.length > 0) ? (
               sortedCategories.map(category => (
                 <div key={category} id={`category-${category.replace(/\s+/g, '-')}`} className="category-section">
-                  <h2 className="category-title">{category}</h2>
+                  <h2 className="category-title">{t(category)}</h2>
                   <div
                     className="catalogue-grid"
                     style={{
@@ -535,7 +537,7 @@ export default function SignGallery() {
               <div className="modal-image-container">
                 <img
                   src={selectedSign.imageUrl}
-                  alt={`${(selectedSign.filename || '').startsWith('RM') ? 'Road Marking' : 'Traffic Sign'} ${selectedSign.signNumber || selectedSign.id}`}
+                  alt={`${(selectedSign.filename || '').startsWith('RM') ? t('Road Marking') : t('Traffic Sign')} ${selectedSign.signNumber || selectedSign.id}`}
                   className="modal-image"
                 />
                 {selectedSign.superseded && (
@@ -544,15 +546,14 @@ export default function SignGallery() {
               </div>
 
               <div className="modal-details">
-                <h2 className="modal-title">{(selectedSign.filename || '').startsWith('RM') ? 'Road Marking' : 'Traffic Sign'} {selectedSign.signNumber}</h2>
-                <p className="modal-subtitle">{selectedSign.filename}</p>
+                <h2 className="modal-title">{(selectedSign.filename || '').startsWith('RM') ? t('Road Marking') : t('Traffic Sign')} {selectedSign.signNumber}</h2>
 
                 <div className="modal-info-section">
-                  <h3>Description</h3>
-                  <p>{selectedSign.description || 'No description available.'}</p>
+                  <h3>{t('Description')}</h3>
+                  <p>{selectedSign.description || t('No description available.')}</p>
 
-                  <h3>Reference No.</h3>
-                  <p>{selectedSign.signNumber}</p>
+                  <h3>{t('Reference No.')}</h3>
+                  <p>{(selectedSign.filename || '').startsWith('RM') ? 'RM ' + selectedSign.signNumber : 'TS ' + selectedSign.signNumber}</p>
                 </div>
 
                 <div className="modal-actions">

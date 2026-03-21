@@ -4,9 +4,11 @@ import Link from 'next/link';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import { DemoCanvas } from './demo/demo-canvas';
+import { useI18n } from './components/I18nProvider';
 // import './homepage.css'; - Moved to layout.js for global scope
 
 export default function Home() {
+    const { t } = useI18n();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [showMigrationNotice, setShowMigrationNotice] = useState(true);
     const [activeRouletteIndex, setActiveRouletteIndex] = useState(-1);
@@ -195,22 +197,6 @@ export default function Home() {
             }, 5000);
             return () => clearTimeout(timer);
         }
-
-        // Scroll effect for navbar
-        const handleScroll = () => {
-            const navbar = document.querySelector('.navbar');
-            if (navbar) {
-                if (window.scrollY > 50) {
-                    navbar.style.background = 'rgba(255, 255, 255, 0.98)';
-                    navbar.style.boxShadow = '0 4px 6px -1px rgb(0 0 0 / 0.1)';
-                } else {
-                    navbar.style.background = 'rgba(255, 255, 255, 0.95)';
-                    navbar.style.boxShadow = 'none';
-                }
-            }
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
     return (
@@ -224,11 +210,8 @@ export default function Home() {
                     <div className="migration-content">
                         <button className="migration-close" onClick={() => setShowMigrationNotice(false)}>&times;</button>
                         <img src="/images/diversion-sign.svg" alt="Diversion Sign" className="migration-sign" onError={(e) => e.target.style.display = 'none'} />
-                        <div className="migration-title">Site Migration Notice</div>
-                        <div className="migration-text">
-                            We're moving from <strong>g1213123.info</strong> to <strong><a href="https://roadsignfactory.hk" target="_blank" className="migration-link">roadsignfactory.hk</a></strong><br />
-                            Please update your bookmarks to ensure continued access to our services.
-                        </div>
+                        <div className="migration-title">{t('Site Migration Notice')}</div>
+                        <div className="migration-text" dangerouslySetInnerHTML={{ __html: t('migration_notice_html') }} />
                     </div>
                 </div>
             )}
@@ -241,14 +224,12 @@ export default function Home() {
                     <div className="hero-content">
                         <div className="development-notice">
                             <i className="fas fa-info-circle"></i>
-                            <span> <strong>Development Version</strong> - This application is under active development. Please report any issues on <a href="https://github.com/G1213123/TrafficSign" target="_blank">GitHub</a>. </span>
+                            <span dangerouslySetInnerHTML={{ __html: t('dev_notice_html') }} />
                         </div>
                         <h1 className="hero-title">
-                            Professional Sign Design Tool
+                            {t('Professional Directional Sign Design Tool')}
                         </h1>
-                        <p className="hero-subtitle">
-                            Create, customize, and export professional signs online. Built with Hong Kong <span className="tpdm-tooltip" data-tooltip="Transport Planning and Design Manual">TPDM</span> standards for precision and compliance.
-                        </p>
+                        <p className="hero-subtitle" dangerouslySetInnerHTML={{ __html: t('hero_subtitle_html') }} />
 
                         {/* Buttons Container */}
                         <div className="hero-buttons">
@@ -256,13 +237,13 @@ export default function Home() {
                             <div className="primary-action-group">
                                 <a href="/design" className="btn btn-primary">
                                     <i className="fas fa-play"></i>
-                                    Launch Application
+                                    {t('Launch Application')}
                                 </a>
                                 <div className="version-display">
                                     <span className="version-number">
                                         v1.4.1
                                     </span>
-                                    <span className="version-label">Current Build</span>
+                                    <span className="version-label">{t('Current Build')}</span>
                                 </div>
                             </div>
                         </div>
@@ -271,19 +252,19 @@ export default function Home() {
                         <div className="hero-stats">
                             <div className="stat">
                                 <span className="stat-number">10+</span>
-                                <span className="stat-label">Sign Templates</span>
+                                <span className="stat-label">{t('Sign Templates')}</span>
                             </div>
                             <div className="stat">
                                 <span className="stat-number">30+</span>
-                                <span className="stat-label">Symbols</span>
+                                <span className="stat-label">{t('Symbols')}</span>
                             </div>
                             <div className="stat">
                                 <span className="stat-number">200+</span>
-                                <span className="stat-label">Destination Names</span>
+                                <span className="stat-label">{t('Destination Names')}</span>
                             </div>
                             <div className="stat">
                                 <span className="stat-number">100%</span>
-                                <span className="stat-label">Web-Based</span>
+                                <span className="stat-label">{t('Web-Based')}</span>
                             </div>
                         </div>
                     </div>
@@ -303,7 +284,7 @@ export default function Home() {
                             <div className="preview-overlay">
                                 <a href="/design" className="preview-launch">
                                     <i className="fas fa-external-link-alt"></i>
-                                    Open Full App
+                                    {t('Open Full App')}
                                 </a>
                             </div>
                         </div>
@@ -324,8 +305,8 @@ export default function Home() {
             {/* Features Section */}
             <section id="features" className="features">
                 <div className="container">
-                    <h2 className="section-title">Professional Design Features</h2>
-                    <p className="section-subtitle">Comprehensive tools for creating standards-compliant traffic signs</p>
+                    <h2 className="section-title">{t('Professional Design Features')}</h2>
+                    <p className="section-subtitle">{t('Comprehensive tools for creating standards-compliant traffic signs')}</p>
 
                     <div className="features-grid">
 
@@ -333,48 +314,48 @@ export default function Home() {
                             <div className="feature-icon">
                                 <i className="fas fa-font"></i>
                             </div>
-                            <h3>Destination Text</h3>
-                            <p>Choose destinations from a comprehensive list of common districts, or type in names with authentic fonts.</p>
+                            <h3>{t('Destination Text')}</h3>
+                            <p>{t('feature_destination_text')}</p>
                         </div>
 
                         <div className="feature-card">
                             <div className="feature-icon">
                                 <i className="fas fa-shapes"></i>
                             </div>
-                            <h3>Symbol Library</h3>
-                            <p>Access a comprehensive library of traffic symbols and glyphs. No hassle for drawing points and shapes.</p>
+                            <h3>{t('Symbol Library')}</h3>
+                            <p>{t('feature_symbols_text')}</p>
                         </div>
 
                         <div className="feature-card">
                             <div className="feature-icon">
                                 <i className="fas fa-vector-square"></i>
                             </div>
-                            <h3>Vector Graphics</h3>
-                            <p>Create scalable signs using vector graphics that maintain quality at any size.</p>
+                            <h3>{t('Vector Graphics')}</h3>
+                            <p>{t('feature_vector_text')}</p>
                         </div>
 
                         <div className="feature-card">
                             <div className="feature-icon">
                                 <i className="fas fa-file-export"></i>
                             </div>
-                            <h3>Multiple Export Formats</h3>
-                            <p>Export your designs as PNG, SVG, DXF, or PDF for professional use.</p>
+                            <h3>{t('Multiple Export Formats')}</h3>
+                            <p>{t('feature_export_text')}</p>
                         </div>
 
                         <div className="feature-card">
                             <div className="feature-icon">
                                 <i className="fas fa-ruler"></i>
                             </div>
-                            <h3>Precision Tools</h3>
-                            <p>Built-in measurement tools and grid system for accurate sign dimensions.</p>
+                            <h3>{t('Precision Tools')}</h3>
+                            <p>{t('feature_precision_text')}</p>
                         </div>
 
                         <div className="feature-card">
                             <div className="feature-icon">
                                 <i className="fas fa-save"></i>
                             </div>
-                            <h3>Save & Load</h3>
-                            <p>Automatic save to browser storage and manual save/load functionality to preserve your work.</p>
+                            <h3>{t('Save & Load')}</h3>
+                            <p>{t('feature_save_text')}</p>
                         </div>
                     </div>
                 </div>
@@ -383,19 +364,19 @@ export default function Home() {
             {/* Demo Section */}
             <section id="demo" className="demo">
                 <div className="container">
-                    <h2 className="section-title">See It In Action</h2>
-                    <p className="section-subtitle">Interactive demonstration of key features</p>
+                    <h2 className="section-title">{t('See It In Action')}</h2>
+                    <p className="section-subtitle">{t('Interactive demonstration of key features')}</p>
 
                     <div className="demo-container">
                         <div className="main-demo-canvas" id="main-demo-canvas">
                             <div className="demo-sign-canvas">
                                 <canvas id="demo-canvas"></canvas>
                                 <div className="demo-placeholder-overlay" id="demo-placeholder-overlay">
-                                    <div className="demo-placeholder-text">Click any button below to see the feature in action</div>
+                                    <div className="demo-placeholder-text">{t('demo_click_hint')}</div>
                                 </div>
                                 {/* Demo Cursor Box for Snap Prompts */}
                                 <div id="demo-cursor-box-container" className="demo-cursor-box-container">
-                                    <div id="demo-cursor-text-box" className="demo-cursor-text-box">Snap prompt</div>
+                                    <div id="demo-cursor-text-box" className="demo-cursor-text-box">{t('Snap prompt')}</div>
                                     <input type="text" id="demo-cursor-answer-box" className="demo-cursor-answer-box" defaultValue="0" />
                                 </div>
                             </div>
@@ -409,7 +390,7 @@ export default function Home() {
                                 data-demo="symbol"
                             >
                                 <i className="fas fa-plus-circle"></i>
-                                <span>Add Symbol</span>
+                                <span>{t('Add Symbol')}</span>
                             </button>
                             <button
                                 className={getButtonClass('text')}
@@ -417,7 +398,7 @@ export default function Home() {
                                 data-demo="text"
                             >
                                 <i className="fas fa-font"></i>
-                                <span>Add Text</span>
+                                <span>{t('Add Text')}</span>
                             </button>
                             <button
                                 className={getButtonClass('snap')}
@@ -425,7 +406,7 @@ export default function Home() {
                                 data-demo="snap"
                             >
                                 <i className="fas fa-arrows-alt"></i>
-                                <span>Drag &amp; Snap</span>
+                                <span>{t('Drag & Snap')}</span>
                             </button>
                             <button
                                 className={getButtonClass('border')}
@@ -433,7 +414,7 @@ export default function Home() {
                                 data-demo="border"
                             >
                                 <i className="fas fa-border-style"></i>
-                                <span>Add Border</span>
+                                <span>{t('Add Border')}</span>
                             </button>
                             <button
                                 className="demo-btn"
@@ -441,7 +422,7 @@ export default function Home() {
                                 data-demo="reset"
                             >
                                 <i className="fas fa-undo"></i>
-                                <span>Reset</span>
+                                <span>{t('Reset')}</span>
                             </button>
                         </div>
                     </div>
@@ -452,8 +433,8 @@ export default function Home() {
             {/* SVG Gallery Roulette Section */}
             <section id="gallery" className="svg-gallery">
                 <div className="container">
-                    <h2 className="section-title" data-i18n="Example Signs Gallery">Example Signs Gallery</h2>
-                    <p className="section-subtitle" data-i18n="Browse through various traffic sign examples">Browse through various traffic sign examples</p>
+                    <h2 className="section-title" data-i18n="Example Signs Gallery">{t('Example Signs Gallery')}</h2>
+                    <p className="section-subtitle" data-i18n="Browse through various traffic sign examples">{t('Browse through various traffic sign examples')}</p>
                     <div className="roulette-container">
                         <div className="roulette-track-container">
                             <div 
@@ -474,7 +455,7 @@ export default function Home() {
                                         onClick={() => setActiveRouletteIndex(index)}
                                     >
                                         <img src={item.src} alt={item.title} />
-                                        <div className="item-title" data-i18n={item.title}>{item.title}</div>
+                                        <div className="item-title" data-i18n={item.title}>{t(item.title)}</div>
                                     </div>
                                 ))}
                                 
@@ -486,7 +467,7 @@ export default function Home() {
                                         onClick={() => setActiveRouletteIndex(index)}
                                     >
                                         <img src={item.src} alt={item.title} />
-                                        <div className="item-title" data-i18n={item.title}>{item.title}</div>
+                                        <div className="item-title" data-i18n={item.title}>{t(item.title)}</div>
                                     </div>
                                 ))}
                             </div>
