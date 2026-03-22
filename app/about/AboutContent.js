@@ -170,7 +170,7 @@ export default function AboutContent() {
                   <i className="fab fa-github"></i>
                   <span>{t('View on GitHub')}</span>
                 </a>
-                <a href="mailto:enquiry@g1213123.info" className="btn btn-outline">
+                <a href="mailto:enquiry@roadsignfactory.hk" className="btn btn-outline">
                   <i className="fas fa-envelope"></i>
                   <span>{t('Contact Us')}</span>
                 </a>

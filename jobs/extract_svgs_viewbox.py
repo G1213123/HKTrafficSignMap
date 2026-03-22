@@ -27,6 +27,16 @@ output_dir = os.path.join(BASE_DIR, "web", "public", "data", "svgs")
 DEBUG = False
 SCALE_FACTOR = 10.0 # Scaling 10x as requested ("1- times")
 
+# --------------------------------------------------------------------------
+# USER CONFIGURATION: Set SPECIFIC_FILES to process only specific files.
+# If this list is empty, ALL .svg files will be processed.
+SPECIFIC_FILES = [
+     # Example: "(TS 601 - 700)_page1.svg",
+     "(RM 1001 - 1080)_page1.svg",
+     "(RM 1101 - 1180)_page1.svg",
+]
+# --------------------------------------------------------------------------
+
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
@@ -1084,4 +1094,44 @@ def process_all_svgs():
          print(f"Warning: Web public directory not found at {os.path.dirname(output_json_path)}. Skipping JSON generation.")
 
 if __name__ == "__main__":
-    process_all_svgs()
+    search_dir = os.path.join(BASE_DIR, "data", "whole_pdf_svg")
+    
+    files_to_process = []
+    
+    if SPECIFIC_FILES and len(SPECIFIC_FILES) > 0:
+        print(f"Processing ONLY {len(SPECIFIC_FILES)} specific files from configuration.")
+        for name in SPECIFIC_FILES:
+            full_path = os.path.join(search_dir, name)
+            if os.path.exists(full_path):
+                files_to_process.append(full_path)
+    else:
+        print(f"Processing ALL svg files in {search_dir}...")
+        search_pattern = os.path.join(search_dir, "*.svg")
+        files_to_process = glob.glob(search_pattern)
+        files_to_process.sort()
+
+    if not files_to_process:
+        print("No files to process.")
+    
+    for f in files_to_process:
+        basename = os.path.basename(f)
+        # Extract ID from filename like "(TS 123 - ...) or (RM 1001 - ...)"
+        match = re.search(r"\((TS|RM)\s*(\d+)", basename)
+        if match:
+            sign_prefix = match.group(1)
+            start_seq_id = int(match.group(2))
+            process_svg_file(f, output_dir, start_seq_id, prefix=sign_prefix)
+        else:
+            print(f"Skipping {f}: Could not determine Start ID from filename.")
+            
+    # Generate sign list after processing
+    # output_dir is "data/svgs", but specifically web/public/data/svgs
+    output_json_path = os.path.join(BASE_DIR, "web", "public", "data", "signs.json")
+    rm_output_json_path = os.path.join(BASE_DIR, "web", "public", "data", "roadmarkings.json")
+    
+    if os.path.exists(os.path.dirname(output_json_path)):
+         generate_sign_list(output_dir, output_json_path, prefix_filter="TS")
+         generate_sign_list(output_dir, rm_output_json_path, prefix_filter="RM")
+    else:
+         print(f"Warning: Web public directory not found at {os.path.dirname(output_json_path)}. Skipping JSON generation.")
+

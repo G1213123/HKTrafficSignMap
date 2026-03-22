@@ -19,8 +19,13 @@ export default function Footer() {
               <a href="https://www.threads.net/@ginger_n_1213" target="_blank" rel="noreferrer" aria-label="Threads">
                 <i className="fa-brands fa-threads"></i>
               </a>
-              <a href="mailto:enquiry@g1213123.info" aria-label="Email">
+              <a href="mailto:enquiry@roadsignfactory.hk" aria-label="Email">
                 <i className="fas fa-envelope"></i>
+              </a>
+            </div>
+            <div style={{ marginTop: '1rem' }}>
+              <a href="mailto:enquiry@roadsignfactory.hk" style={{ color: 'var(--footer-muted)', textDecoration: 'none' }}>
+                enquiry@roadsignfactory.hk
               </a>
             </div>
           </div>
