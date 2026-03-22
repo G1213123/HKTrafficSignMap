@@ -59,6 +59,7 @@ const base = {
   'Footer Disclaimer 2': 'This application is under development and not affiliated with government authorities. Users are responsible for ensuring compliance with local regulations.',
   // Region labels (note: key has a typo kept for compatibility)
   'New Terriitories': 'New Territories',
+  'CSDI Disclaimer Content': 'This website / product / service contains information that is copied or extracted from data made available by the Government of Hong Kong Special Administrative Region (the “Government”) at https://DATA.GOV.HK/ (“DATA.GOV.HK”). The provision of information copied or extracted from or a link to DATA.GOV.HK at this website or in relation to the product or service shall not constitute any form of co-operation or affiliation by the Government with any person in relation to this website, the product or the service or any contents herein. Nothing in this website, the product or the service shall give rise to any representation, warranty or implication that the Government agrees with, approves of, recommends or endorses any contents of this website or the product or the service. The Government does not have any liability, obligation or responsibility whatsoever for any loss, destruction or damage (including without limitation consequential loss, destruction or damage) howsoever arising from or in respect of your use or misuse of or reliance on or inability to use any contents herein.',
 };
 
 const dictionaries = {
@@ -278,6 +279,8 @@ const dictionaries = {
     'Others': '其他',
     'Description': '說明',
     'Reference No.': '參考編號',
+    'Disclaimer': '免責聲明',
+    'CSDI Disclaimer Content': '本網站/產品/服務載有由香港特別行政區政府（下稱「政府」）在 https://DATA.GOV.HK/ （下稱「DATA.GOV.HK」）提供的數據複製或提取的資料。在本網站或產品或服務內提供從 DATA.GOV.HK 複製或提取的資料或連結到 DATA.GOV.HK，並不構成政府與任何人士就本網站、產品或服務或其中任何內容有任何形式的合作或聯繫。本網站、產品或服務中的任何內容均不構成政府同意、批准、推薦或認可本網站、產品或服務的任何內容的申述、保證或暗示。政府不對任何因使用或未能使用本網站內容而引致的損失、破壞或損害（包括但不限於相應而生的損失、破壞或損害）承擔任何法律責任、義務或責任。',
   },
 };
 
