@@ -367,7 +367,7 @@ export default function Home() {
                     <h2 className="section-title">{t('See It In Action')}</h2>
                     <p className="section-subtitle">{t('Interactive demonstration of key features')}</p>
 
-                    <div className="demo-container">
+                    <div className="demo-container no-ads">
                         <div className="main-demo-canvas" id="main-demo-canvas">
                             <div className="demo-sign-canvas">
                                 <canvas id="demo-canvas"></canvas>

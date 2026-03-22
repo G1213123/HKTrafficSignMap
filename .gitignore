@@ -1,12 +1,15 @@
-\data
-\__pycache__
+/data
+/svgs
+/public/data/svgs
+__pycache__/
+*.py[cod]
 .venv
 
 node_modules
 target
 dist
 logs
-public
+# public
 .cache
 .vscode
 .DS_Store
@@ -24,6 +27,8 @@ yarn-error.log
 # Build outputs
 dist/
 build/
+
+
 
 # IDE specific files
 .idea/

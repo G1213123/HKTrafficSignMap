@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect } from 'react';
-import { i18n } from '../i18n';
+import { i18n } from './i18n';
 
 const I18nContext = createContext();
 

@@ -59,6 +59,7 @@ const base = {
   'Footer Disclaimer 2': 'This application is under development and not affiliated with government authorities. Users are responsible for ensuring compliance with local regulations.',
   // Region labels (note: key has a typo kept for compatibility)
   'New Terriitories': 'New Territories',
+  'CSDI Disclaimer Content': 'This website / product / service contains information that is copied or extracted from data made available by the Government of Hong Kong Special Administrative Region (the “Government”) at https://DATA.GOV.HK/ (“DATA.GOV.HK”). The provision of information copied or extracted from or a link to DATA.GOV.HK at this website or in relation to the product or service shall not constitute any form of co-operation or affiliation by the Government with any person in relation to this website, the product or the service or any contents herein. Nothing in this website, the product or the service shall give rise to any representation, warranty or implication that the Government agrees with, approves of, recommends or endorses any contents of this website or the product or the service. The Government does not have any liability, obligation or responsibility whatsoever for any loss, destruction or damage (including without limitation consequential loss, destruction or damage) howsoever arising from or in respect of your use or misuse of or reliance on or inability to use any contents herein.',
 };
 
 const dictionaries = {
@@ -71,6 +72,7 @@ const dictionaries = {
   'Gantry Sign': '門架標誌',
   'Lane Sign': '車道標誌',
   'Roundabout Sign': '迴旋處標誌',
+  'Spiral Sign': '螺旋處標誌',
   'Spiral Roundabout Sign': '螺旋迴旋處標誌',
   'Stack Sign': '長型標誌',
   'Diverge Sign': '支路標誌',
@@ -187,7 +189,46 @@ const dictionaries = {
   'Loading...': '正在載入…',
   'Ready to Create Your Own Signs?': '準備好建立專屬的標誌了嗎？',
   "You've seen the tutorials and examples - now it's time to put your knowledge into practice! Launch the application and start designing professional traffic signs.": '你已看過教學與示例—現在是實作的時候！啟動應用程式，開始設計專業交通標誌吧。',
-  'Learn More': '瞭解更多',
+  'Learn More': '瞭解更多',    // About page headers/buttons
+    'About Road Sign Factory': '關於 Road Sign Factory',
+    'Key features:': '主要功能：',
+    'Development Timeline': '開發歷程',
+    'Technical Information': '技術資訊',
+    'View on GitHub': '在 GitHub 上查看',
+    'Contact Us': '聯絡我們',
+    // Changelog page
+    'Release History': '版本歷史',
+    'Stay Updated': '保持更新',
+    'Upcoming Features': '即將推出的功能',
+    'In Development': '開發中',
+    'Future Improvements': '未來改進',
+    "We're continuously working on improving Road Sign Factory. Here are some features and improvements we're considering for future releases.": '我們持續致力於改善 Road Sign Factory。以下是我們考慮在未來版本中加入的功能與改進。',
+    'Planned Features': '規劃中的功能',
+    'Language support for traditional Chinese': '繁體中文語言支援',
+    'Hint for sign creation best practices': '標誌製作最佳實務提示',
+    'Extended symbol and template libraries': '擴充符號與範本庫',
+    'Export DXF function optimized for font character': '優化 DXF 匯出的字型字元',
+    'Redo and Undo function optimization': '重做與復原功能優化',
+    'Unit tests and integration tests': '單元測試與整合測試',
+    'Documentation of codebase': '程式碼庫文件',
+    'AI tools to assist with sign design': 'AI 輔助標誌設計工具',
+    // Sign Index page
+    'Index': '索引',
+    'Browse, preview and download traffic signs and road markings graphics.': '瀏覽、預覽與下載交通標誌及道路標記圖檔。',
+    'Data provided by': '資料來源：',
+    'View terms of use': '查看使用條款',
+    'Data Attribution & Terms of Use': '資料歸屬與使用條款',
+    'Traffic signs and road marking data used in this index are provided by the Government of the Hong Kong Special Administrative Region via the Common Spatial Data Infrastructure (CSDI) Portal.': '本索引使用的交通標誌及道路標記資料由香港特別行政區政府透過空間數據共享平台 (CSDI Portal) 提供。',
+    'The Government and relevant organisations are the owners of the intellectual property rights in the Data. You are allowed to browse, download, and use the Data provided you comply with the CSDI Portal Terms of Use. By using this data, you agree to indemnify the Government and relevant organisations against any allegations, claims of infringement, costs, losses, or damages arising directly or indirectly in relation to your use, reproduction, and/or distribution of the Data.': '政府及相關機構擁有該等數據的知識產權。只要遵守 CSDI Portal 使用條款，閣下即可瀏覽、下載及使用數據。使用此數據即表示閣下同意就因使用、複製及/或分發數據而直接或間接引起的任何指控、侵權索賠、成本、損失或損害，向政府及相關機構作出賠償。',
+    // Posters page
+    'Featured Posters': '精選海報',
+    'Browse our collection of traffic signs posters.': '瀏覽我們精選的交通標誌海報系列。',
+    'Central Kowloon Bypass Eastbound': '中九龍幹線東行',
+    'A map of directional signs in Central Kowloon Bypass Eastbound.': '中九龍幹線東行方向指示標誌地圖。',
+    'Central Kowloon Bypass Westbound': '中九龍幹線西行',
+    'A map of directional signs in Central Kowloon Bypass Westbound.': '中九龍幹線西行方向指示標誌地圖。',
+    'Download': '下載',
+    'Download Original': '下載原圖',
     // About page body
     'About Intro Text': 'Road Sign Factory 為交通工程師、設計師與愛好者提供一套符合標準的專業交通標誌製作工具。這是一個以現代需求為目標而建置與提供的網頁服務，致力於生成高品質設計。',
     'feature_comply_tpdm_html': '符合香港 <span class="tpdm-tooltip" data-tooltip="運輸策劃及設計手冊">TPDM</span> 標準',
@@ -225,7 +266,22 @@ const dictionaries = {
     'HK TPDM Guidelines': '香港 TPDM 指南',
     'UK Traffic Signs Manual': '英國交通標誌手冊',
     'Help support this project:': '支持此專案：',
-    
+
+    // Sign Gallery
+    'Traffic Signs': '交通標誌',
+    'Traffic Sign': '交通標誌',
+    'Road Marking': '道路標記',
+    'Search...': '搜尋...',
+    'Go to #': '跳至編號',
+    'Go': '前往',
+    'Size:': '大小：',
+    'Shuffle 🔀': '隨機 🔀',
+    'Categories': '分類',
+    'Others': '其他',
+    'Description': '說明',
+    'Reference No.': '參考編號',
+    'Disclaimer': '免責聲明',
+    'CSDI Disclaimer Content': '本網站/產品/服務載有由香港特別行政區政府（下稱「政府」）在 https://DATA.GOV.HK/ （下稱「DATA.GOV.HK」）提供的數據複製或提取的資料。在本網站或產品或服務內提供從 DATA.GOV.HK 複製或提取的資料或連結到 DATA.GOV.HK，並不構成政府與任何人士就本網站、產品或服務或其中任何內容有任何形式的合作或聯繫。本網站、產品或服務中的任何內容均不構成政府同意、批准、推薦或認可本網站、產品或服務的任何內容的申述、保證或暗示。政府不對任何因使用或未能使用本網站內容而引致的損失、破壞或損害（包括但不限於相應而生的損失、破壞或損害）承擔任何法律責任、義務或責任。',
   },
 };
 
