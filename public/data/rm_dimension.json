@@ -1,0 +1,895 @@
+[
+    {
+        "signNumber": "1001",
+        "lineWidth": 150,
+        "lineSpacing": 100
+    },
+    {
+        "signNumber": "1002",
+        "lineWidth": 150,
+        "lineSpacing": 100,
+        "leftLineModule": null,
+        "rightLineModule": [
+            1000,
+            5000
+        ]
+    },
+    {
+        "signNumber": "1003",
+        "lineWidth": 150,
+        "lineSpacing": 100,
+        "leftLineModule": [
+            1000,
+            5000
+        ],
+        "rightLineModule": null
+    },
+    {
+        "signNumber": "1004",
+        "lineWidth": 150,
+        "maxHatchedLineSpacing": 3000
+    },
+    {
+        "signNumber": "1006",
+        "lineWidth": 250
+    },
+    {
+        "signNumber": "1007",
+        "lineWidth": 250,
+        "Module": [
+            1000,
+            1000
+        ]
+    },
+    {
+        "signNumber": "1009",
+        "lineWidth": 200
+    },
+    {
+        "signNumber": "1010",
+        "lineWidth": 150
+    },
+    {
+        "signNumber": "1011",
+        "lineWidth": 150
+    },
+    {
+        "signNumber": "1012",
+        "lineWidth": 200,
+        "lineSpacing": 300,
+        "leftLineModule": null,
+        "rightLineModule": null
+    },
+    {
+        "signNumber": "1013",
+        "lineWidth": 200,
+        "lineSpacing": 200,
+        "leftLineModule": [
+            600,
+            300
+        ],
+        "rightLineModule": [
+            600,
+            300
+        ]
+    },
+    {
+        "signNumber": "1016",
+        "width": 2000,
+        "length": 5600
+    },
+    {
+        "signNumber": "1017",
+        "length": 4000
+    },
+    {
+        "signNumber": "1018",
+        "length": 6000
+    },
+    {
+        "signNumber": "1019",
+        "length": 4000
+    },
+    {
+        "signNumber": "1020",
+        "length": 6000
+    },
+    {
+        "signNumber": "1021",
+        "length": 4000
+    },
+    {
+        "signNumber": "1022",
+        "length": 6000
+    },
+    {
+        "signNumber": "1023",
+        "length": 4000
+    },
+    {
+        "signNumber": "1024",
+        "length": 6000
+    },
+    {
+        "signNumber": "1025",
+        "length": 4000
+    },
+    {
+        "signNumber": "1026",
+        "length": 6000
+    },
+    {
+        "signNumber": "1027",
+        "length": 4000
+    },
+    {
+        "signNumber": "1028",
+        "length": 6000
+    },
+    {
+        "signNumber": "1029",
+        "length": 4000
+    },
+    {
+        "signNumber": "1030",
+        "length": 6000
+    },
+    {
+        "signNumber": "1031",
+        "length": 8000,
+        "width": 2000
+    },
+    {
+        "signNumber": "1032",
+        "letterHeight": 1600,
+        "characterHeight": 2700,
+        "verticalSpacing": 1000
+    },
+    {
+        "signNumber": "1033",
+        "minLetterHeight": 1600,
+        "maxLetterHeight": 2800,
+        "minCharacterHeight": 2700,
+        "maxCharacterHeight": 4700,
+        "verticalSpacing": 1000
+    },
+    {
+        "signNumber": "1034",
+        "letterHeight": 1600,
+        "characterHeight": 2700,
+        "verticalSpacing": 1000
+    },
+    {
+        "signNumber": "1035",
+        "lineWidth": 150,
+        "chevronWidth": 900,
+        "chevronSpacing": 2000
+    },
+    {
+        "signNumber": "1036",
+        "lineWidth": 150,
+        "chevronWidth": 900,
+        "chevronSpacing": 2000
+    },
+    {
+        "signNumber": "1037",
+        "lineWidth": 150,
+        "hatchedLineSpacing": 3000
+    },
+    {
+        "signNumber": "1038",
+        "boundaryLineWidth": 300,
+        "hatchedLineWidth": 200,
+        "minHatchedLineSpacing": 2000,
+        "maxHatchedLineSpacing": 2500
+    },
+    {
+        "signNumber": "1040",
+        "lineWidth": 150,
+        "lineSpacing": 100
+    },
+    {
+        "signNumber": "1041",
+        "lineWidth": 150
+    },
+    {
+        "signNumber": "1042",
+        "lineWidth": 150,
+        "Module": [
+            900,
+            3000
+        ]
+    },
+    {
+        "signNumber": "1043",
+        "lineWidth": 100
+    },
+    {
+        "signNumber": "1044",
+        "boundaryLineWidth": 300,
+        "hatchedLineWidth": 300,
+        "minHatchedLineSpacing": 2000,
+        "maxHatchedLineSpacing": 3000
+    },
+    {
+        "signNumber": "1045",
+        "lineWidth": 300
+    },
+    {
+        "signNumber": "1046",
+        "letterHeight": 1600,
+        "characterHeight": 2700
+    },
+    {
+        "signNumber": "1047",
+        "letterHeight": 1600,
+        "characterHeight": 2700
+    },
+    {
+        "signNumber": "1048",
+        "letterHeight": 100,
+        "Module": [
+            1000,
+            1000
+        ]
+    },
+    {
+        "signNumber": "1049",
+        "lineWidth": 100,
+        "Module": [
+            1000,
+            1000,
+            "white",
+            "yellow"
+        ]
+    },
+    {
+        "signNumber": "1050",
+        "letterHeight": 1600,
+        "characterHeight": 2700
+    },
+    {
+        "signNumber": "1051",
+        "lineWidth": 100,
+        "bayWidth": 1000,
+        "bayLength": 2000
+    },
+    {
+        "signNumber": "1052",
+        "lineWidth": 100,
+        "bayWidth": 2500,
+        "bayLength": 5000,
+        "bayPairsSpacing": 1500
+    },
+    {
+        "signNumber": "1053",
+        "lineWidth": 100,
+        "bayWidth": 2500,
+        "bayLength": 5000
+    },
+    {
+        "signNumber": "1054",
+        "bayWidth": 2500,
+        "bayLength": 5000
+    },
+    {
+        "signNumber": "1055",
+        "bayWidth": 2500,
+        "bayLength": 5000
+    },
+    {
+        "signNumber": "1056",
+        "lineWidth": 100,
+        "bayWidth": 3500,
+        "bayLength": 11000
+    },
+    {
+        "signNumber": "1057",
+        "lineWidth": 100,
+        "bayWidth": 3500,
+        "bayLength": 11000
+    },
+    {
+        "signNumber": "1058",
+        "bayWidth": 3500,
+        "bayLength": 11000
+    },
+    {
+        "signNumber": "1059",
+        "bayWidth": 3500,
+        "bayLength": 11000
+    },
+    {
+        "signNumber": "1060",
+        "lineWidth": 100,
+        "bayWidth": 3500,
+        "bayLength": 16000
+    },
+    {
+        "signNumber": "1061",
+        "lineWidth": 100,
+        "bayWidth": 3500,
+        "bayLength": 16000
+    },
+    {
+        "signNumber": "1062",
+        "bayWidth": 3500,
+        "bayLength": 16000
+    },
+    {
+        "signNumber": "1063",
+        "bayWidth": 3500,
+        "bayLength": 16000
+    },
+    {
+        "signNumber": "1064",
+        "lineWidth": 100,
+        "bayWidth": 3000,
+        "bayLength": 12000
+    },
+    {
+        "signNumber": "1065",
+        "lineWidth": 100,
+        "bayWidth": 3000,
+        "bayLength": 12000
+    },
+    {
+        "signNumber": "1066",
+        "bayWidth": 3000,
+        "bayLength": 12000
+    },
+    {
+        "signNumber": "1067",
+        "bayWidth": 3000,
+        "bayLength": 12000
+    },
+    {
+        "signNumber": "1068",
+        "length": 7250
+    },
+    {
+        "signNumber": "1069",
+        "letterHeight": 1600,
+        "characterHeight": 2700
+    },
+    {
+        "signNumber": "1070",
+        "minLength": 2500,
+        "minWidth": 500,
+        "maxWidth": 700,
+        "minSpacing": 500,
+        "maxSpacing": 700
+    },
+    {
+        "signNumber": "1071",
+        "lineWidth": 200,
+        "Module": [
+            500,
+            500
+        ]
+    },
+    {
+        "signNumber": "1072",
+        "lineWidth": 100,
+        "Module": [
+            2000,
+            150
+        ]
+    },
+    {
+        "signNumber": "1073",
+        "lineWidth": 100,
+        "Module": [
+            2000,
+            150
+        ]
+    },
+    {
+        "signNumber": "1074",
+        "lineWidth": 200,
+        "length": 200
+    },
+    {
+        "signNumber": "1075",
+        "maxFirstStudSpacing": 1250,
+        "minStudSpacing": 250,
+        "maxStudSpacing": 700
+    },
+    {
+        "signNumber": "1076",
+        "minWidth": 250,
+        "maxWidth": 350,
+        "minFirstMarkerSpacing": 500,
+        "maxFirstMarkerSpacing": 1300,
+        "minMarkerSpacing": 600,
+        "maxMarkerSpacing": 800
+    },
+    {
+        "signNumber": "1077",
+        "width": 600
+    },
+    {
+        "signNumber": "1101",
+        "lineWidth": 100,
+        "Module": [
+            1000,
+            5000
+        ]
+    },
+    {
+        "signNumber": "1102",
+        "lineWidth": 100,
+        "Module": [
+            2000,
+            7000
+        ]
+    },
+    {
+        "signNumber": "1103",
+        "lineWidth": 100,
+        "Module": [
+            3000,
+            5000
+        ]
+    },
+    {
+        "signNumber": "1104",
+        "lineWidth": 100,
+        "Module": [
+            4000,
+            2000
+        ]
+    },
+    {
+        "signNumber": "1105",
+        "lineWidth": 100,
+        "Module": [
+            6000,
+            3000
+        ]
+    },
+    {
+        "signNumber": "1106",
+        "lineWidth": 100,
+        "Module": [
+            600,
+            300
+        ]
+    },
+    {
+        "signNumber": "1107",
+        "lineWidth": 100,
+        "Module": [
+            1000,
+            1000
+        ]
+    },
+    {
+        "signNumber": "1108",
+        "lineWidth": 100,
+        "Module": [
+            1000,
+            3500
+        ]
+    },
+    {
+        "signNumber": "1109",
+        "lineWidth": 100
+    },
+    {
+        "signNumber": "1110"
+    },
+    {
+        "signNumber": "1111"
+    },
+    {
+        "signNumber": "1112"
+    },
+    {
+        "signNumber": "1113"
+    },
+    {
+        "signNumber": "1114"
+    },
+    {
+        "signNumber": "1115",
+        "length": 3600
+    },
+    {
+        "signNumber": "1116",
+        "length": 6000
+    },
+    {
+        "signNumber": "1117",
+        "length": 4500
+    },
+    {
+        "signNumber": "1118",
+        "length": 6000
+    },
+    {
+        "signNumber": "1119",
+        "length": 4500
+    },
+    {
+        "signNumber": "1121",
+        "lineWidth": 200,
+        "Module": [
+            1000,
+            1000
+        ]
+    },
+    {
+        "signNumber": "1122",
+        "minLength": 5550,
+        "maxLength": 6550
+    },
+    {
+        "signNumber": "1123",
+        "minLength": 5550,
+        "maxLength": 6550
+    },
+    {
+        "signNumber": "1124",
+        "length": 16000
+    },
+    {
+        "signNumber": "1125",
+        "length": 8000
+    },
+    {
+        "signNumber": "1126",
+        "boundaryLineWidth": 300,
+        "hatchedLineWidth": 300
+    },
+    {
+        "signNumber": "1127",
+        "lineWidth": 100,
+        "Module": [
+            4000,
+            2000
+        ]
+    },
+    {
+        "signNumber": "1128",
+        "lineWidth": 150,
+        "Module": [
+            6000,
+            3000
+        ]
+    },
+    {
+        "signNumber": "1129",
+        "lineWidth": 100,
+        "Module": [
+            4000,
+            2000
+        ]
+    },
+    {
+        "signNumber": "1130",
+        "lineWidth": 150,
+        "Module": [
+            6000,
+            3000
+        ]
+    },
+    {
+        "signNumber": "1131",
+        "lineWidth": 100,
+        "Module": [
+            4000,
+            2000
+        ]
+    },
+    {
+        "signNumber": "1132",
+        "lineWidth": 150,
+        "Module": [
+            6000,
+            3000
+        ]
+    },
+    {
+        "signNumber": "1133",
+        "lineWidth": 150,
+        "Module": [
+            6000,
+            3000
+        ]
+    },
+    {
+        "signNumber": "1134",
+        "lineWidth": 100,
+        "Module": [
+            4000,
+            2000
+        ]
+    },
+    {
+        "signNumber": "1135",
+        "letterHeight": 300,
+        "characterHeight": 500
+    },
+    {
+        "signNumber": "1136",
+        "letterHeight": 300,
+        "characterHeight": 500
+    },
+    {
+        "signNumber": "1137",
+        "letterHeight": 1600,
+        "characterHeight": 2700
+    },
+    {
+        "signNumber": "1138",
+        "letterHeight": 1600,
+        "characterHeight": 2700
+    },
+    {
+        "signNumber": "1139",
+        "letterHeight": 1600,
+        "characterHeight": 2700
+    },
+    {
+        "signNumber": "1140",
+        "letterHeight": 1600,
+        "characterHeight": 2700
+    },
+    {
+        "signNumber": "1141",
+        "letterHeight": 1600,
+        "characterHeight": 2700
+    },
+    {
+        "signNumber": "1142",
+        "letterHeight": 1600,
+        "characterHeight": 2700
+    },
+    {
+        "signNumber": "1143",
+        "lineWidth": 300,
+        "Module": [
+            1000,
+            1000
+        ]
+    },
+    {
+        "signNumber": "1144",
+        "letterHeight": 1600,
+        "characterHeight": 2700
+    },
+    {
+        "signNumber": "1145",
+        "width": 675,
+        "height": 675
+    },
+    {
+        "signNumber": "1146",
+        "width": 1350,
+        "height": 1350
+    },
+    {
+        "signNumber": "1147",
+        "length": 16000
+    },
+    {
+        "signNumber": "1148",
+        "length": 8000
+    },
+    {
+        "signNumber": "1149",
+        "lineWidth": 100,
+        "Module": [
+            1000,
+            1000
+        ]
+    },
+    {
+        "signNumber": "1150",
+        "width": 750,
+        "length": 1850
+    },
+    {
+        "signNumber": "1151",
+        "width": 3700,
+        "maxHeight": 100
+    },
+    {
+        "signNumber": "1152",
+        "minLength": 1200,
+        "maxLength": 2750,
+        "minWidth": 750,
+        "maxWidth": 1700
+    },
+    {
+        "signNumber": "1153",
+        "letterHeight": 1600,
+        "characterHeight": 2700
+    },
+    {
+        "signNumber": "1154",
+        "minLetterHeight": 800,
+        "maxLetterHeight": 1400,
+        "minCharacterHeight": 1000,
+        "maxCharacterHeight": 1750,
+        "minNumeralHeight": 1600,
+        "maxNumeralHeight": 2800
+    },
+    {
+        "signNumber": "1155",
+        "minLetterHeight": 800,
+        "maxLetterHeight": 1400,
+        "minCharacterHeight": 1000,
+        "maxCharacterHeight": 1750,
+        "minNumeralHeight": 1600,
+        "maxNumeralHeight": 2800
+    },
+    {
+        "signNumber": "1156",
+        "minLetterHeight": 800,
+        "maxLetterHeight": 1400,
+        "minCharacterHeight": 1000,
+        "maxCharacterHeight": 1750,
+        "minNumeralHeight": 1600,
+        "maxNumeralHeight": 2800
+    },
+    {
+        "signNumber": "1157",
+        "minLetterHeight": 800,
+        "maxLetterHeight": 1400,
+        "minCharacterHeight": 1000,
+        "maxCharacterHeight": 1750,
+        "minNumeralHeight": 1600,
+        "maxNumeralHeight": 2800
+    },
+    {
+        "signNumber": "1158",
+        "minLetterHeight": 800,
+        "maxLetterHeight": 1400,
+        "minCharacterHeight": 1000,
+        "maxCharacterHeight": 1750,
+        "minNumeralHeight": 1600,
+        "maxNumeralHeight": 2800
+    },
+    {
+        "signNumber": "1159",
+        "minLetterHeight": 800,
+        "maxLetterHeight": 1400,
+        "minCharacterHeight": 1000,
+        "maxCharacterHeight": 1750,
+        "minNumeralHeight": 1600,
+        "maxNumeralHeight": 2800
+    },
+    {
+        "signNumber": "1160",
+        "minLetterHeight": 700,
+        "maxLetterHeight": 1000,
+        "minCharacterHeight": 1200,
+        "maxCharacterHeight": 1700
+    },
+    {
+        "signNumber": "1161",
+        "minLineWidth": 50,
+        "maxLineWidth": 100,
+        "Module": [
+            2000,
+            1000
+        ]
+    },
+    {
+        "signNumber": "1162",
+        "minLineWidth": 150,
+        "maxLineWidth": 300
+    },
+    {
+        "signNumber": "1163",
+        "lineWidth": 100,
+        "lineSpacing": 150
+    },
+    {
+        "signNumber": "1164",
+        "lineWidth": 100
+    },
+    {
+        "signNumber": "1165",
+        "lineWidth": 100,
+        "lineSpacing": 150,
+        "leftLineModule": [
+            300,
+            150
+        ],
+        "rightLineModule": [
+            300,
+            150
+        ]
+    },
+    {
+        "signNumber": "1166",
+        "lineWidth": 100,
+        "Module": [
+            300,
+            150
+        ]
+    },
+    {
+        "signNumber": "1167",
+        "length": 2000
+    },
+    {
+        "signNumber": "1168",
+        "length": 2000
+    },
+    {
+        "signNumber": "1169",
+        "length": 2000
+    },
+    {
+        "signNumber": "1170",
+        "length": 2000
+    },
+    {
+        "signNumber": "1171",
+        "minLength": 1200,
+        "maxLength": 2750,
+        "minWidth": 750,
+        "maxWidth": 1700
+    },
+    {
+        "signNumber": "1172",
+        "minLength": 800,
+        "maxLength": 500,
+        "minWidth": 2000,
+        "maxWidth": 1250
+    },
+    {
+        "signNumber": "1173",
+        "minLetterHeight": 700,
+        "maxLetterHeight": 1000,
+        "minCharacterHeight": 1200,
+        "maxCharacterHeight": 1700
+    },
+    {
+        "signNumber": "1174",
+        "minLetterHeight": 700,
+        "maxLetterHeight": 1000,
+        "minCharacterHeight": 1200,
+        "maxCharacterHeight": 1700
+    },
+    {
+        "signNumber": "1175",
+        "letterHeight": 800,
+        "characterHeight": 1350
+    },
+    {
+        "signNumber": "1176",
+        "letterHeight": 800,
+        "characterHeight": 1350
+    },
+    {
+        "signNumber": "1177",
+        "minLetterHeight": 1600,
+        "maxLetterHeight": 2800,
+        "minCharacterHeight": 2700,
+        "maxCharacterHeight": 4700
+    },
+    {
+        "signNumber": "1178",
+        "minLineWidth": 100,
+        "maxLineWidth": 150,
+        "hatchedLineSpacing": 2000
+    },
+    {
+        "signNumber": "1179",
+        "minLineWidth": 100,
+        "maxLineWidth": 150,
+        "hatchedLineSpacing": 2000
+    },
+    {
+        "signNumber": "1180",
+        "minLength": 1000,
+        "maxLength": 1000,
+        "minWidth": 1500,
+        "maxWidth": 1500
+    }
+]
