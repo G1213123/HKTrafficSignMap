@@ -1,4 +1,5 @@
 'use client';
+import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import SignGallery from '../components/SignGallery';
@@ -7,6 +8,14 @@ import './gallery.css';
 
 export default function SignIndexContent() {
   const { t } = useI18n();
+  const [lastUpdate, setLastUpdate] = useState('');
+
+  useEffect(() => {
+    fetch('/lastRun.json')
+      .then(res => res.json())
+      .then(data => setLastUpdate(data.lastRun))
+      .catch(e => console.error('Failed to load last run time:', e));
+  }, []);
 
   return (
     <>
@@ -20,6 +29,11 @@ export default function SignIndexContent() {
             <p style={{ fontSize: '0.85rem', color: '#6c757d', margin: '0' }}>
               {t('Data provided by')} <a href="https://data.gov.hk/" target="_blank" rel="noreferrer" style={{ color: '#0056b3', textDecoration: 'underline' }}>DATA.GOV.HK</a>. <a href="#data-disclaimer" style={{ color: '#0056b3', textDecoration: 'underline', cursor: 'pointer' }}>{t('Disclaimer')}</a>.
             </p>
+            {lastUpdate && (
+                <p style={{ fontSize: '0.85rem', color: '#6c757d', margin: '0', marginTop: '0.2rem' }}>
+                    {t('Last Update') || 'Last Update'} : {lastUpdate}
+                </p>
+            )}
           </div>
 
           <SignGallery />

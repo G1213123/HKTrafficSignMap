@@ -55,6 +55,22 @@ def run_pipeline():
     except Exception as e:
         print(f"FATAL ERROR in Step 4: {e}")
         sys.exit(1)
+
+    # Step 5: Export Last Run Time
+    print("\n[STEP 5] Exporting Last Run Time...")
+    try:
+        import json
+        from datetime import datetime
+        last_run_data = {
+            "lastRun": datetime.now().strftime("%Y-%m-%d")
+        }
+        # Output to public folder
+        output_path = os.path.join(current_dir, "..", "public", "lastRun.json")
+        with open(output_path, "w") as f:
+            json.dump(last_run_data, f)
+        print(f"Exported last run time to {output_path}")
+    except Exception as e:
+        print(f"Warning in Step 5: {e}")
         
     elapsed = time.time() - start_time
     print("\n" + "="*60)
