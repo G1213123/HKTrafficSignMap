@@ -1,6 +1,7 @@
 /data
 /svgs
 /public/data/svgs
+/public/data/wfs
 __pycache__/
 *.py[cod]
 .venv

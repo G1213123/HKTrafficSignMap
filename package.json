@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "update-version": "node scripts/update-version.js",
+    "sync-wfs": "python jobs/sync_wfs_layers.py",
     "dev": "npm run update-version && next dev",
     "build": "npm run update-version && next build",
     "start": "next start",

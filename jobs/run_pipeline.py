@@ -12,7 +12,7 @@ try:
     import download_index_plan
     import convert_whole_pdf_to_svg
     import extract_svgs_viewbox
-    import update_data
+    import sync_wfs_layers
 except ImportError as e:
     print(f"Error importing job modules: {e}")
     print("Ensure you are running this script with the correct PYTHONPATH or from the correct directory.")
@@ -25,12 +25,12 @@ def run_pipeline():
     start_time = time.time()
 
     # Step 1: Update Map Layers (WFS Data)
-    # print("\n[STEP 1] Updating Map Layers (WFS Data)...")
-    # try:
-    #     update_data.main()
-    # except Exception as e:
-    #     print(f"Warning in Step 1: {e}")
-    #     # Proceed even if WFS fails? Usually yes, separate data source.
+    print("\n[STEP 1] Syncing full WFS layer cache...")
+    try:
+        sync_wfs_layers.main()
+    except Exception as e:
+        print(f"Warning in Step 1: {e}")
+        # Proceed with the rest of the pipeline even if WFS sync fails.
 
     # Step 2: Download Index Plan PDFs
     print("\n[STEP 2] Downloading Index Plan PDFs...")

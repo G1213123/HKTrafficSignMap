@@ -53,8 +53,7 @@ export default function Map() {
         L.control.scale({ metric: true, imperial: false }).addTo(map);
 
         // Configuration
-        const wfsBaseUrl = 'https://portal.csdi.gov.hk/server/services/common/td_rcd_1638928986276_39755/MapServer/WFSServer';
-        const outputFormat = 'GEOJSON';
+        const layerApiUrl = '/api/layers';
 
         const layersConfig = {
             "Traffic Signs": [
@@ -93,74 +92,22 @@ export default function Map() {
         const groupedOverlays = {};
         const allLayersMap = {};
 
-        // Helper functions from script.js logic
-        function createAnnotationIcon(feature, latlng) {
-            const p = feature.properties || {};
-            const text = (p.TextString || '').split(' ').join('<br>');
-            const angle = p.Angle || 0; 
-            const cssRotation = -angle; 
-            const sizeMeters = p.FontSize || 8; 
-            
-            let fontSizePx = '12px';
-            if (latlng && map) {
-                // metersToPixels definition below, used here
-                const px = metersToPixels(sizeMeters, latlng.lat, map.getZoom());
-                fontSizePx = px + 'px';
-            }
-        
-            let fontFamily = p.FontName;
-            if (!fontFamily || fontFamily.toLowerCase().indexOf('chinese') !== -1) {
-                fontFamily = '"Microsoft JhengHei", "Microsoft YaHei", sans-serif';
-            }
-            
-            const isBold = p.Bold == 1;
-            const isItalic = p.Italic == 1;
-            const isUnderline = p.Underline == 1;
-            const scaleX = (p.CharacterWidth && p.CharacterWidth !== 100) ? (p.CharacterWidth / 100) : 1;
-            
-            let translateX = '-50%';
-            let translateY = '-50%';
-            let textAlign = 'center';
-        
-            if (p.HorizontalAlignment == 0) { translateX = '0%'; textAlign = 'left'; } 
-            else if (p.HorizontalAlignment == 1) { translateX = '-50%'; textAlign = 'center'; } 
-            else if (p.HorizontalAlignment == 2) { translateX = '-100%'; textAlign = 'right'; }
-        
-            if (p.VerticalAlignment == 0) { translateY = '0%'; } 
-            else if (p.VerticalAlignment == 1) { translateY = '-50%'; } 
-            else if (p.VerticalAlignment == 2 || p.VerticalAlignment == 3) { translateY = '-100%'; }
-        
-            const style = `
-                position: absolute;
-                left: 0; top: 0;
-                white-space: nowrap;
-                font-family: ${fontFamily};
-                font-weight: ${isBold ? 'bold' : 'normal'};
-                font-style: ${isItalic ? 'italic' : 'normal'};
-                text-decoration: ${isUnderline ? 'underline' : 'none'};
-                color: black;
-                text-align: ${textAlign};
-                transform-origin: 0 0;
-                transform: rotate(${cssRotation}deg) translate(${translateX}, ${translateY}) scaleX(${scaleX});
-                pointer-events: none; 
-                line-height: 1.2;
-            `;
-        
-            return L.divIcon({
-                className: '', 
-                html: `<div class="road-label" data-size-meters="${sizeMeters}" data-lat="${latlng ? latlng.lat : 0}" style="${style} font-size: ${fontSizePx};">${text}</div>`,
-                iconSize: [0, 0], 
-                iconAnchor: [0, 0] 
-            });
+        // Layer Builder
+        function getIconUrl(typeName, refname) {
+            if (!refname) return null;
+            if (typeName.includes('TRAFFIC_LIGHT')) return `/data/svgs/${refname}.svg`;
+            if (typeName.includes('DTAD_TS_')) return `/data/svgs/TS_${refname}.svg`;
+            if (typeName.includes('DTAD_RD_MARK_SYM')) return `/data/svgs/RM_${refname}.svg`;
+            return null;
         }
 
-        // Layer Builder
         for (const [groupName, layerList] of Object.entries(layersConfig)) {
             groupedOverlays[groupName] = {};
             
             layerList.forEach(typeName => {
                 let label = typeName.replace('csdi:', '').replace('DTAD_', '').replace(/_/g, ' ');
                 
+                // Road Marking Annotations line style
                 const layer = L.geoJSON(null, {
                     style: function (feature) {
                         if (typeName === 'csdi:DTAD_RD_MARK_ANNO') {
@@ -179,28 +126,17 @@ export default function Map() {
                         return style;
                     },
                     pointToLayer: function (feature, latlng) {
-                        if (typeName === "csdi:DTAD_TRAFFIC_LIGHT_PT" || typeName === "csdi:DTAD_TS_POLE_PT" || typeName === "csdi:DTAD_RD_MARK_SYM_PT") {
-                            let iconUrl = null;
+                        let iconUrl = getIconUrl(typeName, feature.properties?.REFNAME);
+                        if (iconUrl) {
                             let angle = (feature.properties && feature.properties.ANGLE) ? feature.properties.ANGLE : 0;
-        
-                            if (typeName === "csdi:DTAD_TRAFFIC_LIGHT_PT" && feature.properties && feature.properties.REFNAME) {
-                                 iconUrl = `/svg/t lights/${feature.properties.REFNAME}.svg`;
-                            } else if (typeName === "csdi:DTAD_TS_POLE_PT") {
-                                 iconUrl = "/svg/TrafficSign.svg";
-                            } else if (typeName === "csdi:DTAD_RD_MARK_SYM_PT" && feature.properties && feature.properties.REFNAME) {
-                                 iconUrl = `/svg/rd mark/${feature.properties.REFNAME}.svg`;
-                            }
-        
-                            if (iconUrl) {
-                                return L.marker(latlng, {
-                                    icon: L.divIcon({
-                                        className: 'custom-svg-icon-wrapper', 
-                                        html: `<div class="custom-svg-icon"><img src="${iconUrl}" style="transform: rotate(${-angle}deg);" /></div>`,
-                                        iconSize: [0, 0],
-                                        iconAnchor: [0, 0]
-                                    })
-                                });
-                            }
+                            return L.marker(latlng, {
+                                icon: L.divIcon({
+                                    className: 'custom-svg-icon-wrapper', 
+                                    html: `<div class="custom-svg-icon"><img src="${iconUrl}" style="transform: rotate(${-angle}deg);" /></div>`,
+                                    iconSize: [0, 0],
+                                    iconAnchor: [0, 0]
+                                })
+                            });
                         }
                         return L.circleMarker(latlng, {
                             radius: 3,
@@ -212,19 +148,8 @@ export default function Map() {
                         });
                     },
                     onEachFeature: function (feature, featureLayer) {
-                        if (typeName === "csdi:DTAD_RD_MARK_ANNO") {
-                            const center = featureLayer.getBounds().getCenter();
-                            const marker = L.marker(center, { 
-                                icon: createAnnotationIcon(feature, center),
-                                interactive: false
-                            });
-                            layer.addLayer(marker);
-                             if (featureLayer.setStyle) {
-                                featureLayer.setStyle({ stroke: false, fill: false });
-                                if (featureLayer.getElement) { featureLayer.getElement().style.pointerEvents = 'none'; }
-                            }
-                            return;
-                        }
+
+
                         if (feature.properties) {
                             let popupContent = `<b>${label}</b><br><div class="popup-content">`;
                             for (const key in feature.properties) {
@@ -334,16 +259,39 @@ export default function Map() {
 
         // Data Loading
         const abortControllers = {}; 
+        async function fetchWithRetry(url, options, retries = 2) {
+            let lastError;
+            for (let attempt = 0; attempt <= retries; attempt++) {
+                try {
+                    const res = await fetch(url, options);
+                    if (!res.ok) {
+                        throw new Error(`HTTP ${res.status}`);
+                    }
+                    return await res.json();
+                } catch (err) {
+                    // Respect aborts immediately (e.g., user pans/zooms quickly and a new request starts)
+                    if (err && err.name === 'AbortError') {
+                        throw err;
+                    }
+                    lastError = err;
+                    if (attempt < retries) {
+                        // Small backoff to reduce burst failures on transient network issues
+                        await new Promise(resolve => setTimeout(resolve, 200 * (attempt + 1)));
+                    }
+                }
+            }
+            throw lastError;
+        }
+
         function loadLayer(typeName, bounds, layerInstance) {
             if (abortControllers[typeName]) abortControllers[typeName].abort();
             const controller = new AbortController();
             abortControllers[typeName] = controller;
 
             const bbox = `${bounds.getSouth()},${bounds.getWest()},${bounds.getNorth()},${bounds.getEast()}`;
-            const wfsUrl = `${wfsBaseUrl}?service=WFS&version=2.0.0&request=GetFeature&typeNames=${typeName}&outputFormat=${outputFormat}&bbox=${bbox},urn:ogc:def:crs:EPSG::4326&count=1000`; 
+            const wfsUrl = `${layerApiUrl}?typeName=${encodeURIComponent(typeName)}&bbox=${encodeURIComponent(bbox)}`;
 
-            fetch(wfsUrl, { signal: controller.signal })
-                .then(res => res.ok ? res.json() : null)
+            fetchWithRetry(wfsUrl, { signal: controller.signal }, 2)
                 .then(data => {
                     layerInstance.clearLayers();
                     if (data && data.features && data.features.length > 0) {

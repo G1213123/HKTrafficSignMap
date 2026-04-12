@@ -24,19 +24,29 @@ Due to browser security restrictions (CORS), you may not be able to fetch the da
 ## Data Source & Auto-Update
 - **WFS Service**: [CSDI Portal](https://portal.csdi.gov.hk/)
 - **Data Updates**: 
-  The map reads data from the local `data/` folder to improve performance and avoid CORS issues.
+  The map reads layer data from the local cache in `public/data/wfs/` through the internal API route `GET /api/layers`.
   
-  To fetch or update the data:
+  To fetch or update the data cache manually:
   1. Run the update script:
      ```bash
-     python update_data.py
+     npm run sync-wfs
      ```
-  2. This script implements a caching mechanism:
-     - It downloads GeoJSON files for all 51 layers.
-     - It only re-downloads if the local file is missing or older than **7 days**.
+  2. This job:
+     - Downloads full Hong Kong extent data for all configured layers.
+     - Paginates through WFS responses (`startIndex` + `count`) until each layer is complete.
+     - Saves one GeoJSON per layer under `public/data/wfs/`.
+     - Writes sync metadata to `public/data/wfs/metadata.json`.
   
-  **Scheduled Updates:**
-  You can automate this by adding `python update_data.py` to your system's scheduler (e.g., Windows Task Scheduler or cron) to run once a day. The script itself handles the "7-day check", so it's safe to run frequent checks.
+  **Scheduled Updates (Cron):**
+  - A GitHub Actions workflow is included at `.github/workflows/sync-wfs-data.yml`.
+  - It runs daily (`0 2 * * *`) and can also be triggered manually.
+  - The workflow refreshes cache files and auto-commits updates back to `main`.
+
+## Internal Layer API
+- Endpoint: `GET /api/layers?typeName=<layer>&bbox=<south,west,north,east>`
+- `typeName` is required.
+- `bbox` is optional; if provided, the API filters cached features server-side before returning GeoJSON.
+- The map now uses this API instead of directly requesting CSDI WFS.
 
 ## Layer Info
 - **Layer**: All 51 traffic sign related layers (DTAD series)
