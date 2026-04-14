@@ -576,7 +576,7 @@ export default function SignGallery() {
                       <div className="dimension-list" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {(() => {
                           const dimensions = rmDimensions[selectedSign.signNumber];
-                          const keys = Object.keys(dimensions).filter(key => !['signNumber', 'filename', 'mtime', 'id'].includes(key));
+                          const keys = Object.keys(dimensions).filter(key => !['signNumber', 'filename', 'mtime', 'id', 'angleCorrection'].includes(key));
                           
                           // Convert to array of entries for easier processing
                           const entries = keys.map(key => ({ key, value: dimensions[key] }));

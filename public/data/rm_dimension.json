@@ -137,7 +137,8 @@
     {
         "signNumber": "1031",
         "length": 8000,
-        "width": 2000
+        "width": 2000,
+        "angleCorrection": -90
     },
     {
         "signNumber": "1032",
@@ -223,7 +224,8 @@
     {
         "signNumber": "1047",
         "letterHeight": 1600,
-        "characterHeight": 2700
+        "characterHeight": 2700,
+        "length": 12150
     },
     {
         "signNumber": "1048",
@@ -231,7 +233,8 @@
         "Module": [
             1000,
             1000
-        ]
+        ],
+        "angleCorrection": -90
     },
     {
         "signNumber": "1049",
@@ -609,12 +612,16 @@
     {
         "signNumber": "1135",
         "letterHeight": 300,
-        "characterHeight": 500
+        "characterHeight": 500,
+        "angleCorrection": 90,
+        "length": 3125
     },
     {
         "signNumber": "1136",
         "letterHeight": 300,
-        "characterHeight": 500
+        "characterHeight": 500,
+        "angleCorrection": 90,
+        "length": 3125
     },
     {
         "signNumber": "1137",
@@ -624,27 +631,35 @@
     {
         "signNumber": "1138",
         "letterHeight": 1600,
-        "characterHeight": 2700
+        "characterHeight": 2700,
+        "length": 5120,
+        "angleCorrection":-90
     },
     {
         "signNumber": "1139",
         "letterHeight": 1600,
-        "characterHeight": 2700
+        "characterHeight": 2700,
+        "length": 8920,
+        "angleCorrection":-90
     },
     {
         "signNumber": "1140",
         "letterHeight": 1600,
-        "characterHeight": 2700
+        "characterHeight": 2700,
+        "length": 10800,
+        "angleCorrection":-90   
     },
     {
         "signNumber": "1141",
         "letterHeight": 1600,
-        "characterHeight": 2700
+        "characterHeight": 2700,
+        "length":4770
     },
     {
         "signNumber": "1142",
-        "letterHeight": 1600,
-        "characterHeight": 2700
+        "letterHeight": 2800,
+        "characterHeight": 4700,
+        "length": 8320
     },
     {
         "signNumber": "1143",
@@ -662,12 +677,14 @@
     {
         "signNumber": "1145",
         "width": 675,
-        "height": 675
+        "length": 675,
+        "angleCorrection": 90
     },
     {
         "signNumber": "1146",
         "width": 1350,
-        "height": 1350
+        "length": 1350,
+        "angleCorrection": 90
     },
     {
         "signNumber": "1147",

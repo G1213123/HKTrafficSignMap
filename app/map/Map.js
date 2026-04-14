@@ -7,6 +7,7 @@ import 'leaflet-groupedlayercontrol';
 import 'leaflet-groupedlayercontrol/dist/leaflet.groupedlayercontrol.min.css';
 import { getLineStyles, getOffsetLatLngs } from './lineStyles';
 import './map.css';
+import rmDimensions from '../../public/data/rm_dimension.json';
 
 // Fix for default marker icon issues in Next.js/Webpack
 delete L.Icon.Default.prototype._getIconUrl;
@@ -54,6 +55,14 @@ export default function Map() {
 
         // Configuration
         const layerApiUrl = '/api/layers';
+
+        // Build lookup dictionary for road marking physical dimensions
+        const rmDimensionDict = {};
+        if (Array.isArray(rmDimensions)) {
+            rmDimensions.forEach(item => {
+                rmDimensionDict[item.signNumber] = item;
+            });
+        }
 
         const layersConfig = {
             "Traffic Signs": [
@@ -128,11 +137,33 @@ export default function Map() {
                     pointToLayer: function (feature, latlng) {
                         let iconUrl = getIconUrl(typeName, feature.properties?.REFNAME);
                         if (iconUrl) {
-                            let angle = (feature.properties && feature.properties.ANGLE) ? feature.properties.ANGLE : 0;
+                            // Fix: Don't just check `feature.properties.ANGLE`, because `0` is falsy in JavaScript!
+                            // Explicitly check that it is != null so that an angle of 0 correctly gets the -90 offset.
+                            let angle = (feature.properties && feature.properties.ANGLE != null) ? Number(feature.properties.ANGLE) - 90 : 0;
+                            let customStyle = `transform: rotate(${-angle}deg);`;
+                            let extraClass = '';
+                            
+                            if (typeName.includes('DTAD_RD_MARK') && feature.properties?.REFNAME) {
+                                extraClass = ' rd-mark-icon';
+                                const dim = rmDimensionDict[feature.properties.REFNAME.toString()];
+                                if (dim) {
+                                    if (dim.angleCorrection) {
+                                        angle -= dim.angleCorrection;
+                                        customStyle = `transform: rotate(${-angle}deg);`;
+                                    }
+                                    if (dim.length || dim.minLength || dim.maxLength) {
+                                        // 1 pixel at zoom 21 in HK (lat ~22.3) is approx 69.05 mm
+                                        const lengthValue = dim.length || dim.minLength || dim.maxLength;
+                                        const lengthPx = lengthValue / 69.05;
+                                        customStyle += ` height: calc(${lengthPx}px * var(--map-icon-scale, 1)); width: auto; max-width: none;`;
+                                    }
+                                }
+                            }
+
                             return L.marker(latlng, {
                                 icon: L.divIcon({
                                     className: 'custom-svg-icon-wrapper', 
-                                    html: `<div class="custom-svg-icon"><img src="${iconUrl}" style="transform: rotate(${-angle}deg);" /></div>`,
+                                    html: `<div class="custom-svg-icon${extraClass}"><img src="${iconUrl}" style="${customStyle}" /></div>`,
                                     iconSize: [0, 0],
                                     iconAnchor: [0, 0]
                                 })
