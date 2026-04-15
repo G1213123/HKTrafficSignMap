@@ -11,9 +11,10 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "leaflet": "^1.9.4",
-    "leaflet-groupedlayercontrol": "^0.6.1",
+    "@mapbox/geojson-normalize": "^0.0.1",
+    "@turf/turf": "^7.3.4",
     "lucide-react": "latest",
+    "maplibre-gl": "^5.23.0",
     "next": "^16.1.6",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"

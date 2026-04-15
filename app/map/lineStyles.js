@@ -2,7 +2,6 @@
 // This file maps the 'LINETYPE' attribute from the data to visual styles (dash patterns)
 // Format based on Leaflet Path options: https://leafletjs.com/reference.html#path
 
-import L from 'leaflet';
 
 const roadMarkingStyles = {
 
@@ -672,7 +671,7 @@ export function getOffsetLatLngs(latlngs, offsetMeters, map) {
  * Retrieves the styles array.
  * Converts config format to Leaflet style options.
  */
-export function getLineStyles(lineType, map) {
+export function getLineStyles(lineType) {
     // Get config (array or single object fallback)
     let config = roadMarkingStyles[lineType] || roadMarkingStyles["DEFAULT"];
 
@@ -690,24 +689,6 @@ export function getLineStyles(lineType, map) {
             weight: 2,
             ...styleDef
         };
-
-        // Handle Dashes
-        if (style.dashMeters && map) {
-            const zoom = map.getZoom();
-            const lat = map.getCenter().lat;
-            const metersPerPx = getMetersPerPixel(lat, zoom);
-            const dashArrayPx = style.dashMeters.map(m => m / metersPerPx);
-            style.dashArray = dashArrayPx.join(", ");
-
-            if (style.shift) {
-                style.dashOffset = (style.shift / metersPerPx).toString();
-            }
-        } else {
-            style.dashArray = null;
-        }
-
-        // Clean up internal property but keep offset
-        delete style.dashMeters;
 
         return style;
     });
