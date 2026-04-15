@@ -162,128 +162,121 @@ export default function Map() {
             }
         } catch (e) { }
 
-        const map = new maplibregl.Map({
-            container: mapContainerRef.current,
-            style: {
-                version: 8,
-                sources: {
-                    basemap: {
-                        type: 'raster',
-                        tiles: ['https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/basemap/WGS84/{z}/{x}/{y}.png'],
-                        tileSize: 256,
-                        maxzoom: 22
-                    },
-                    label: {
-                        type: 'raster',
-                        tiles: ['https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/label/hk/en/WGS84/{z}/{x}/{y}.png'],
-                        tileSize: 256,
-                        maxzoom: 22
-                    }
-                },
-                layers: [
-                    {
-                        id: 'basemap-layer',
-                        type: 'raster',
-                        source: 'basemap',
-                        minzoom: 0,
-                        maxzoom: 22
-                    },
-                    {
-                        id: 'label-layer',
-                        type: 'raster',
-                        source: 'label',
-                        minzoom: 0,
-                        maxzoom: 22
-                    }
-                ]
-            },
-            center: initialCenter,
-            zoom: initialZoom,
-            maxZoom: 22,
-            attributionControl: false
-        });
-        
-        map.addControl(new maplibregl.AttributionControl({ customAttribution: 'Map information from Lands Department' }));
-        map.addControl(new maplibregl.ScaleControl({ maxWidth: 200, unit: 'metric' }));
-
-        map.on('load', () => {
-            mapInstanceRef.current = map;
-            setMapLoaded(true);
-            updateScaleIndicator();
-        });
-
-        // Dynamic Icon Scaling CSS Variable
-        const updateScaleIndicator = () => {
-            const zoom = map.getZoom();
-            const scale = Math.pow(2, zoom - 21);
-            if (mapContainerRef.current) {
-                mapContainerRef.current.style.setProperty('--map-icon-scale', scale);
-            }
-            
-            // Labels scaling
-            document.querySelectorAll('.road-label').forEach(el => {
-                const sizeMeters = parseFloat(el.getAttribute('data-size-meters'));
-                const lat = parseFloat(el.getAttribute('data-lat'));
-                if (!isNaN(sizeMeters) && !isNaN(lat)) {
-                    const pxSize = sizeMeters / getMetersPerPixel(lat, zoom);
-                    el.style.fontSize = pxSize + 'px';
+        // Fetch and patch the Vector Map Style dynamically
+        fetch('https://mapapi.geodata.gov.hk/gs/api/v1.0.0/vt/basemap/WGS84/resources/styles/root.json')
+            .then(res => res.json())
+            .then(styleData => {
+                // GeoData API uses an ArcGIS-style tilejson which maplibre doesn't parse natively,
+                // so we manually override the source to explicitly provide the tile URL format.
+                if (styleData.sources && styleData.sources.esri) {
+                    delete styleData.sources.esri.url;
+                    styleData.sources.esri.tiles = [
+                        'https://mapapi.geodata.gov.hk/gs/api/v1.0.0/vt/basemap/WGS84/tile/{z}/{y}/{x}.pbf'
+                    ];
+                    // Restrict zoom limits to force overzoom/underzoom from available vector tiles
+                    styleData.sources.esri.minzoom = 9;
+                    styleData.sources.esri.maxzoom = 15;
                 }
-            });
+                // Fix relative fonts/sprites paths
+                styleData.sprite = 'https://mapapi.geodata.gov.hk/gs/api/v1.0.0/vt/basemap/WGS84/resources/sprites/sprite';
+                styleData.glyphs = 'https://mapapi.geodata.gov.hk/gs/api/v1.0.0/vt/basemap/WGS84/resources/fonts/{fontstack}/{range}.pbf';
 
-            if (zoom < 16) {
-                setMapMessage('Zoom in to level 16+ to load data');
-            } else {
-                setMapMessage('Data loading/active');
-            }
-        };
+                if (!mapContainerRef.current) return;
 
-        map.on('zoom', updateScaleIndicator);
-        map.on('moveend', () => {
-            if (!mapInstanceRef.current) return;
-            const c = map.getCenter();
-            localStorage.setItem('mapState', JSON.stringify({
-                center: { lat: c.lat, lng: c.lng },
-                zoom: map.getZoom(),
-                activeLayers: Array.from(activeLayersRef.current)
-            }));
-            
-            if (map.getZoom() >= 16) {
-                Array.from(activeLayersRef.current).forEach(layer => loadLayerData(layer));
-            }
-        });
+                const map = new maplibregl.Map({
+                    container: mapContainerRef.current,
+                    style: styleData,
+                    center: initialCenter,
+                    zoom: initialZoom,
+                    maxZoom: 22,
+                    attributionControl: false
+                });
+                
+                map.addControl(new maplibregl.AttributionControl({ customAttribution: 'Map information from Lands Department' }));
+                map.addControl(new maplibregl.ScaleControl({ maxWidth: 200, unit: 'metric' }));
 
-        map.on('click', (e) => {
-            // Intersect Line/Polygon clicks
-            const features = map.queryRenderedFeatures(e.point);
-            const clickableGeoJSONs = features.filter(f => f.source && f.source.startsWith('csdi:'));
-            
-            if (clickableGeoJSONs.length > 0) {
-                const feature = clickableGeoJSONs[0];
-                let label = feature.source.replace('csdi:DTAD_', '').replace(/_/g, ' ');
-                let popupContent = `<b>${label}</b><br><div class="popup-content">`;
-                for (const key in feature.properties) {
-                    if (feature.properties[key] !== null) {
-                        popupContent += `<b>${key}:</b> ${feature.properties[key]}<br>`;
+                map.on('load', () => {
+                    mapInstanceRef.current = map;
+                    setMapLoaded(true);
+                    updateScaleIndicator();
+                });
+
+                // Dynamic Icon Scaling CSS Variable
+                const updateScaleIndicator = () => {
+                    const zoom = map.getZoom();
+                    const scale = Math.pow(2, zoom - 21);
+                    if (mapContainerRef.current) {
+                        mapContainerRef.current.style.setProperty('--map-icon-scale', scale);
                     }
-                }
-                popupContent += '</div>';
+                    
+                    // Labels scaling
+                    document.querySelectorAll('.road-label').forEach(el => {
+                        const sizeMeters = parseFloat(el.getAttribute('data-size-meters'));
+                        const lat = parseFloat(el.getAttribute('data-lat'));
+                        if (!isNaN(sizeMeters) && !isNaN(lat)) {
+                            const pxSize = sizeMeters / getMetersPerPixel(lat, zoom);
+                            el.style.fontSize = pxSize + 'px';
+                        }
+                    });
 
-                new maplibregl.Popup()
-                    .setLngLat(e.lngLat)
-                    .setHTML(popupContent)
-                    .addTo(map);
-            }
-        });
+                    if (zoom < 16) {
+                        setMapMessage('Zoom in to level 16+ to load data');
+                    } else {
+                        setMapMessage('Data loading/active');
+                    }
+                };
 
-        map.on('mousemove', (e) => {
-            const features = map.queryRenderedFeatures(e.point);
-            const isClickable = features.some(f => f.source && f.source.startsWith('csdi:'));
-            map.getCanvas().style.cursor = isClickable ? 'pointer' : '';
-        });
+                map.on('zoom', updateScaleIndicator);
+                map.on('moveend', () => {
+                    if (!mapInstanceRef.current) return;
+                    const c = map.getCenter();
+                    localStorage.setItem('mapState', JSON.stringify({
+                        center: { lat: c.lat, lng: c.lng },
+                        zoom: map.getZoom(),
+                        activeLayers: Array.from(activeLayersRef.current)
+                    }));
+                    
+                    if (map.getZoom() >= 16) {
+                        Array.from(activeLayersRef.current).forEach(layer => loadLayerData(layer));
+                    }
+                });
+
+                map.on('click', (e) => {
+                    // Intersect Line/Polygon clicks
+                    const features = map.queryRenderedFeatures(e.point);
+                    const clickableGeoJSONs = features.filter(f => f.source && f.source.startsWith('csdi:'));
+                    
+                    if (clickableGeoJSONs.length > 0) {
+                        const feature = clickableGeoJSONs[0];
+                        let label = feature.source.replace('csdi:DTAD_', '').replace(/_/g, ' ');
+                        let popupContent = `<b>${label}</b><br><div class="popup-content">`;
+                        for (const key in feature.properties) {
+                            if (feature.properties[key] !== null) {
+                                popupContent += `<b>${key}:</b> ${feature.properties[key]}<br>`;
+                            }
+                        }
+                        popupContent += '</div>';
+
+                        new maplibregl.Popup()
+                            .setLngLat(e.lngLat)
+                            .setHTML(popupContent)
+                            .addTo(map);
+                    }
+                });
+
+                map.on('mousemove', (e) => {
+                    const features = map.queryRenderedFeatures(e.point);
+                    const isClickable = features.some(f => f.source && f.source.startsWith('csdi:'));
+                    map.getCanvas().style.cursor = isClickable ? 'pointer' : '';
+                });
+            })
+            .catch(e => console.error("Error loading Vector Map Style:", e));
 
         return () => {
-            map.remove();
-            mapInstanceRef.current = null;
+            if (mapInstanceRef.current) {
+                mapInstanceRef.current.remove();
+                mapInstanceRef.current = null;
+            }
         };
     }, []);
 
