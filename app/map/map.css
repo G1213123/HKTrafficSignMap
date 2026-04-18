@@ -13,6 +13,15 @@ body {
     z-index: 1;
 }
 
+/* Force map text color to override any global/homepage styles */
+.map-container {
+    color: #000000 !important;
+}
+
+.map-container * {
+    color: #000000;
+}
+
 /* Better Popup Styling */
 .leaflet-popup-content-wrapper {
     border-radius: 8px;
@@ -68,4 +77,12 @@ body {
 }
 .rd-mark-icon img {
     transform-origin: top center; /* Rotate around the top middle anchor point */
+}
+
+/* Disable map markers interactions while measuring so clicks hit the canvas */
+body.measuring-active .custom-svg-icon-wrapper,
+body.measuring-active .custom-svg-icon img,
+body.measuring-active .default-circle-marker {
+    pointer-events: none !important;
+    cursor: crosshair !important;
 }
