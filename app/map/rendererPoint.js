@@ -17,6 +17,7 @@ export const renderPoints = (map, typeName, points, markersRef, activeLayersRef)
         const iconUrl = getIconUrl(typeName, refname);
         
         const el = document.createElement('div');
+        
         if (iconUrl) {
             let angle = (feature.properties && feature.properties.ANGLE != null) ? Number(feature.properties.ANGLE) - 90 : 0;
             let customStyle = `transform: rotate(${-angle}deg);`;
@@ -56,7 +57,11 @@ export const renderPoints = (map, typeName, points, markersRef, activeLayersRef)
             el.style.borderRadius = '50%';
         }
 
-        const marker = new maplibregl.Marker({ element: el }).setLngLat(coords);
+        const marker = new maplibregl.Marker({
+            element: el,
+            rotationAlignment: 'map',
+            pitchAlignment: 'map'
+        }).setLngLat(coords);
 
         el.addEventListener('click', (e) => {
             if (window.isMeasuringActive) return; // Prevent popup if measuring tool is active

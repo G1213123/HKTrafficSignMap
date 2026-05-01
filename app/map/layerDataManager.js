@@ -2,6 +2,7 @@ import { fetchWithRetry } from './mapUtils';
 import { layersConfig } from './mapConfig';
 import { renderLines } from './rendererLine';
 import { renderPoints } from './rendererPoint';
+import { renderAnno } from './rendererAnno';
 
 export const loadLayerData = (typeName, { map, abortControllers, markersRef, activeLayersRef }) => {
     if (!map || map.getZoom() < 16) return;
@@ -22,9 +23,12 @@ export const loadLayerData = (typeName, { map, abortControllers, markersRef, act
         const isAnno = typeName === 'csdi:DTAD_RD_MARK_ANNO';
         const nonPoints = [];
         const points = [];
+        const annos = [];
 
         data.features.forEach(f => {
-            if (f.geometry.type === 'Point' || f.geometry.type === 'MultiPoint') {
+            if (isAnno && f.geometry.type === 'Polygon' || f.geometry.type === 'MultiPolygon') {
+                annos.push(f);
+            } else if (f.geometry.type === 'Point' || f.geometry.type === 'MultiPoint') {
                 points.push(f);
             } else {
                 nonPoints.push(f);
@@ -36,6 +40,11 @@ export const loadLayerData = (typeName, { map, abortControllers, markersRef, act
 
         // Render Points and Markers
         renderPoints(map, typeName, points, markersRef, activeLayersRef);
+
+        // Render Annotations
+        if (isAnno && annos.length > 0) {
+            renderAnno(map, typeName, annos, markersRef, activeLayersRef);
+        }
 
     }).catch(err => {
         if (err.name !== 'AbortError') console.error(`Error loading ${typeName}:`, err);

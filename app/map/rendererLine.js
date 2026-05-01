@@ -136,5 +136,23 @@ export const renderLines = (map, typeName, features) => {
                 }
             });
         }
+        
+        if (!map.getLayer(`${typeName}-line-fallback`)) {
+            map.addLayer({
+                id: `${typeName}-line-fallback`,
+                type: 'line',
+                source: typeName,
+                filter: [
+                    'all',
+                    ['any', ['==', ['geometry-type'], 'LineString'], ['==', ['geometry-type'], 'MultiLineString']],
+                    ['!', ['has', '_styleIndex']]
+                ],
+                paint: {
+                    'line-color': '#000000', // Default fallback color
+                    'line-width': 2,
+                    'line-opacity': 0.8
+                }
+            });
+        }
     }
 };

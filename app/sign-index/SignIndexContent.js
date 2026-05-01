@@ -24,7 +24,7 @@ export default function SignIndexContent() {
       <section className="gallery-page" style={{ paddingTop: '120px' }}>
         <div className="container">
           <div className="page-header">
-            <h1 style={{ marginBottom: '0.5rem' }}>{t('Index')}</h1>
+            <h1 style={{ marginBottom: '0.5rem' }}>{t('Index')} - Traffic Signs, Road Markings & Index Plan (CT174/51)</h1>
             <p className="muted" style={{ marginBottom: '0.2rem' }}>{t('Browse, preview and download traffic signs and road markings graphics.')}</p>
             <p style={{ fontSize: '0.85rem', color: '#6c757d', margin: '0' }}>
               {t('Data provided by')} <a href="https://data.gov.hk/" target="_blank" rel="noreferrer" style={{ color: '#0056b3', textDecoration: 'underline' }}>DATA.GOV.HK</a>. <a href="#data-disclaimer" style={{ color: '#0056b3', textDecoration: 'underline', cursor: 'pointer' }}>{t('Disclaimer')}</a>.

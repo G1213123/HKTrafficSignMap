@@ -236,18 +236,19 @@ def main():
     failures = []
 
     for layer_name in LAYERS:
-        for attempt in range(1, 4):
+        for attempt in range(1, MAX_RETRIES + 1):
             try:
                 result = download_layer(layer_name)
                 results.append(result)
                 break
             except Exception as err:
-                if attempt < 5:
-                    print(f"FAILED {layer_name} (Attempt {attempt}): {err}. Retrying in 5 seconds...")
-                    time.sleep(5)
+                if attempt < MAX_RETRIES:
+                    wait_time = RETRY_BASE_SECONDS * (2 ** (attempt - 1))
+                    print(f"FAILED {layer_name} (Attempt {attempt}/{MAX_RETRIES}): {err}. Retrying in {wait_time} seconds...")
+                    time.sleep(wait_time)
                 else:
                     failures.append({"layer": layer_name, "error": str(err)})
-                    print(f"FAILED {layer_name}: {err}. All attempts exhausted.")
+                    print(f"CRITICAL FAILURE: {layer_name} completely failed after {MAX_RETRIES} attempts. Error: {err}")
 
     finished_at = datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
     metadata = {
@@ -267,6 +268,10 @@ def main():
     print(f"Layers failed: {len(failures)}")
 
     if failures:
+        print("\n--- FAILED LAYERS SUMMARY ---")
+        for f in failures:
+            print(f"- {f['layer']}: {f['error']}")
+        print("-----------------------------\n")
         raise SystemExit(1)
 
 

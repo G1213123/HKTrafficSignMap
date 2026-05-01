@@ -13,6 +13,7 @@ import './map.css';
 export default function Map() {
     const mapContainerRef = useRef(null);
     const mapInstanceRef = useRef(null);
+    const isInitializingRef = useRef(false);
     const markersRef = useRef({});
     const abortControllers = useRef({});
     const popupsRef = useRef([]);
@@ -45,7 +46,8 @@ export default function Map() {
 
     // Initialize Map
     useEffect(() => {
-        if (mapInstanceRef.current) return;
+        if (mapInstanceRef.current || isInitializingRef.current) return;
+        isInitializingRef.current = true;
 
         let initialCenter = [114.1694, 22.3193];
         let initialZoom = 14;
@@ -86,7 +88,9 @@ export default function Map() {
                     center: initialCenter,
                     zoom: initialZoom,
                     maxZoom: 22,
-                    attributionControl: false
+                    attributionControl: false,
+                    pitchWithRotate: false,
+                    dragPitch: false
                 });
                 
                 map.addControl(new maplibregl.AttributionControl({ customAttribution: 'Map information from Lands Department' }));
