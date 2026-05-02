@@ -6,11 +6,12 @@
 .next/
 .venv/
 node_modules/
-build/
+build/  
 jobs/
 permenant/
 /data/
 public/data/svgs/
+public/data/wfs/
 __pycache__/
 *.pyc
 *.py

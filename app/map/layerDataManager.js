@@ -2,6 +2,7 @@ import { fetchWithRetry } from './mapUtils';
 import { layersConfig } from './mapConfig';
 import { renderLines } from './rendererLine';
 import { renderPoints } from './rendererPoint';
+import { renderTsPolePt } from './rendererTsPolePt';
 import { renderAnno } from './rendererAnno';
 
 export const loadLayerData = (typeName, { map, abortControllers, markersRef, activeLayersRef }) => {
@@ -39,7 +40,11 @@ export const loadLayerData = (typeName, { map, abortControllers, markersRef, act
         renderLines(map, typeName, nonPoints);
 
         // Render Points and Markers
-        renderPoints(map, typeName, points, markersRef, activeLayersRef);
+        if (typeName === 'csdi:DTAD_TS_POLE_PT') {
+            renderTsPolePt(map, typeName, points, markersRef, activeLayersRef);
+        } else {
+            renderPoints(map, typeName, points, markersRef, activeLayersRef);
+        }
 
         // Render Annotations
         if (isAnno && annos.length > 0) {
