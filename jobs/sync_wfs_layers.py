@@ -145,26 +145,36 @@ def request_layer(layer_name):
         prepared = req.prepare()
         print(f"  - Requesting startIndex={start_index} -> {prepared.url}")
         
-        try:
-            response = requests.get(WFS_BASE_URL, params=params, timeout=REQUEST_TIMEOUT)
-            response.raise_for_status()
-            payload = response.json()
-            
-            if first_payload is None:
-                first_payload = payload
+        chunk_success = False
+        for attempt in range(1, 6):
+            try:
+                response = requests.get(WFS_BASE_URL, params=params, timeout=REQUEST_TIMEOUT)
+                response.raise_for_status()
+                payload = response.json()
                 
-            features = payload.get("features", [])
-            all_features.extend(features)
-            
-            consecutive_failures = 0
-            
+                if first_payload is None:
+                    first_payload = payload
+                    
+                features = payload.get("features", [])
+                all_features.extend(features)
+                
+                consecutive_failures = 0
+                chunk_success = True
+                break  # successfully fetched, break attempt loop
+            except Exception as e:
+                print(f"    - Attempt {attempt}/5 failed for startIndex={start_index}. Error: {e}")
+                if attempt < 5:
+                    import time
+                    time.sleep(2)
+        
+        if chunk_success:
             if len(features) < PAGE_SIZE:
                 break
-        except Exception as e:
-            print(f"  - WARNING: Failed to fetch startIndex={start_index}. Error: {e}. Skipping chunk.")
+        else:
+            print(f"  - WARNING: All 5 attempts failed for startIndex={start_index}. Skipping chunk.")
             consecutive_failures += 1
             if consecutive_failures >= 5:
-                print(f"  - WARNING: Aborting layer pagination due to {consecutive_failures} consecutive failures.")
+                print(f"  - WARNING: Aborting layer pagination due to {consecutive_failures} consecutive skipping failures.")
                 break
             
         start_index += PAGE_SIZE
