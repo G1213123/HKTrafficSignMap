@@ -2,7 +2,7 @@ import maplibregl from 'maplibre-gl';
 import { getIconUrl } from './mapUtils';
 import { rmDimensionDict } from './mapConfig';
 
-export const renderPoints = (map, typeName, points, markersRef, activeLayersRef) => {
+export const renderPoints = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false) => {
     // 3. Purge old markers & Repopulate newly fetched MapLibre Point Markers
     if (markersRef.current[typeName]) {
         markersRef.current[typeName].forEach(m => m.remove());
@@ -63,6 +63,15 @@ export const renderPoints = (map, typeName, points, markersRef, activeLayersRef)
             pitchAlignment: 'map'
         }).setLngLat(coords);
 
+        // Optional debug: also plot the raw point as a small dot
+        let rawMarker = null;
+        if (showRawPoints) {
+            const rawEl = document.createElement('div');
+            rawEl.className = 'raw-point-debug';
+            rawEl.title = `raw: ${refname || ''}`;
+            rawMarker = new maplibregl.Marker({ element: rawEl, rotationAlignment: 'map', pitchAlignment: 'map' }).setLngLat(coords);
+        }
+
         el.addEventListener('click', (e) => {
             if (window.isMeasuringActive) return; // Prevent popup if measuring tool is active
             
@@ -83,7 +92,9 @@ export const renderPoints = (map, typeName, points, markersRef, activeLayersRef)
 
         if (activeLayersRef.current.has(typeName)) {
             marker.addTo(map);
+            if (rawMarker) rawMarker.addTo(map);
         }
         markersRef.current[typeName].push(marker);
+        if (rawMarker) markersRef.current[typeName].push(rawMarker);
     });
 };

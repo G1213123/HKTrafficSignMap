@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { layersConfig } from './mapConfig';
 
-const LayerControl = ({ activeLayers, onToggleLayer, onToggleGroup }) => {
+const LayerControl = ({ activeLayers, onToggleLayer, onToggleGroup, showRawPoints, onToggleShowRawPoints }) => {
     const [collapsed, setCollapsed] = useState(false);
 
     return (
@@ -52,6 +52,12 @@ const LayerControl = ({ activeLayers, onToggleLayer, onToggleGroup }) => {
                     </div>
                 );
             })}
+            <div style={{ marginTop: '8px', borderTop: '1px solid #eee', paddingTop: '8px' }}>
+                <label style={{ display: 'flex', alignItems: 'center', fontSize: '12px', cursor: 'pointer' }}>
+                    <input type="checkbox" checked={!!showRawPoints} onChange={(e) => onToggleShowRawPoints && onToggleShowRawPoints(e.target.checked)} style={{ marginRight: '8px' }} />
+                    Show raw points (debug)
+                </label>
+            </div>
         </div>
     );
 };

@@ -22,10 +22,21 @@ export default function Map() {
     const activeLayersRef = useRef(activeLayers);
     const [mapMessage, setMapMessage] = useState('Initializing map...');
     const [mapLoaded, setMapLoaded] = useState(false);
+    const [showRawPoints, setShowRawPoints] = useState(false);
 
     useEffect(() => {
         activeLayersRef.current = activeLayers;
     }, [activeLayers]);
+
+    useEffect(() => {
+        try {
+            const savedState = localStorage.getItem('mapState');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                if (typeof state.showRawPoints === 'boolean') setShowRawPoints(state.showRawPoints);
+            }
+        } catch (e) {}
+    }, []);
 
     // Initial Active layer config loading
     useEffect(() => {
@@ -134,7 +145,8 @@ export default function Map() {
                     localStorage.setItem('mapState', JSON.stringify({
                         center: { lat: c.lat, lng: c.lng },
                         zoom: map.getZoom(),
-                        activeLayers: Array.from(activeLayersRef.current)
+                        activeLayers: Array.from(activeLayersRef.current),
+                        showRawPoints
                     }));
                     
                     if (map.getZoom() >= 16) {
@@ -187,9 +199,10 @@ export default function Map() {
             map: mapInstanceRef.current,
             abortControllers,
             markersRef,
-            activeLayersRef
+            activeLayersRef,
+            showRawPoints
         });
-    }, []);
+    }, [showRawPoints]);
 
     // Apply Visibility Overlays
     useEffect(() => {
@@ -198,7 +211,8 @@ export default function Map() {
         localStorage.setItem('mapState', JSON.stringify({
             center: map.getCenter(),
             zoom: map.getZoom(),
-            activeLayers: Array.from(activeLayers)
+            activeLayers: Array.from(activeLayers),
+            showRawPoints
         }));
 
         Object.values(layersConfig).flat().forEach(typeName => {
@@ -243,6 +257,8 @@ export default function Map() {
                 activeLayers={activeLayers} 
                 onToggleLayer={toggleLayer} 
                 onToggleGroup={toggleGroup}
+                showRawPoints={showRawPoints}
+                onToggleShowRawPoints={(val) => setShowRawPoints(val)}
             />
             <div className="info legend" style={{
                 position: 'absolute', bottom: '20px', left: '10px',

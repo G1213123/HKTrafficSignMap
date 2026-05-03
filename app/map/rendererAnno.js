@@ -56,10 +56,14 @@ export const renderAnno = (map, typeName, annos, markersRef, activeLayersRef) =>
         const hPx = hMeters / metersPerPx;
 
         el.className = 'custom-svg-icon-wrapper';
+        // Detect CJK characters and add a class so CSS can select a different font
+        const isCjk = /[\u4E00-\u9FFF]/.test(textStr);
+        const wrapperClass = isCjk ? 'svg-wrapper cjk' : 'svg-wrapper';
+        // Set CSS variables for dynamic sizing/rotation and let globals.css provide the styling
         el.innerHTML = `
-            <div style="transform: rotate(${-angle}deg); width: calc(${wPx}px * var(--map-icon-scale, 1)); height: calc(${hPx}px * var(--map-icon-scale, 1)); display: flex; align-items: center; justify-content: center;">
-                <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" overflow="visible">
-                    <text x="50" y="50" dominant-baseline="central" text-anchor="middle" font-size="80" fill="black" font-weight="bold" font-family="sans-serif">${textStr}</text>
+            <div class="${wrapperClass}" style="--angle:${-angle}deg; --w:${wPx}px; --h:${hPx}px;">
+                <svg viewBox="0 0 100 100" preserveAspectRatio="none" overflow="visible">
+                    <text transform="scale(0.5, 1.5)" x="100" y="50" dominant-baseline="central" text-anchor="middle" font-size="80" fill="black" stroke="none">${textStr}</text>
                 </svg>
             </div>
         `;

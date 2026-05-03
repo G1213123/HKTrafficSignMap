@@ -5,7 +5,7 @@ import { renderPoints } from './rendererPoint';
 import { renderTsPolePt } from './rendererTsPolePt';
 import { renderAnno } from './rendererAnno';
 
-export const loadLayerData = (typeName, { map, abortControllers, markersRef, activeLayersRef }) => {
+export const loadLayerData = (typeName, { map, abortControllers, markersRef, activeLayersRef, showRawPoints = false }) => {
     if (!map || map.getZoom() < 16) return;
 
     if (abortControllers.current[typeName]) {
@@ -41,9 +41,9 @@ export const loadLayerData = (typeName, { map, abortControllers, markersRef, act
 
         // Render Points and Markers
         if (typeName === 'csdi:DTAD_TS_POLE_PT') {
-            renderTsPolePt(map, typeName, points, markersRef, activeLayersRef);
+            renderTsPolePt(map, typeName, points, markersRef, activeLayersRef, showRawPoints);
         } else {
-            renderPoints(map, typeName, points, markersRef, activeLayersRef);
+            renderPoints(map, typeName, points, markersRef, activeLayersRef, showRawPoints);
         }
 
         // Render Annotations

@@ -1,6 +1,6 @@
 import maplibregl from 'maplibre-gl';
 
-export const renderTsPolePt = (map, typeName, points, markersRef, activeLayersRef) => {
+export const renderTsPolePt = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false) => {
     if (markersRef.current[typeName]) {
         markersRef.current[typeName].forEach(m => m.remove());
     }
@@ -54,6 +54,14 @@ export const renderTsPolePt = (map, typeName, points, markersRef, activeLayersRe
             anchor: 'center'
         }).setLngLat(coords);
 
+        let rawMarker = null;
+        if (showRawPoints) {
+            const rawEl = document.createElement('div');
+            rawEl.className = 'raw-point-debug';
+            rawEl.title = 'raw: ts pole';
+            rawMarker = new maplibregl.Marker({ element: rawEl, rotationAlignment: 'map', pitchAlignment: 'map' }).setLngLat(coords);
+        }
+
         // Optional popup info mimicking rendererPoint
         el.addEventListener('click', (e) => {
             if (window.isMeasuringActive) return;
@@ -74,7 +82,9 @@ export const renderTsPolePt = (map, typeName, points, markersRef, activeLayersRe
 
         if (activeLayersRef.current.has(typeName)) {
             marker.addTo(map);
+            if (rawMarker) rawMarker.addTo(map);
         }
         markersRef.current[typeName].push(marker);
+        if (rawMarker) markersRef.current[typeName].push(rawMarker);
     });
 };

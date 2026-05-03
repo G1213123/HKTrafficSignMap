@@ -613,15 +613,17 @@
         "signNumber": "1135",
         "letterHeight": 300,
         "characterHeight": 500,
-        "angleCorrection": 90,
-        "length": 3125
+        "angleCorrection": 270,
+        "length": 3125,
+        "offset": { "x": 10, "y": -10 }
     },
     {
         "signNumber": "1136",
         "letterHeight": 300,
         "characterHeight": 500,
-        "angleCorrection": 90,
-        "length": 3125
+        "angleCorrection": 270,
+        "length": 3125,
+        "offset": { "x": 10, "y": 10 }
     },
     {
         "signNumber": "1137",
