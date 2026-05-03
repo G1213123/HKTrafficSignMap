@@ -1,8 +1,7 @@
 import json
 import os
-import time
-from datetime import datetime
-
+import traceback
+from datetime import datetime, timezone
 import requests
 
 from collections import defaultdict
@@ -17,64 +16,62 @@ WFS_BASE_URL = "https://portal.csdi.gov.hk/server/services/common/td_rcd_1638928
 HONG_KONG_BBOX = "22.13,113.82,22.58,114.52,urn:ogc:def:crs:EPSG::4326"
 ZOOM_LEVEL = 16
 
-PAGE_SIZE = 10000
-
 REQUEST_TIMEOUT = 45
 MAX_RETRIES = 3
 RETRY_BASE_SECONDS = 1.0
 
 LAYERS = [
-    "csdi:DTAD_PS_ANNO",
-    "csdi:DTAD_TS_ABV_ANNO",
-    "csdi:DTAD_RD_MARK_ANNO",
-    "csdi:DTAD_DS_POLE_PT",
-    "csdi:DTAD_PS_POLE_PT",
-    "csdi:DTAD_TRAFFIC_LIGHT_PT",
-    "csdi:DTAD_RD_MARK_SYM_PT",
-    "csdi:DTAD_TS_ABV_PT",
-    "csdi:DTAD_TS_POLE_PT",
-    "csdi:DTAD_GIPOLE_PT",
-    "csdi:DTAD_MISC_PT",
-    "csdi:DTAD_CYC_PT",
-    "csdi:UNKNOWN_LINE",
-    "csdi:DTAD_DS_POLE_LINE",
-    "csdi:DTAD_LV38_LINE",
-    "csdi:DTAD_DS_PLATE_LINE",
-    "csdi:DTAD_DS_MISC_LINE",
-    "csdi:DTAD_DS_POLE_LINE_C",
-    "csdi:DTAD_PS_POLE_LINE",
-    "csdi:DTAD_LV30_LINE",
-    "csdi:DTAD_PS_PLATE_LINE",
-    "csdi:DTAD_PS_MISC_LINE",
-    "csdi:DTAD_LV24_LINE",
-    "csdi:DTAD_RST_ZONE_LINE",
-    "csdi:DTAD_LV23_LINE",
-    "csdi:DTAD_TRAFFIC_LIGHT_LINE",
-    "csdi:DTAD_LV22_LINE",
-    "csdi:DTAD_RD_MARK_SYM_LINE",
-    "csdi:DTAD_RD_MARK_LINE_C",
-    "csdi:DTAD_RD_MARK_LINE",
-    "csdi:DTAD_CROSSING_LINE",
-    "csdi:DTAD_YL_BOX_LINE",
-    "csdi:DTAD_RAILING_LINE",
-    "csdi:DTAD_TG_PATH_LINE",
+    #"csdi:DTAD_PS_ANNO",
+    #"csdi:DTAD_TS_ABV_ANNO",
+    #"csdi:DTAD_RD_MARK_ANNO",
+    #"csdi:DTAD_DS_POLE_PT",
+    #"csdi:DTAD_PS_POLE_PT",
+    #"csdi:DTAD_TRAFFIC_LIGHT_PT",
+    #"csdi:DTAD_RD_MARK_SYM_PT",
+    #"csdi:DTAD_TS_ABV_PT",
+    #"csdi:DTAD_TS_POLE_PT",
+    #"csdi:DTAD_GIPOLE_PT",
+    #"csdi:DTAD_MISC_PT",
+    #"csdi:DTAD_CYC_PT",
+    #"csdi:UNKNOWN_LINE",
+    #"csdi:DTAD_DS_POLE_LINE",
+    #"csdi:DTAD_LV38_LINE",
+    #"csdi:DTAD_DS_PLATE_LINE",
+    #"csdi:DTAD_DS_MISC_LINE",
+    #"csdi:DTAD_DS_POLE_LINE_C",
+    #"csdi:DTAD_PS_POLE_LINE",
+    #"csdi:DTAD_LV30_LINE",
+    #"csdi:DTAD_PS_PLATE_LINE",
+    #"csdi:DTAD_PS_MISC_LINE",
+    #"csdi:DTAD_LV24_LINE",
+    #"csdi:DTAD_RST_ZONE_LINE",
+    #"csdi:DTAD_LV23_LINE",
+    #"csdi:DTAD_TRAFFIC_LIGHT_LINE",
+    #"csdi:DTAD_LV22_LINE",
+    #"csdi:DTAD_RD_MARK_SYM_LINE",
+    #"csdi:DTAD_RD_MARK_LINE_C",
+    #"csdi:DTAD_RD_MARK_LINE",
+    #"csdi:DTAD_CROSSING_LINE",
+    #"csdi:DTAD_YL_BOX_LINE",
+    #"csdi:DTAD_RAILING_LINE",
+    #"csdi:DTAD_TG_PATH_LINE",
     "csdi:DTAD_TS_PLATE_LINE",
-    "csdi:DTAD_TS_MISC_LINE",
-    "csdi:DTAD_TS_ABV_LINE",
-    "csdi:DTAD_TS_POLE_LINE",
-    "csdi:DTAD_TW_STRIP_LINE",
-    "csdi:DTAD_TY_BAR_LINE",
-    "csdi:DTAD_LV21_LINE",
-    "csdi:DTAD_PED_REFUGE_LINE",
-    "csdi:DTAD_RUN_IN_OUT_LINE",
-    "csdi:DTAD_DROP_KERB_LINE",
-    "csdi:DTAD_RD_AL_LINE",
-    "csdi:DTAD_DS_FILLED",
-    "csdi:DTAD_PS_FILLED",
-    "csdi:DTAD_TRAFFIC_LIGHT_FILLED",
-    "csdi:DTAD_LV22_FILLED",
-    "csdi:DTAD_YL_BOX_POLY",
-    "csdi:DTAD_TS_FILLED",
+    #"csdi:DTAD_TS_MISC_LINE",
+    #"csdi:DTAD_TS_ABV_LINE",
+    #"csdi:DTAD_TS_POLE_LINE",
+    #"csdi:DTAD_TW_STRIP_LINE",
+    #"csdi:DTAD_TY_BAR_LINE",
+    #"csdi:DTAD_LV21_LINE",
+    #"csdi:DTAD_PED_REFUGE_LINE",
+    #"csdi:DTAD_RUN_IN_OUT_LINE",
+    #"csdi:DTAD_DROP_KERB_LINE",
+    #"csdi:DTAD_RD_AL_LINE",
+    #"csdi:DTAD_DS_FILLED",
+    #"csdi:DTAD_PS_FILLED",
+    #"csdi:DTAD_TRAFFIC_LIGHT_FILLED",
+    #"csdi:DTAD_LV22_FILLED",
+    #"csdi:DTAD_YL_BOX_POLY",
+    #"csdi:DTAD_TS_FILLED",
 ]
 
 
@@ -124,6 +121,12 @@ def request_layer(layer_name):
     start_index = 0
     all_features = []
     first_payload = None
+    consecutive_failures = 0
+
+    if "PLATE" in layer_name:
+        PAGE_SIZE = 100
+    else:
+        PAGE_SIZE = 10000
 
     while True:
         params = {
@@ -142,24 +145,33 @@ def request_layer(layer_name):
         prepared = req.prepare()
         print(f"  - Requesting startIndex={start_index} -> {prepared.url}")
         
-        response = requests.get(WFS_BASE_URL, params=params, timeout=REQUEST_TIMEOUT)
-        response.raise_for_status()
-        payload = response.json()
-        
-        if first_payload is None:
-            first_payload = payload
+        try:
+            response = requests.get(WFS_BASE_URL, params=params, timeout=REQUEST_TIMEOUT)
+            response.raise_for_status()
+            payload = response.json()
             
-        features = payload.get("features", [])
-        all_features.extend(features)
-        
-        if len(features) < PAGE_SIZE:
-            break
+            if first_payload is None:
+                first_payload = payload
+                
+            features = payload.get("features", [])
+            all_features.extend(features)
+            
+            consecutive_failures = 0
+            
+            if len(features) < PAGE_SIZE:
+                break
+        except Exception as e:
+            print(f"  - WARNING: Failed to fetch startIndex={start_index}. Error: {e}. Skipping chunk.")
+            consecutive_failures += 1
+            if consecutive_failures >= 5:
+                print(f"  - WARNING: Aborting layer pagination due to {consecutive_failures} consecutive failures.")
+                break
             
         start_index += PAGE_SIZE
         
     if first_payload:
         first_payload["features"] = all_features
-    return first_payload or {"type": "FeatureCollection", "features": []}
+    return first_payload or {"type": "FeatureCollection", "features": all_features}
 
 
 def download_layer(layer_name):
@@ -229,33 +241,26 @@ def download_layer(layer_name):
 def main():
     ensure_output_dir()
 
-    started_at = datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
+    started_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat() + "Z"
     print(f"WFS sync started at {started_at}")
 
     results = []
     failures = []
 
     for layer_name in LAYERS:
-        for attempt in range(1, MAX_RETRIES + 1):
-            try:
-                result = download_layer(layer_name)
-                results.append(result)
-                break
-            except Exception as err:
-                if attempt < MAX_RETRIES:
-                    wait_time = RETRY_BASE_SECONDS * (2 ** (attempt - 1))
-                    print(f"FAILED {layer_name} (Attempt {attempt}/{MAX_RETRIES}): {err}. Retrying in {wait_time} seconds...")
-                    time.sleep(wait_time)
-                else:
-                    failures.append({"layer": layer_name, "error": str(err)})
-                    print(f"CRITICAL FAILURE: {layer_name} completely failed after {MAX_RETRIES} attempts. Error: {err}")
+        try:
+            result = download_layer(layer_name)
+            results.append(result)
+        except Exception as err:
+            print(f"\n[!] ERROR in {layer_name} [!]")
+            traceback.print_exc()
+            failures.append({"layer": layer_name, "error": str(err)})
 
-    finished_at = datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
+    finished_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat() + "Z"
     metadata = {
         "generatedAt": finished_at,
         "source": WFS_BASE_URL,
         "bbox": HONG_KONG_BBOX,
-        "pageSize": PAGE_SIZE,
         "layers": results,
         "failures": failures,
     }
