@@ -6,6 +6,11 @@ const layerCache = globalThis.__layerApiCache || new Map();
 globalThis.__layerApiCache = layerCache;
 const ZOOM_LEVEL = 16;
 
+function getDataSource() {
+  // Use local storage in development, Google Cloud Storage in production
+  return process.env.NODE_ENV === 'development' ? 'local' : 'cloud';
+}
+
 function parseBbox(bboxText) {
   if (!bboxText) return null;
 
@@ -103,10 +108,12 @@ function getTile(lon, lat, zoom) {
 async function getLayerTileFromCache(typeName, x, y) {
   const filename = `${x}_${y}.json`;
   const dirName = typeName.replace(':', '_');
-  const filePath = path.join(process.cwd(), 'public', 'data', 'wfs', dirName, filename);
-
   const cacheKey = `${typeName}_${x}_${y}`;
+  const dataSource = getDataSource();
+  
   try {
+    // Try local cache first (even in production for fallback)
+    const filePath = path.join(process.cwd(), 'public', 'data', 'wfs', dirName, filename);
     const fileStat = await fs.stat(filePath);
     const mtimeMs = fileStat.mtimeMs;
 
@@ -121,6 +128,21 @@ async function getLayerTileFromCache(typeName, x, y) {
     layerCache.set(cacheKey, { mtimeMs, featureCollection });
     return featureCollection;
   } catch (err) {
+    // If local file not found and in production, try fetching from Google Cloud
+    if (dataSource === 'cloud' && err.code === 'ENOENT') {
+      try {
+        const bucketUrl = `https://storage.googleapis.com/road-sign-factory-static/public/data/wfs/${dirName}/${filename}`;
+        const response = await fetch(bucketUrl);
+        if (response.ok) {
+          const featureCollection = await response.json();
+          layerCache.set(cacheKey, { mtimeMs: Date.now(), featureCollection });
+          return featureCollection;
+        }
+      } catch (cloudErr) {
+        console.warn(`Error fetching from cloud for tile ${cacheKey}:`, cloudErr);
+      }
+    }
+    
     if (err.code !== 'ENOENT') {
       console.warn(`Error reading tile ${cacheKey}:`, err);
     }

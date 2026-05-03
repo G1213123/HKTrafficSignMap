@@ -253,7 +253,10 @@ export default function SignGallery() {
         setRmDimensions(dimMap);
 
         // Construct imageUrl since JSON only has filename and mtime
-        const svgBaseUrl = 'https://storage.googleapis.com/road-sign-factory-static/public/data/svgs';
+        // Use local SVGs in development, Google Cloud Storage in production
+        const svgBaseUrl = process.env.NEXT_PUBLIC_DATA_SOURCE === 'local' 
+          ? '/api/proxy?url=/data/svgs'
+          : '/api/proxy?url=https://storage.googleapis.com/road-sign-factory-static/public/data/svgs';
         const processedSigns = signsData.map(sign => ({
           ...sign,
           imageUrl: `${svgBaseUrl}/${sign.filename}?v=${sign.mtime}`,
@@ -576,7 +579,7 @@ export default function SignGallery() {
                       <div className="dimension-list" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {(() => {
                           const dimensions = rmDimensions[selectedSign.signNumber];
-                          const keys = Object.keys(dimensions).filter(key => !['signNumber', 'filename', 'mtime', 'id', 'angleCorrection'].includes(key));
+                          const keys = Object.keys(dimensions).filter(key => !['signNumber', 'filename', 'mtime', 'id', 'angleCorrection', 'offset'].includes(key));
                           
                           // Convert to array of entries for easier processing
                           const entries = keys.map(key => ({ key, value: dimensions[key] }));

@@ -23,10 +23,15 @@ export default function Map() {
     const [mapMessage, setMapMessage] = useState('Initializing map...');
     const [mapLoaded, setMapLoaded] = useState(false);
     const [showRawPoints, setShowRawPoints] = useState(false);
+    const showRawPointsRef = useRef(showRawPoints);
 
     useEffect(() => {
         activeLayersRef.current = activeLayers;
     }, [activeLayers]);
+
+    useEffect(() => {
+        showRawPointsRef.current = showRawPoints;
+    }, [showRawPoints]);
 
     useEffect(() => {
         try {
@@ -146,11 +151,19 @@ export default function Map() {
                         center: { lat: c.lat, lng: c.lng },
                         zoom: map.getZoom(),
                         activeLayers: Array.from(activeLayersRef.current),
-                        showRawPoints
+                        showRawPoints: showRawPointsRef.current
                     }));
                     
                     if (map.getZoom() >= 16) {
-                        Array.from(activeLayersRef.current).forEach(layer => fetchLayerData(layer));
+                        Array.from(activeLayersRef.current).forEach(layer => {
+                            loadLayerData(layer, {
+                                map: mapInstanceRef.current,
+                                abortControllers,
+                                markersRef,
+                                activeLayersRef,
+                                showRawPoints: showRawPointsRef.current
+                            });
+                        });
                     }
                 });
 
@@ -200,9 +213,9 @@ export default function Map() {
             abortControllers,
             markersRef,
             activeLayersRef,
-            showRawPoints
+            showRawPoints: showRawPointsRef.current
         });
-    }, [showRawPoints]);
+    }, []);
 
     // Apply Visibility Overlays
     useEffect(() => {
@@ -218,15 +231,17 @@ export default function Map() {
         Object.values(layersConfig).flat().forEach(typeName => {
             const isActive = activeLayers.has(typeName);
 
-            // Fetch missing data if activated
-            if (isActive && (!markersRef.current[typeName] && !map.getSource(typeName))) {
+            // Fetch missing data if activated or force refetch to apply raw points visibility
+            if (isActive) {
+                // If it's already there but we just toggled showRawPoints, it's easier to just re-fetch
+                // or we could decouple raw points logic. For now let's just trigger fetchLayerData to redraw
                 fetchLayerData(typeName);
             }
         });
 
         applyVisibilityOverlays({ map, activeLayers, markersRef });
 
-    }, [activeLayers, mapLoaded, fetchLayerData]);
+    }, [activeLayers, mapLoaded, fetchLayerData, showRawPoints]);
 
     const toggleLayer = (layerName) => {
         setActiveLayers(prev => {

@@ -10,7 +10,7 @@ export const renderPoints = (map, typeName, points, markersRef, activeLayersRef,
     markersRef.current[typeName] = [];
 
     points.forEach(feature => {
-        const coords = feature.geometry.coordinates;
+        let coords = [...feature.geometry.coordinates];
         if (!coords || isNaN(coords[0]) || isNaN(coords[1])) return;
         
         const refname = feature.properties?.REFNAME;
@@ -30,6 +30,27 @@ export const renderPoints = (map, typeName, points, markersRef, activeLayersRef,
                     if (dim.angleCorrection) {
                         angle -= dim.angleCorrection;
                         customStyle = `transform: rotate(${-angle}deg);`;
+                    }
+                    if (dim.offset) {
+                        // Offset is defined in SVG local space in millimeters. X is right, Y is down.
+                        const localX_m = dim.offset.x / 1000;
+                        const localY_m = dim.offset.y / 1000;
+                        
+                        // Apply the rotation to the offset to get screen-space global offset
+                        // Visual clockwise rotation is -angle degrees
+                        const rotRad = (-angle) * Math.PI / 180;
+                        
+                        // Screen space: X right, Y down
+                        const screenOffsetX_m = localX_m * Math.cos(rotRad) - localY_m * Math.sin(rotRad);
+                        const screenOffsetY_m = localX_m * Math.sin(rotRad) + localY_m * Math.cos(rotRad);
+                        
+                        // Map geographic space: X is East (right), Y is North (up).
+                        // So geographic Y is inverse of screen Y.
+                        const latMetersPerDegree = 111320;
+                        const lonMetersPerDegree = 111320 * Math.cos(coords[1] * Math.PI / 180);
+                        
+                        coords[0] += screenOffsetX_m / lonMetersPerDegree;
+                        coords[1] += (-screenOffsetY_m) / latMetersPerDegree;
                     }
                     if (dim.length || dim.minLength || dim.maxLength) {
                         const lengthValue = dim.length || dim.minLength || dim.maxLength;
@@ -69,7 +90,7 @@ export const renderPoints = (map, typeName, points, markersRef, activeLayersRef,
             const rawEl = document.createElement('div');
             rawEl.className = 'raw-point-debug';
             rawEl.title = `raw: ${refname || ''}`;
-            rawMarker = new maplibregl.Marker({ element: rawEl, rotationAlignment: 'map', pitchAlignment: 'map' }).setLngLat(coords);
+            rawMarker = new maplibregl.Marker({ element: rawEl, rotationAlignment: 'map', pitchAlignment: 'map' }).setLngLat([...feature.geometry.coordinates]);
         }
 
         el.addEventListener('click', (e) => {

@@ -615,7 +615,7 @@
         "characterHeight": 500,
         "angleCorrection": 270,
         "length": 3125,
-        "offset": { "x": 10, "y": -10 }
+        "offset": { "x": -2000, "y": -2000 }
     },
     {
         "signNumber": "1136",
@@ -623,7 +623,7 @@
         "characterHeight": 500,
         "angleCorrection": 270,
         "length": 3125,
-        "offset": { "x": 10, "y": 10 }
+        "offset": { "x": 2000, "y": -2000 }
     },
     {
         "signNumber": "1137",
@@ -649,7 +649,8 @@
         "letterHeight": 1600,
         "characterHeight": 2700,
         "length": 10800,
-        "angleCorrection":-90   
+        "angleCorrection":-90 ,
+        "offset": { "x": 0, "y": -1000 }
     },
     {
         "signNumber": "1141",
@@ -686,7 +687,8 @@
         "signNumber": "1146",
         "width": 1350,
         "length": 1350,
-        "angleCorrection": 90
+        "angleCorrection": 90,
+        "offset": { "x": 0, "y": -675 }
     },
     {
         "signNumber": "1147",

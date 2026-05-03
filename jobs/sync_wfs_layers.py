@@ -21,57 +21,57 @@ MAX_RETRIES = 3
 RETRY_BASE_SECONDS = 1.0
 
 LAYERS = [
-    "csdi:DTAD_PS_ANNO",
-    "csdi:DTAD_TS_ABV_ANNO",
-    "csdi:DTAD_RD_MARK_ANNO",
-    "csdi:DTAD_DS_POLE_PT",
-    "csdi:DTAD_PS_POLE_PT",
-    "csdi:DTAD_TRAFFIC_LIGHT_PT",
-    "csdi:DTAD_RD_MARK_SYM_PT",
-    "csdi:DTAD_TS_ABV_PT",
-    "csdi:DTAD_TS_POLE_PT",
-    "csdi:DTAD_GIPOLE_PT",
-    "csdi:DTAD_MISC_PT",
-    "csdi:DTAD_CYC_PT",
-    "csdi:UNKNOWN_LINE",
-    "csdi:DTAD_DS_POLE_LINE",
-    "csdi:DTAD_LV38_LINE",
-    "csdi:DTAD_DS_PLATE_LINE",
-    "csdi:DTAD_DS_MISC_LINE",
-    "csdi:DTAD_DS_POLE_LINE_C",
-    "csdi:DTAD_PS_POLE_LINE",
-    "csdi:DTAD_LV30_LINE",
-    "csdi:DTAD_PS_PLATE_LINE",
-    "csdi:DTAD_PS_MISC_LINE",
-    "csdi:DTAD_LV24_LINE",
-    "csdi:DTAD_RST_ZONE_LINE",
-    "csdi:DTAD_LV23_LINE",
-    "csdi:DTAD_TRAFFIC_LIGHT_LINE",
-    "csdi:DTAD_LV22_LINE",
-    "csdi:DTAD_RD_MARK_SYM_LINE",
-    "csdi:DTAD_RD_MARK_LINE_C",
-    "csdi:DTAD_RD_MARK_LINE",
-    "csdi:DTAD_CROSSING_LINE",
-    "csdi:DTAD_YL_BOX_LINE",
-    "csdi:DTAD_RAILING_LINE",
-    "csdi:DTAD_TG_PATH_LINE",
+    #"csdi:DTAD_PS_ANNO",
+    #"csdi:DTAD_TS_ABV_ANNO",
+    #"csdi:DTAD_RD_MARK_ANNO",
+    #"csdi:DTAD_DS_POLE_PT",
+    #"csdi:DTAD_PS_POLE_PT",
+    #"csdi:DTAD_TRAFFIC_LIGHT_PT",
+    #"csdi:DTAD_RD_MARK_SYM_PT",
+    #"csdi:DTAD_TS_ABV_PT",
+    #"csdi:DTAD_TS_POLE_PT",
+    #"csdi:DTAD_GIPOLE_PT",
+    #"csdi:DTAD_MISC_PT",
+    #"csdi:DTAD_CYC_PT",
+    #"csdi:UNKNOWN_LINE",
+    #"csdi:DTAD_DS_POLE_LINE",
+    #"csdi:DTAD_LV38_LINE",
+    #"csdi:DTAD_DS_PLATE_LINE",
+    #"csdi:DTAD_DS_MISC_LINE",
+    #"csdi:DTAD_DS_POLE_LINE_C",
+    #"csdi:DTAD_PS_POLE_LINE",
+    #"csdi:DTAD_LV30_LINE",
+    #"csdi:DTAD_PS_PLATE_LINE",
+    #"csdi:DTAD_PS_MISC_LINE",
+    #"csdi:DTAD_LV24_LINE",
+    #"csdi:DTAD_RST_ZONE_LINE",
+    #"csdi:DTAD_LV23_LINE",
+    #"csdi:DTAD_TRAFFIC_LIGHT_LINE",
+    #"csdi:DTAD_LV22_LINE",
+    #"csdi:DTAD_RD_MARK_SYM_LINE",
+    #"csdi:DTAD_RD_MARK_LINE_C",
+    #"csdi:DTAD_RD_MARK_LINE",
+    #"csdi:DTAD_CROSSING_LINE",
+    #"csdi:DTAD_YL_BOX_LINE",
+    #"csdi:DTAD_RAILING_LINE",
+    #"csdi:DTAD_TG_PATH_LINE",
     "csdi:DTAD_TS_PLATE_LINE",
-    "csdi:DTAD_TS_MISC_LINE",
-    "csdi:DTAD_TS_ABV_LINE",
-    "csdi:DTAD_TS_POLE_LINE",
-    "csdi:DTAD_TW_STRIP_LINE",
-    "csdi:DTAD_TY_BAR_LINE",
-    "csdi:DTAD_LV21_LINE",
-    "csdi:DTAD_PED_REFUGE_LINE",
-    "csdi:DTAD_RUN_IN_OUT_LINE",
-    "csdi:DTAD_DROP_KERB_LINE",
-    "csdi:DTAD_RD_AL_LINE",
-    "csdi:DTAD_DS_FILLED",
-    "csdi:DTAD_PS_FILLED",
-    "csdi:DTAD_TRAFFIC_LIGHT_FILLED",
-    "csdi:DTAD_LV22_FILLED",
-    "csdi:DTAD_YL_BOX_POLY",
-    "csdi:DTAD_TS_FILLED",
+    #"csdi:DTAD_TS_MISC_LINE",
+    #"csdi:DTAD_TS_ABV_LINE",
+    #"csdi:DTAD_TS_POLE_LINE",
+    #"csdi:DTAD_TW_STRIP_LINE",
+    #"csdi:DTAD_TY_BAR_LINE",
+    #"csdi:DTAD_LV21_LINE",
+    #"csdi:DTAD_PED_REFUGE_LINE",
+    #"csdi:DTAD_RUN_IN_OUT_LINE",
+    #"csdi:DTAD_DROP_KERB_LINE",
+    #"csdi:DTAD_RD_AL_LINE",
+    #"csdi:DTAD_DS_FILLED",
+    #"csdi:DTAD_PS_FILLED",
+    #"csdi:DTAD_TRAFFIC_LIGHT_FILLED",
+    #"csdi:DTAD_LV22_FILLED",
+    #"csdi:DTAD_YL_BOX_POLY",
+    #"csdi:DTAD_TS_FILLED",
 ]
 
 
@@ -129,24 +129,32 @@ def request_layer(layer_name):
         PAGE_SIZE = 10000
 
     while True:
-        params = {
-            "service": "WFS",
-            "version": "2.0.0",
-            "request": "GetFeature",
-            "typeNames": layer_name,
-            "outputFormat": "GEOJSON",
-            "bbox": HONG_KONG_BBOX,
-            "count": PAGE_SIZE,
-            "startIndex": start_index,
-        }
-        
-        # Construct url string for logging purposes
-        req = requests.Request('GET', WFS_BASE_URL, params=params)
-        prepared = req.prepare()
-        print(f"  - Requesting startIndex={start_index} -> {prepared.url}")
-        
+        current_page_size = PAGE_SIZE
         chunk_success = False
+        features_fetched_count = 0
+        
         for attempt in range(1, 6):
+            if attempt == 3:
+                print(f"    - Downsizing page size to 10% for this chunk...")
+                current_page_size = max(1, int(PAGE_SIZE * 0.1))
+                
+            params = {
+                "service": "WFS",
+                "version": "2.0.0",
+                "request": "GetFeature",
+                "typeNames": layer_name,
+                "outputFormat": "GEOJSON",
+                "bbox": HONG_KONG_BBOX,
+                "count": current_page_size,
+                "startIndex": start_index,
+            }
+            
+            # Construct url string for logging purposes
+            req = requests.Request('GET', WFS_BASE_URL, params=params)
+            prepared = req.prepare()
+            if attempt == 1 or attempt == 3:
+                print(f"  - Requesting startIndex={start_index}, count={current_page_size} -> {prepared.url}")
+            
             try:
                 response = requests.get(WFS_BASE_URL, params=params, timeout=REQUEST_TIMEOUT)
                 response.raise_for_status()
@@ -156,6 +164,7 @@ def request_layer(layer_name):
                     first_payload = payload
                     
                 features = payload.get("features", [])
+                features_fetched_count = len(features)
                 all_features.extend(features)
                 
                 consecutive_failures = 0
@@ -168,7 +177,7 @@ def request_layer(layer_name):
                     time.sleep(2)
         
         if chunk_success:
-            if len(features) < PAGE_SIZE:
+            if features_fetched_count < current_page_size:
                 break
         else:
             print(f"  - WARNING: All 5 attempts failed for startIndex={start_index}. Skipping chunk.")
@@ -177,7 +186,7 @@ def request_layer(layer_name):
                 print(f"  - WARNING: Aborting layer pagination due to {consecutive_failures} consecutive skipping failures.")
                 break
             
-        start_index += PAGE_SIZE
+        start_index += current_page_size
         
     if first_payload:
         first_payload["features"] = all_features

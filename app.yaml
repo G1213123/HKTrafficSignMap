@@ -19,6 +19,7 @@ includes:
 
 env_variables:
   NODE_ENV: 'production'
+  NEXT_PUBLIC_DATA_SOURCE: 'cloud'
 
 build_env_variables:
   NEXT_PUBLIC_GOOGLE_ADS_CLIENT_ID: 'ca-pub-9252664921109550'

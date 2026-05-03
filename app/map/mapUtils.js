@@ -23,8 +23,10 @@ export const fetchWithRetry = async (url, options, retries = 2) => {
 
 export const getIconUrl = (typeName, refname) => {
     if (!refname) return null;
-    if (typeName.includes('TRAFFIC_LIGHT')) return `/data/svgs/${refname}.svg`;
-    if (typeName.includes('DTAD_TS_')) return `/data/svgs/TS_${refname}.svg`;
-    if (typeName.includes('DTAD_RD_MARK_SYM')) return `/data/svgs/RM_${refname}.svg`;
+    const getProxyUrl = (assetPath) => `/api/proxy?asset=${encodeURIComponent(assetPath)}`;
+
+    if (typeName.includes('TRAFFIC_LIGHT')) return getProxyUrl(`/data/svgs/${refname}.svg`);
+    if (typeName.includes('DTAD_TS_')) return getProxyUrl(`/data/svgs/TS_${refname}.svg`);
+    if (typeName.includes('DTAD_RD_MARK_SYM')) return getProxyUrl(`/data/svgs/RM_${refname}.svg`);
     return null;
 };
