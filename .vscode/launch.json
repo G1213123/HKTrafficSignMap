@@ -20,6 +20,15 @@
       "request": "launch",
       "url": "http://localhost:3000"
     },
-    
+    {
+      "name": "Generate Signed URL (Google Cloud Storage)",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/app/lib/generateSignedUrlGoogle.mjs",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "envFile": "${workspaceFolder}/.env.local",
+      "args": ["public/data/svgs/TS_101.svg"]
+    }
   ]
 }

@@ -254,12 +254,10 @@ export default function SignGallery() {
 
         // Construct imageUrl since JSON only has filename and mtime
         // Use local SVGs in development, Google Cloud Storage in production
-        const svgBaseUrl = process.env.NEXT_PUBLIC_DATA_SOURCE === 'local' 
-          ? '/api/proxy?url=/data/svgs'
-          : '/api/proxy?url=https://storage.googleapis.com/road-sign-factory-static/public/data/svgs';
+        const getProxyUrl = (assetPath) => `/api/proxy?asset=${encodeURIComponent(assetPath)}`
         const processedSigns = signsData.map(sign => ({
           ...sign,
-          imageUrl: `${svgBaseUrl}/${sign.filename}?v=${sign.mtime}`,
+          imageUrl: getProxyUrl(`/data/svgs/${sign.filename}`),
           description: descriptionsData[sign.signNumber] || sign.description || '',
           superseded: supSet.has(String(sign.signNumber))
         }));
@@ -267,7 +265,7 @@ export default function SignGallery() {
         // Process Road Markings
         const processedRm = (rmData || []).map(rm => ({
           ...rm,
-          imageUrl: `${svgBaseUrl}/${rm.filename}?v=${rm.mtime || ''}`,
+          imageUrl: getProxyUrl(`/data/svgs/${rm.filename}`),
           description: descriptionsData[rm.signNumber] || descriptionsData[rm.id] || rm.description || '',
           superseded: supSet.has(String(rm.signNumber || rm.id))
         }));

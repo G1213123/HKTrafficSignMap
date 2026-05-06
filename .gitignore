@@ -49,6 +49,8 @@ Thumbs.db
 .env.test.local
 .env.production.local
 env_variables.yaml
+road-sign-factory-*.json
+credentials/*.json
 
 # AdSense
 ads.txt

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
+import { generateSignedUrlGoogle } from '../../lib/generateSignedUrlGoogle';
 
 const layerCache = globalThis.__layerApiCache || new Map();
 globalThis.__layerApiCache = layerCache;
@@ -110,42 +111,51 @@ async function getLayerTileFromCache(typeName, x, y) {
   const dirName = typeName.replace(':', '_');
   const cacheKey = `${typeName}_${x}_${y}`;
   const dataSource = getDataSource();
-  
-  try {
-    // Try local cache first (even in production for fallback)
-    const filePath = path.join(process.cwd(), 'public', 'data', 'wfs', dirName, filename);
-    const fileStat = await fs.stat(filePath);
-    const mtimeMs = fileStat.mtimeMs;
 
-    const cached = layerCache.get(cacheKey);
-    if (cached && cached.mtimeMs === mtimeMs) {
-      return cached.featureCollection;
-    }
+  // In development, try local first. In production, go straight to cloud.
+  if (dataSource === 'local') {
+    try {
+      const filePath = path.join(process.cwd(), 'public', 'data', 'wfs', dirName, filename);
+      const fileStat = await fs.stat(filePath);
+      const mtimeMs = fileStat.mtimeMs;
 
-    const fileData = await fs.readFile(filePath, 'utf-8');
-    const featureCollection = JSON.parse(fileData);
-
-    layerCache.set(cacheKey, { mtimeMs, featureCollection });
-    return featureCollection;
-  } catch (err) {
-    // If local file not found and in production, try fetching from Google Cloud
-    if (dataSource === 'cloud' && err.code === 'ENOENT') {
-      try {
-        const bucketUrl = `https://storage.googleapis.com/road-sign-factory-static/public/data/wfs/${dirName}/${filename}`;
-        const response = await fetch(bucketUrl);
-        if (response.ok) {
-          const featureCollection = await response.json();
-          layerCache.set(cacheKey, { mtimeMs: Date.now(), featureCollection });
-          return featureCollection;
-        }
-      } catch (cloudErr) {
-        console.warn(`Error fetching from cloud for tile ${cacheKey}:`, cloudErr);
+      const cached = layerCache.get(cacheKey);
+      if (cached && cached.mtimeMs === mtimeMs) {
+        return cached.featureCollection;
       }
+
+      const fileData = await fs.readFile(filePath, 'utf-8');
+      const featureCollection = JSON.parse(fileData);
+
+      layerCache.set(cacheKey, { mtimeMs, featureCollection });
+      return featureCollection;
+    } catch (err) {
+      console.warn(`Error reading local tile ${cacheKey}:`, err);
+      return null;
     }
-    
-    if (err.code !== 'ENOENT') {
-      console.warn(`Error reading tile ${cacheKey}:`, err);
+  }
+
+  // In production (cloud mode), fetch from Google Cloud Storage using a signed URL (no public fallback)
+  try {
+    const bucketName = process.env.GCS_BUCKET_NAME || 'road-sign-factory-asset';
+    const objectName = `public/data/wfs/${dirName}/${filename}`;
+
+    try {
+      const signedUrl = await generateSignedUrlGoogle({ bucketName, objectName });
+      const response = await fetch(signedUrl);
+      if (response.ok) {
+        const featureCollection = await response.json();
+        layerCache.set(cacheKey, { mtimeMs: Date.now(), featureCollection });
+        return featureCollection;
+      }
+      console.warn(`Cloud fetch returned ${response.status} for tile ${cacheKey}`);
+      return null;
+    } catch (signErr) {
+      console.error(`Signing or fetch failed for tile ${cacheKey}:`, signErr);
+      return null;
     }
+  } catch (cloudErr) {
+    console.warn(`Error fetching from cloud for tile ${cacheKey}:`, cloudErr);
     return null;
   }
 }

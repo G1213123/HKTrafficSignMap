@@ -1,20 +1,16 @@
 import { NextResponse } from 'next/server';
+import { generateSignedUrlGoogle, toBucketObjectName } from '../../lib/generateSignedUrlGoogle';
 
 function getDataSource() {
-  // Use local storage in development, Google Cloud Storage in production
   return process.env.NODE_ENV === 'development' ? 'local' : 'cloud';
 }
 
 function getAllowedPrefixes() {
-  return ['/data/svgs', 'https://storage.googleapis.com/road-sign-factory-static/public/data/svgs'];
+  return ['/data/svgs'];
 }
 
 function resolveAssetUrl(assetPath) {
   if (!assetPath) return null;
-
-  if (assetPath.startsWith('http://') || assetPath.startsWith('https://')) {
-    return assetPath;
-  }
 
   if (!assetPath.startsWith('/data/svgs/')) {
     return null;
@@ -23,8 +19,13 @@ function resolveAssetUrl(assetPath) {
   if (getDataSource() === 'local') {
     return assetPath;
   }
+  // Cloud: generate a V4 signed URL using the Storage client
+  const bucketName = process.env.GCS_BUCKET_NAME || 'road-sign-factory-asset';
+  const objectName = toBucketObjectName(assetPath);
 
-  return `https://storage.googleapis.com/road-sign-factory-static/public${assetPath}`;
+  const expiresMs = 15 * 60 * 1000; // 15 minutes
+  // Return a promise-like placeholder; callers will await when needed
+  return { __signedUrlRequest: true, bucketName, objectName, expiresMs };
 }
 
 export async function GET(request) {
@@ -37,10 +38,9 @@ export async function GET(request) {
     return new NextResponse('Missing URL parameter', { status: 400 });
   }
 
-  // Validate URL to prevent open proxy abuse
   const allowedPrefixes = getAllowedPrefixes();
-  const isAllowed = allowedPrefixes.some(prefix => resolvedUrl.startsWith(prefix));
-  if (!isAllowed) {
+  // If resolvedUrl is a signed-url request object, it's allowed. Otherwise require allowed prefix.
+  if (!(resolvedUrl && resolvedUrl.__signedUrlRequest) && !allowedPrefixes.some(prefix => typeof resolvedUrl === 'string' && resolvedUrl.startsWith(prefix))) {
     return new NextResponse('Forbidden URL', { status: 403 });
   }
 
@@ -48,7 +48,7 @@ export async function GET(request) {
     let response;
     
     // Handle local file paths
-    if (resolvedUrl.startsWith('/data/svgs')) {
+    if (typeof resolvedUrl === 'string' && resolvedUrl.startsWith('/data/svgs')) {
       const { promises: fs } = await import('fs');
       const path = await import('path');
       const localPath = path.join(process.cwd(), 'public', resolvedUrl);
@@ -78,7 +78,22 @@ export async function GET(request) {
     }
     
     // Handle remote URLs (Google Cloud Storage)
-    response = await fetch(resolvedUrl);
+    if (resolvedUrl && resolvedUrl.__signedUrlRequest) {
+      try {
+        const signedUrl = await generateSignedUrlGoogle({
+          bucketName: resolvedUrl.bucketName,
+          objectName: resolvedUrl.objectName,
+          expiresMs: resolvedUrl.expiresMs,
+        });
+
+        response = await fetch(signedUrl);
+      } catch (signErr) {
+        console.error('Failed to generate or fetch signed URL:', signErr);
+        return new NextResponse('Internal Server Error (signing failed)', { status: 500 });
+      }
+    } else {
+      response = await fetch(resolvedUrl);
+    }
     if (!response.ok) {
         return new NextResponse(`Failed to fetch image: ${response.statusText}`, { status: response.status });
     }
