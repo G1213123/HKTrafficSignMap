@@ -51,23 +51,22 @@ body {
     border: none;
 }
 .custom-svg-icon {
-    width: 0;
-    height: 0;
-    display: flex;
+    display: inline-flex;
     justify-content: center; /* Center horizontally */
     align-items: center;    /* Center vertically */
-    /* No overflow: hidden, let the image extend */
+    width: auto;
+    height: auto;
+    overflow: visible; /* allow the image to extend beyond wrapper */
 }
 
 /* The image or inline svg itself. Sized relative to map zoom via CSS variable --map-icon-scale */
 .custom-svg-icon img,
 .custom-svg-icon svg {
-    /* Base size at max zoom (e.g. 20) is roughly real-world meter size converted to pixels? */
-    /* Let's pick a base size visually appealing at high zoom. e.g. 40px */
-    width: calc(30px * var(--map-icon-scale, 1)); 
-    height: auto;
+    /* Base size at max zoom: size by height so width scales with SVG aspect ratio */
+    height: calc(30px * var(--map-icon-scale, 1));
+    width: auto;
     transform-origin: center center; /* Default rotation origin */
-    pointer-events: auto; /* Allow image to receive clicks since wrapper is 0x0 */
+    pointer-events: auto; /* Allow image to receive clicks */
     cursor: pointer;
 }
 

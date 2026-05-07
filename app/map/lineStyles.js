@@ -284,7 +284,7 @@ const roadMarkingStyles = {
         {
             dashMeters: null,
             weight: 2,
-            color: "#000000",
+            color: "#FFFF00",
             opacity: 0.8
         }
     ],

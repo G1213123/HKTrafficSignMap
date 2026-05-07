@@ -3,7 +3,23 @@ import { layersConfig } from './mapConfig';
 import { renderLines } from './rendererLine';
 import { renderPoints } from './rendererPoint';
 import { renderTsPolePt } from './rendererTsPolePt';
+import { renderDsPolePt } from './rendererDsPolePt';
+import { renderTrafficLightPt } from './rendererTrafficLightPt';
 import { renderAnno } from './rendererAnno';
+
+// Renderer dispatch maps allow easy extension by typeName
+const pointRenderers = {
+    'csdi:DTAD_TS_POLE_PT': renderTsPolePt,
+    'csdi:DTAD_DS_POLE_PT': renderDsPolePt,
+    'csdi:DTAD_TRAFFIC_LIGHT_PT': renderTrafficLightPt,
+};
+
+const annoRenderers = {
+    'csdi:DTAD_RD_MARK_ANNO': renderAnno,
+};
+
+const getPointRenderer = (typeName) => pointRenderers[typeName] || renderPoints;
+const getAnnoRenderer = (typeName) => annoRenderers[typeName] || null;
 
 export const loadLayerData = (typeName, { map, abortControllers, markersRef, activeLayersRef, showRawPoints = false }) => {
     if (!map || map.getZoom() < 16) return;
@@ -39,16 +55,16 @@ export const loadLayerData = (typeName, { map, abortControllers, markersRef, act
         // Render Lines and Polygons
         renderLines(map, typeName, nonPoints);
 
-        // Render Points and Markers
-        if (typeName === 'csdi:DTAD_TS_POLE_PT') {
-            renderTsPolePt(map, typeName, points, markersRef, activeLayersRef, showRawPoints);
-        } else {
-            renderPoints(map, typeName, points, markersRef, activeLayersRef, showRawPoints);
+        // Render Points and Markers via dispatch
+        const pointRenderer = getPointRenderer(typeName);
+        if (pointRenderer) {
+            pointRenderer(map, typeName, points, markersRef, activeLayersRef, showRawPoints);
         }
 
-        // Render Annotations
-        if (isAnno && annos.length > 0) {
-            renderAnno(map, typeName, annos, markersRef, activeLayersRef);
+        // Render Annotations via dispatch
+        const annoRenderer = getAnnoRenderer(typeName);
+        if (annoRenderer && annos.length > 0) {
+            annoRenderer(map, typeName, annos, markersRef, activeLayersRef);
         }
 
     }).catch(err => {

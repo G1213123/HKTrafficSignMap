@@ -1,6 +1,6 @@
 import maplibregl from 'maplibre-gl';
 
-export const renderTsPolePt = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false) => {
+export const renderDsPolePt = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false) => {
     if (markersRef.current[typeName]) {
         markersRef.current[typeName].forEach(m => m.remove());
     }
@@ -26,12 +26,18 @@ export const renderTsPolePt = (map, typeName, points, markersRef, activeLayersRe
         const widthPx = svgWidthMeters / metersPerPx;
         const heightPx = svgHeightMeters / metersPerPx;
 
+        // Allow per-feature override of height using SYMBOL_SIZE (interpreted as meters)
+        const rawSymbolSize = feature.properties && feature.properties.SYMBOL_SIZE;
+        const parsedSymbolSize = rawSymbolSize != null ? Number(rawSymbolSize) : NaN;
+        const finalHeightPx = !isNaN(parsedSymbolSize) ? (parsedSymbolSize / metersPerPx) : heightPx;
+
         const el = document.createElement('div');
         el.className = 'custom-svg-icon-wrapper';
         
         // Handle rotation if any (falling back to 0)
         let angle = (feature.properties && feature.properties.ANGLE != null) ? Number(feature.properties.ANGLE) : 0;
-        let customStyle = `transform: rotate(${angle+90}deg); width: calc(${widthPx}px * var(--map-icon-scale, 1)); height: calc(${heightPx}px * var(--map-icon-scale, 1)); pointer-events: auto;`;
+        // Only the height is overridden when SYMBOL_SIZE is provided; width remains unchanged
+        let customStyle = `transform: rotate(${angle+90}deg); width: calc(${widthPx}px * var(--map-icon-scale, 1)); height: calc(${finalHeightPx}px * var(--map-icon-scale, 1)); pointer-events: auto;`;
 
         // 1. Circle: center (0,0), radius 0.5
         // 2. Line: (0,0) to (0,-2)
@@ -39,9 +45,9 @@ export const renderTsPolePt = (map, typeName, points, markersRef, activeLayersRe
         const svgContent = `
             <svg viewBox="-0.5 -2.5 1 5" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%; display: block; overflow: visible;">
                 <!-- Main shapes -->
-                <circle cx="0" cy="0" r="0.2" fill="none" stroke="#222" stroke-width="0.05" />
-                <line x1="0" y1="-0.2" x2="0" y2="-1" stroke="#222" stroke-width="0.05" />
-                <polygon points="-0.125,-1 0.125,-1 0,-1.5" fill="#222" />
+                <circle cx="-0.15" cy="-0.375" r="0.225" fill="none" stroke="#222" stroke-width="0.05" />
+                <circle cx="-0.15" cy="0.375" r="0.225" fill="none" stroke="#222" stroke-width="0.05" />
+                <line x1="-0.5" y1="-1" x2="-0.5" y2="1" stroke="#222" stroke-width="0.05" />
             </svg>
         `;
 

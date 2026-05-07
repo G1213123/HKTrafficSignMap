@@ -12,17 +12,21 @@ export const renderPoints = (map, typeName, points, markersRef, activeLayersRef,
     points.forEach(feature => {
         let coords = [...feature.geometry.coordinates];
         if (!coords || isNaN(coords[0]) || isNaN(coords[1])) return;
-        
+
+        // Precompute metersPerPx for this latitude so SYMBOL_SIZE can be converted to pixels
+        const lat = coords[1];
+        const metersPerPx = 40075016.686 * Math.cos(lat * Math.PI / 180) / Math.pow(2, 21 + 9);
+
         const refname = feature.properties?.REFNAME;
         const iconUrl = getIconUrl(typeName, refname);
-        
+
         const el = document.createElement('div');
-        
+
         if (iconUrl) {
             let angle = (feature.properties && feature.properties.ANGLE != null) ? Number(feature.properties.ANGLE) - 90 : 0;
             let customStyle = `transform: rotate(${-angle}deg);`;
             let extraClass = '';
-            
+
             if (typeName.includes('DTAD_RD_MARK') && refname) {
                 extraClass = ' rd-mark-icon';
                 const dim = rmDimensionDict[refname.toString()];
@@ -35,39 +39,43 @@ export const renderPoints = (map, typeName, points, markersRef, activeLayersRef,
                         // Offset is defined in SVG local space in millimeters. X is right, Y is down.
                         const localX_m = dim.offset.x / 1000;
                         const localY_m = dim.offset.y / 1000;
-                        
+
                         // Apply the rotation to the offset to get screen-space global offset
                         // Visual clockwise rotation is -angle degrees
                         const rotRad = (-angle) * Math.PI / 180;
-                        
+
                         // Screen space: X right, Y down
                         const screenOffsetX_m = localX_m * Math.cos(rotRad) - localY_m * Math.sin(rotRad);
                         const screenOffsetY_m = localX_m * Math.sin(rotRad) + localY_m * Math.cos(rotRad);
-                        
+
                         // Map geographic space: X is East (right), Y is North (up).
                         // So geographic Y is inverse of screen Y.
                         const latMetersPerDegree = 111320;
                         const lonMetersPerDegree = 111320 * Math.cos(coords[1] * Math.PI / 180);
-                        
+
                         coords[0] += screenOffsetX_m / lonMetersPerDegree;
                         coords[1] += (-screenOffsetY_m) / latMetersPerDegree;
                     }
                     if (dim.length || dim.minLength || dim.maxLength) {
                         const lengthValue = dim.length || dim.minLength || dim.maxLength;
-                        
+
                         // lengthValue is in millimeters. We convert to meters ( / 1000 )
                         // Then divide by the exact meters/pixel at zoom 21 for this latitude
-                        const lat = coords[1];
-                        // Earth circumference / 2^(zoom + 9) dynamically for MapLibre
-                        const metersPerPx = 40075016.686 * Math.cos(lat * Math.PI / 180) / Math.pow(2, 21 + 9);
-                        
                         const lengthPx = (lengthValue / 1000) / metersPerPx;
                         customStyle += ` height: calc(${lengthPx}px * var(--map-icon-scale, 1)); width: auto; max-width: none;`;
-                    }
+                    } 
                 }
             }
-            
+
             el.className = 'custom-svg-icon-wrapper';
+            // Allow per-feature override of height using SYMBOL_SIZE (interpreted as meters)
+            const rawSymbolSize = feature.properties && feature.properties.SYMBOL_SIZE;
+            const parsedSymbolSize = rawSymbolSize != null ? Number(rawSymbolSize) : NaN;
+            if (!isNaN(parsedSymbolSize)) {
+                const finalHeightPx = parsedSymbolSize / metersPerPx / 2;
+                customStyle += ` height: calc(${finalHeightPx}px * var(--map-icon-scale, 1)); width: auto; max-width: none;`;
+            }
+
             el.innerHTML = `<div class="custom-svg-icon${extraClass}"><img src="${iconUrl}" style="${customStyle}" /></div>`;
         } else {
             el.className = 'default-circle-marker';
@@ -95,7 +103,7 @@ export const renderPoints = (map, typeName, points, markersRef, activeLayersRef,
 
         el.addEventListener('click', (e) => {
             if (window.isMeasuringActive) return; // Prevent popup if measuring tool is active
-            
+
             e.stopPropagation();
             let popupContent = `<b>${typeName.replace('csdi:DTAD_', '').replace(/_/g, ' ')}</b><br><div class="popup-content">`;
             for (const key in feature.properties) {
