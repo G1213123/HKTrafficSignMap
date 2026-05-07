@@ -7,11 +7,11 @@ export const trafficLightShapes = {
         '<line x1="650" y1="225" x2="1008.7" y2="75" stroke="blue" stroke-width="20" />',
         '<line x1="650" y1="-225" x2="1008.57" y2="-75" stroke="blue" stroke-width="20" />',
         // triangle
-        '<line x1="600" y1="-150" x2="1000" y2="0" stroke="fuchsia" stroke-width="20" />',
-        '<line x1="1000" y1="0" x2="600" y2="150" stroke="fuchsia" stroke-width="20" />',
-        '<line x1="600" y1="-150" x2="600" y2="150" stroke="green" stroke-width="20" />',
+        '<line x1="500" y1="-150" x2="1000" y2="0" stroke="fuchsia" stroke-width="20" />',
+        '<line x1="1000" y1="0" x2="500" y2="150" stroke="fuchsia" stroke-width="20" />',
+        '<line x1="500" y1="-150" x2="500" y2="150" stroke="green" stroke-width="20" />',
         // long line
-        '<line x1="150" y1="0" x2="600" y2="0" stroke="black" stroke-width="20" />',
+        '<line x1="150" y1="0" x2="500" y2="0" stroke="black" stroke-width="20" />',
         // circle
         '<circle cx="0" cy="0" r="150" fill="fuchsia" fill-opacity="0.5" stroke="fuchsia" stroke-width="20" />'
     ],
