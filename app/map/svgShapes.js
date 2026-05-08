@@ -8,13 +8,13 @@ export const trafficLightShapes = {
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // circle
-        '<circle cx="0" cy="0" r="0.2" fill="fuchsia" fill-opacity="0.5" stroke="fuchsia" stroke-width="0.05" />'
+        '<circle cx="0" cy="0" r="0.2" fill="fuchsia"  stroke="fuchsia" stroke-width="0.05" />'
     ],
     P02: [
         // triangle
-        '<polygon points="-0.125,-1 0.125,-1 0,-1.5" fill="#222" />',
+        '<polygon points="-0.0625,-0.4 0.0625,-0.4 0,-0.75" fill="#222" />',
         // long line
-        '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
+        '<line x1="0" y1="0" x2="0" y2="-0.4" stroke="black" stroke-width="0.05" />',
     ],
     P03L: [
         // triangle
@@ -22,11 +22,11 @@ export const trafficLightShapes = {
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // circle
-        '<circle cx="0" cy="0" r="0.2" fill="fuchsia" fill-opacity="0.5" stroke="fuchsia" stroke-width="0.05" />',
+        '<circle cx="0" cy="0" r="0.2" fill="fuchsia"  stroke="fuchsia" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-1,-0.125 -1,0.125 -1.5,0" fill="#222" />',
-        // long line
-        '<line x1="0" y1="-1.5" x2="-0.8" y2="-1.5" stroke="black" stroke-width="0.05" />',
+        '<polygon points="-0.4,-1.625 -0.4,-1.375 -0.9,-1.5" fill="#222" />',
+        // short line
+        '<line x1="0" y1="-1.5" x2="-0.4" y2="-1.5" stroke="black" stroke-width="0.05" />',
     ],
     P04R: [
         // triangle
@@ -34,7 +34,83 @@ export const trafficLightShapes = {
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // circle
-        '<circle cx="0" cy="0" r="0.2" fill="fuchsia" fill-opacity="0.5" stroke="fuchsia" stroke-width="0.05" />'
+        '<circle cx="0" cy="0" r="0.2" fill="fuchsia"  stroke="fuchsia" stroke-width="0.05" />',
+        // triangle
+        '<polygon points="0.4,-1.625 0.4,-1.375 0.9,-1.5" fill="#222" />',
+        // short line
+        '<line x1="0" y1="-1.5" x2="0.4" y2="-1.5" stroke="black" stroke-width="0.05" />',
+    ],
+    P05L: [
+        // triangle
+        '<polygon points="-0.125,-1 0.125,-1 0,-1.5" fill="#222" />',
+        // long line
+        '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
+        // triangle
+        '<polygon points="-0.4,-1.625 -0.4,-1.375 -0.9,-1.5" fill="#222" />',
+        // short line
+        '<line x1="0" y1="-1.5" x2="-0.4" y2="-1.5" stroke="black" stroke-width="0.05" />',
+    ],
+    P06R: [
+        // triangle
+        '<polygon points="-0.125,-1 0.125,-1 0,-1.5" fill="#222" />',
+        // long line
+        '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
+        // triangle
+        '<polygon points="0.4,-1.625 0.4,-1.375 0.9,-1.5" fill="#222" />',
+        // short line
+        '<line x1="0" y1="-1.5" x2="0.4" y2="-1.5" stroke="black" stroke-width="0.05" />',
+    ],
+    P07L: [
+        // triangle
+        '<polygon points="-0.125,-1 0.125,-1 0,-1.5" fill="#222" />',
+        // long line
+        '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
+        // circle
+        '<circle cx="0" cy="0" r="0.2" fill="fuchsia"  stroke="fuchsia" stroke-width="0.05" />',
+        // triangle
+        '<polygon points="-0.525,-1.1 -0.275,-1.1 -0.4,-0.6" fill="#222" />',
+        // short line
+        '<line x1="0" y1="-1.5" x2="-0.4" y2="-1.5" stroke="black" stroke-width="0.05" />',
+        // short line
+        '<line x1="-0.4" y1="-1.5" x2="-0.4" y2="-1.1" stroke="black" stroke-width="0.05" />',
+    ],
+    P08R: [
+        // triangle
+        '<polygon points="-0.125,-1 0.125,-1 0,-1.5" fill="#222" />',
+        // long line
+        '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
+        // circle
+        '<circle cx="0" cy="0" r="0.2" fill="fuchsia"  stroke="fuchsia" stroke-width="0.05" />',
+        // triangle
+        '<polygon points="0.525,-1.1 0.275,-1.1 0.4,-0.6" fill="#222" />',
+        // short line
+        '<line x1="0" y1="-1.5" x2="0.4" y2="-1.5" stroke="black" stroke-width="0.05" />',
+        // short line
+        '<line x1="0.4" y1="-1.5" x2="0.4" y2="-1.1" stroke="black" stroke-width="0.05" />',
+    ],
+    P09L: [
+        // triangle
+        '<polygon points="-0.125,-1 0.125,-1 0,-1.5" fill="#222" />',
+        // long line
+        '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
+        // triangle
+        '<polygon points="-0.525,-1.1 -0.275,-1.1 -0.4,-0.6" fill="#222" />',
+        // short line
+        '<line x1="0" y1="-1.5" x2="-0.4" y2="-1.5" stroke="black" stroke-width="0.05" />',
+        // short line
+        '<line x1="-0.4" y1="-1.5" x2="-0.4" y2="-1.1" stroke="black" stroke-width="0.05" />',
+    ],
+    P10R: [
+        // triangle
+        '<polygon points="-0.125,-1 0.125,-1 0,-1.5" fill="#222" />',
+        // long line
+        '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
+        // triangle
+        '<polygon points="0.525,-1.1 0.275,-1.1 0.4,-0.6" fill="#222" />',
+        // short line
+        '<line x1="0" y1="-1.5" x2="0.4" y2="-1.5" stroke="black" stroke-width="0.05" />',
+        // short line
+        '<line x1="0.4" y1="-1.5" x2="0.4" y2="-1.1" stroke="black" stroke-width="0.05" />',
     ],
     S01: [
         // slahses
@@ -45,7 +121,7 @@ export const trafficLightShapes = {
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // circle
-        '<circle cx="0" cy="0" r="0.2" fill="fuchsia" fill-opacity="0.5" stroke="fuchsia" stroke-width="0.05" />'
+        '<circle cx="0" cy="0" r="0.2" fill="fuchsia"  stroke="fuchsia" stroke-width="0.05" />'
     ],
 };
 
@@ -78,7 +154,15 @@ export const buildSvgForRefname = (refname) => {
     const vbW = bbox.width || 24;
     const vbH = bbox.height || 24;
     svgEl.setAttribute('viewBox', `${vbX} ${vbY} ${vbW} ${vbH}`);
-    svgEl.setAttribute('style', "width: 100%; height: 100%; display: block; overflow: visible;");
+
+    group.setAttribute('transform', `translate(0, ${vbY / 2 + 0.1})`);
+
+
+    const fixWidth = 0.4
+    const fixHeight = 1.7;
+    const widthScale = vbW / fixWidth;
+    const heightScale = vbH / fixHeight;
+    svgEl.setAttribute('style', `width: ${widthScale * 100}%; height: ${heightScale * 100}%; display: block; overflow: visible;`);
 
 
     const out = svgEl.outerHTML;

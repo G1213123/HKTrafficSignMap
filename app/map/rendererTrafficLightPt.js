@@ -37,37 +37,14 @@ export const renderTrafficLightPt = (map, typeName, points, markersRef, activeLa
         // Build inline SVG like renderTsPolePt: size by SYMBOL_SIZE (meters) -> px
         const inlineSvg = buildSvgForRefname(refname);
         if (inlineSvg) {
-            // parse svg to extract viewBox width/height
-            //const parser = new DOMParser();
-            //const doc = parser.parseFromString(inlineSvg, 'image/svg+xml');
-            //const svgElDoc = doc.documentElement;
-            //let vbW = 0, vbH = 0;
-            //try {
-            //    if (svgElDoc && svgElDoc.viewBox && typeof svgElDoc.viewBox.baseVal !== 'undefined') {
-            //        vbW = svgElDoc.viewBox.baseVal.width;
-            //        vbH = svgElDoc.viewBox.baseVal.height;
-            //    }
-            //} catch (e) {
-            //    vbW = 0; vbH = 0;
-            //}
-
             el.className = 'custom-svg-icon-wrapper traffic-light-wrapper';
 
             // Rotation matching renderTsPolePt convention
             let angle = (feature.properties && feature.properties.ANGLE != null) ? Number(feature.properties.ANGLE) : 0;
             let customStyle = `transform: rotate(${angle + 90}deg); width: calc(${widthPx}px * var(--map-icon-scale, 1)); height: calc(${heightPx}px * var(--map-icon-scale, 1)); pointer-events: auto;`;
 
-            //const inner = document.createElement('div');
-            //inner.className = 'custom-svg-icon traffic-light-icon';
             el.innerHTML =  `<div class="custom-svg-icon" style="${customStyle}">${inlineSvg}</div>`;
 ;
-            //const svgEl = inner.querySelector('svg');
-            //if (svgEl) {
-            //    svgEl.setAttribute('style', 'width:100%;height:100%;display:block;overflow:visible;');
-            //    svgEl.style.transformOrigin = 'center center';
-            //}
-            //inner.setAttribute('style', customStyle);
-            //el.appendChild(inner);
         } else {
             el.className = 'default-circle-marker';
             el.style.width = '8px';
