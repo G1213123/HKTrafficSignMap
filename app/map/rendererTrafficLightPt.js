@@ -13,49 +13,61 @@ export const renderTrafficLightPt = (map, typeName, points, markersRef, activeLa
         const coords = feature.geometry.coordinates;
         if (!coords || isNaN(coords[0]) || isNaN(coords[1])) return;
 
+        const lat = coords[1];
+        // Calculate meters per pixel at zoom 21 for this latitude
+        const metersPerPx = 40075016.686 * Math.cos(lat * Math.PI / 180) / Math.pow(2, 21 + 9);
+        
+        // We use a symmetrical bounding box around the origin (0,0) 
+        // to make sure MapLibre aligns the center of the marker element perfectly to the coordinates.
+        // Highest point is tip of the triangle at Y = -2.5
+        // Symmetrical lowest point will be Y = +2.5
+        // Width will be X = -0.5 to X = +0.5 (1m)
+        const scaleFactor = 0.5; // Doubled scale as requested
+        const svgWidthMeters = 1.0 * scaleFactor;
+        const svgHeightMeters = 5.0 * scaleFactor; // Symmetrical: from -2.5 to 2.5
+        
+        const widthPx = svgWidthMeters / metersPerPx;
+        const heightPx = svgHeightMeters / metersPerPx;
+
         const refname = feature.properties?.REFNAME;
 
         const el = document.createElement('div');
+        el.className = 'custom-svg-icon-wrapper';
 
         // Build inline SVG like renderTsPolePt: size by SYMBOL_SIZE (meters) -> px
         const inlineSvg = buildSvgForRefname(refname);
         if (inlineSvg) {
             // parse svg to extract viewBox width/height
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(inlineSvg, 'image/svg+xml');
-            const svgElDoc = doc.documentElement;
-            let vbW = 0, vbH = 0;
-            try {
-                if (svgElDoc && svgElDoc.viewBox && typeof svgElDoc.viewBox.baseVal !== 'undefined') {
-                    vbW = svgElDoc.viewBox.baseVal.width;
-                    vbH = svgElDoc.viewBox.baseVal.height;
-                }
-            } catch (e) {
-                vbW = 0; vbH = 0;
-            }
+            //const parser = new DOMParser();
+            //const doc = parser.parseFromString(inlineSvg, 'image/svg+xml');
+            //const svgElDoc = doc.documentElement;
+            //let vbW = 0, vbH = 0;
+            //try {
+            //    if (svgElDoc && svgElDoc.viewBox && typeof svgElDoc.viewBox.baseVal !== 'undefined') {
+            //        vbW = svgElDoc.viewBox.baseVal.width;
+            //        vbH = svgElDoc.viewBox.baseVal.height;
+            //    }
+            //} catch (e) {
+            //    vbW = 0; vbH = 0;
+            //}
 
-            const lat = coords[1];
-            const metersPerPx = getMetersPerPixel(lat, 21);
-            const rawSymbolSize = feature.properties && feature.properties.SYMBOL_SIZE;
-            const parsedSymbolSize = rawSymbolSize != null ? Number(rawSymbolSize) : NaN;
-            const finalHeightPx = !isNaN(parsedSymbolSize) ? parsedSymbolSize / metersPerPx : 30; // default 30px
-            const finalWidthPx = (vbH > 0) ? (vbW / vbH) * finalHeightPx : finalHeightPx;
+            el.className = 'custom-svg-icon-wrapper traffic-light-wrapper';
 
             // Rotation matching renderTsPolePt convention
             let angle = (feature.properties && feature.properties.ANGLE != null) ? Number(feature.properties.ANGLE) : 0;
-            let customStyle = `transform: rotate(${angle + 90}deg); width: calc(${finalWidthPx}px * var(--map-icon-scale, 1)); height: calc(${finalHeightPx}px * var(--map-icon-scale, 1)); pointer-events: auto;`;
+            let customStyle = `transform: rotate(${angle + 90}deg); width: calc(${widthPx}px * var(--map-icon-scale, 1)); height: calc(${heightPx}px * var(--map-icon-scale, 1)); pointer-events: auto;`;
 
-            el.className = 'custom-svg-icon-wrapper traffic-light-wrapper';
-            const inner = document.createElement('div');
-            inner.className = 'custom-svg-icon traffic-light-icon';
-            inner.innerHTML = inlineSvg;
-            const svgEl = inner.querySelector('svg');
-            if (svgEl) {
-                svgEl.setAttribute('style', 'width:100%;height:100%;display:block;overflow:visible;');
-                svgEl.style.transformOrigin = 'center center';
-            }
-            inner.setAttribute('style', customStyle);
-            el.appendChild(inner);
+            //const inner = document.createElement('div');
+            //inner.className = 'custom-svg-icon traffic-light-icon';
+            el.innerHTML =  `<div class="custom-svg-icon" style="${customStyle}">${inlineSvg}</div>`;
+;
+            //const svgEl = inner.querySelector('svg');
+            //if (svgEl) {
+            //    svgEl.setAttribute('style', 'width:100%;height:100%;display:block;overflow:visible;');
+            //    svgEl.style.transformOrigin = 'center center';
+            //}
+            //inner.setAttribute('style', customStyle);
+            //el.appendChild(inner);
         } else {
             el.className = 'default-circle-marker';
             el.style.width = '8px';
@@ -65,7 +77,12 @@ export const renderTrafficLightPt = (map, typeName, points, markersRef, activeLa
             el.style.borderRadius = '50%';
         }
 
-        const marker = new maplibregl.Marker({ element: el, rotationAlignment: 'map', pitchAlignment: 'map', anchor: 'center' }).setLngLat(coords);
+        const marker = new maplibregl.Marker({ 
+            element: el, 
+            rotationAlignment: 'map', 
+            pitchAlignment: 'map', 
+            anchor: 'center' 
+        }).setLngLat(coords);
 
         let rawMarker = null;
         if (showRawPoints) {
