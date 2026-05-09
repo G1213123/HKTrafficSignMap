@@ -138,7 +138,8 @@
         "signNumber": "1031",
         "length": 8000,
         "width": 2000,
-        "angleCorrection": -90
+        "angleCorrection": -90,
+        "offset": { "x": 0, "y": -4000 }
     },
     {
         "signNumber": "1032",
@@ -234,7 +235,9 @@
             1000,
             1000
         ],
-        "angleCorrection": -90
+        "angleCorrection": -90,
+        "length": 13000,
+        "offset": { "x": 1500, "y": -13000 }
     },
     {
         "signNumber": "1049",
@@ -353,7 +356,8 @@
     {
         "signNumber": "1069",
         "letterHeight": 1600,
-        "characterHeight": 2700
+        "characterHeight": 2700,
+        "length": 11000
     },
     {
         "signNumber": "1070",
@@ -525,12 +529,14 @@
     {
         "signNumber": "1122",
         "minLength": 5550,
-        "maxLength": 6550
+        "maxLength": 6550,
+        "offset": { "x": -1500, "y": 0 }    
     },
     {
         "signNumber": "1123",
         "minLength": 5550,
-        "maxLength": 6550
+        "maxLength": 6550,
+        "offset": { "x": -1500, "y": 0 }
     },
     {
         "signNumber": "1124",
@@ -875,7 +881,9 @@
         "minLetterHeight": 700,
         "maxLetterHeight": 1000,
         "minCharacterHeight": 1200,
-        "maxCharacterHeight": 1700
+        "maxCharacterHeight": 1700,
+        "minLength": 2000,
+        "angleCorrection": 90
     },
     {
         "signNumber": "1175",

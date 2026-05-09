@@ -558,6 +558,14 @@ body {
   stroke: none;
 }
 
+/* Override for traffic light shapes: force Times New Roman */
+.custom-svg-icon-wrapper.traffic-light-wrapper svg text {
+  font-family: 'Times New Roman', Times, serif !important;
+  font-weight: 400 !important;
+  fill: #222 !important;
+  stroke: none !important;
+}
+
 /* Wrapper for map SVG annotations — sizing and rotation driven by CSS variables */
 .custom-svg-icon-wrapper .svg-wrapper {
   display: flex;

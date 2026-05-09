@@ -11,14 +11,15 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@mapbox/geojson-normalize": "^0.0.1",
     "@google-cloud/storage": "^7.17.2",
+    "@mapbox/geojson-normalize": "^0.0.1",
     "@turf/turf": "^7.3.5",
+    "dotenv": "^17.2.1",
     "lucide-react": "latest",
     "maplibre-gl": "^5.23.0",
     "next": "^16.1.6",
+    "proj4": "^2.20.8",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "dotenv": "^17.2.1"
+    "react-dom": "^19.2.4"
   }
 }

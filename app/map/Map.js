@@ -5,6 +5,7 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { getMetersPerPixel } from './mapUtils';
 import { layersConfig } from './mapConfig';
+import proj4 from 'proj4';
 import LayerControl from './LayerControl';
 import MeasureTool from './MeasureTool';
 import { loadLayerData, applyVisibilityOverlays } from './layerDataManager';
@@ -24,6 +25,9 @@ export default function Map() {
     const [mapLoaded, setMapLoaded] = useState(false);
     const [showRawPoints, setShowRawPoints] = useState(false);
     const showRawPointsRef = useRef(showRawPoints);
+    const [crsInput, setCrsInput] = useState('EPSG:4326');
+    const [coordInput, setCoordInput] = useState('114.1694,22.3193');
+    const [panError, setPanError] = useState('');
 
     useEffect(() => {
         activeLayersRef.current = activeLayers;
@@ -40,7 +44,7 @@ export default function Map() {
                 const state = JSON.parse(savedState);
                 if (typeof state.showRawPoints === 'boolean') setShowRawPoints(state.showRawPoints);
             }
-        } catch (e) {}
+        } catch (e) { }
     }, []);
 
     // Initial Active layer config loading
@@ -108,7 +112,7 @@ export default function Map() {
                     pitchWithRotate: false,
                     dragPitch: false
                 });
-                
+
                 map.addControl(new maplibregl.AttributionControl({ customAttribution: 'Map information from Lands Department' }));
                 map.addControl(new maplibregl.ScaleControl({ maxWidth: 200, unit: 'metric' }));
 
@@ -125,7 +129,7 @@ export default function Map() {
                     if (mapContainerRef.current) {
                         mapContainerRef.current.style.setProperty('--map-icon-scale', scale);
                     }
-                    
+
                     // Labels scaling
                     document.querySelectorAll('.road-label').forEach(el => {
                         const sizeMeters = parseFloat(el.getAttribute('data-size-meters'));
@@ -153,7 +157,7 @@ export default function Map() {
                         activeLayers: Array.from(activeLayersRef.current),
                         showRawPoints: showRawPointsRef.current
                     }));
-                    
+
                     if (map.getZoom() >= 16) {
                         Array.from(activeLayersRef.current).forEach(layer => {
                             loadLayerData(layer, {
@@ -172,7 +176,7 @@ export default function Map() {
                     // Intersect Line/Polygon clicks
                     const features = map.queryRenderedFeatures(e.point);
                     const clickableGeoJSONs = features.filter(f => f.source && f.source.startsWith('csdi:'));
-                    
+
                     if (clickableGeoJSONs.length > 0) {
                         const feature = clickableGeoJSONs[0];
                         let label = feature.source.replace('csdi:DTAD_', '').replace(/_/g, ' ');
@@ -216,6 +220,58 @@ export default function Map() {
             showRawPoints: showRawPointsRef.current
         });
     }, []);
+
+    const parseAndConvertToWGS84 = (crs, coordStr) => {
+        const parts = coordStr.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+        if (parts.length < 2) throw new Error('Enter two numbers separated by a comma');
+        let x = parts[0], y = parts[1];
+
+        if (crs === 'EPSG:3857') {
+            const R = 6378137;
+            const lon = (x / R) * (180 / Math.PI);
+            const lat = (Math.PI / 2 - 2 * Math.atan(Math.exp(-y / R))) * (180 / Math.PI);
+            return [lon, lat];
+        }
+
+        if (crs === 'EPSG:2326') {
+            try {
+                // Define EPSG:2326 (HK1980 Grid) for proj4 if not already defined
+                proj4.defs("EPSG:2326", "+proj=tmerc +lat_0=22.3121333333333 +lon_0=114.178555555556 +k=1 +x_0=836694.05 +y_0=819069.8 +ellps=intl +towgs84=-162.619,-276.959,-161.764,-0.067753,2.243648,1.158828,-1.094246 +units=m +no_defs +type=crs");
+                const [lon, lat] = proj4('EPSG:2326', 'WGS84', [x, y]);
+                return [lon, lat];
+            } catch (err) {
+                throw new Error('Failed to convert EPSG:2326: ' + err.message);
+            }
+        }
+
+        // EPSG:4326 - allow either `lng,lat` or `lat,lng` by checking ranges
+        if (crs === 'EPSG:4326') {
+            const first = x, second = y;
+            // if looks like lat,lng (lat in [-90,90] and lng outside that), swap
+            if (first >= -90 && first <= 90 && (second < -90 || second > 90)) {
+                return [second, first];
+            }
+            // otherwise assume input is lng,lat
+            return [first, second];
+        }
+
+        // Default: assume WGS84 lon,lat
+        return [x, y];
+    };
+
+    const handlePanTo = () => {
+        setPanError('');
+        if (!mapInstanceRef.current) {
+            setPanError('Map not loaded');
+            return;
+        }
+        try {
+            const center = parseAndConvertToWGS84(crsInput, coordInput);
+            mapInstanceRef.current.jumpTo({ center });
+        } catch (e) {
+            setPanError(e.message || 'Invalid coordinates');
+        }
+    };
 
     // Apply Visibility Overlays
     useEffect(() => {
@@ -266,11 +322,21 @@ export default function Map() {
     return (
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
             <div ref={mapContainerRef} className="map-container" />
+            <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'white', padding: '8px', zIndex: 25, border: '1px solid #ccc', borderRadius: '4px', display: 'flex', gap: '6px', alignItems: 'center' }}>
+                <select value={crsInput} onChange={(e) => setCrsInput(e.target.value)} style={{ padding: '4px' }}>
+                    <option value="EPSG:4326">EPSG:4326</option>
+                    <option value="EPSG:3857">EPSG:3857</option>
+                    <option value="EPSG:2326">EPSG:2326 (HK1980 Grid)</option>
+                </select>
+                <input value={coordInput} onChange={(e) => setCoordInput(e.target.value)} placeholder="lng,lat or x,y" style={{ padding: '4px', minWidth: '160px' }} />
+                <button onClick={handlePanTo} style={{ padding: '6px 8px' }}>Go</button>
+                {panError && <div style={{ color: 'red', marginLeft: '6px' }}>{panError}</div>}
+            </div>
             {mapLoaded && <MeasureTool map={mapInstanceRef.current} />}
-            <LayerControl 
-                layersConfig={layersConfig} 
-                activeLayers={activeLayers} 
-                onToggleLayer={toggleLayer} 
+            <LayerControl
+                layersConfig={layersConfig}
+                activeLayers={activeLayers}
+                onToggleLayer={toggleLayer}
                 onToggleGroup={toggleGroup}
                 showRawPoints={showRawPoints}
                 onToggleShowRawPoints={(val) => setShowRawPoints(val)}

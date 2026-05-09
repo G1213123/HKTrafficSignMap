@@ -10,3 +10,5 @@ This is the markdown todo file for project map.
 - [ ] glow / ping on selected object and related description
 - [ ] tooltip with sign face
 - [ ] rd marking polygon text styling
+- [ ] handle map stutter with large amount data
+
