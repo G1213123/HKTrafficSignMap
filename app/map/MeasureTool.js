@@ -188,8 +188,8 @@ const MeasureTool = ({ map }) => {
     };
 
     return (
-        <div style={{ position: 'absolute', top: 10, left: 10, zIndex: 10, display: 'flex', flexDirection: 'column', gap: '5px' }}>
-            <div style={{ display: 'flex', gap: '5px' }}>
+        <div style={{ position: 'absolute', top: 70, left: 16, zIndex: 10, display: 'flex', flexDirection: 'column', gap: '5px' }}>
+            <div style={{ display: 'flex', gap: '5px', background: '#fff', padding: '4px', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.15)' }}>
                 <button 
                     onClick={(e) => {
                         e.stopPropagation();
@@ -197,7 +197,7 @@ const MeasureTool = ({ map }) => {
                     }}
                     title="Measure Tool"
                     style={{
-                        padding: '8px', background: isMeasuring ? '#2563eb' : 'white', 
+                        padding: '8px', background: isMeasuring ? '#2563eb' : 'transparent', 
                         color: isMeasuring ? 'white' : 'black', border: '1px solid #ccc', 
                         borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                         boxShadow: '0 2px 4px rgba(0,0,0,0.2)'

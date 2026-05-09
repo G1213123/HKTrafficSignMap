@@ -7,6 +7,8 @@ import { getMetersPerPixel } from './mapUtils';
 import { layersConfig } from './mapConfig';
 import proj4 from 'proj4';
 import LayerControl from './LayerControl';
+import Navbar from '../components/Navbar';
+import MapSidebar from './MapSidebar';
 import MeasureTool from './MeasureTool';
 import { loadLayerData, applyVisibilityOverlays } from './layerDataManager';
 import './map.css';
@@ -28,6 +30,7 @@ export default function Map() {
     const [crsInput, setCrsInput] = useState('EPSG:4326');
     const [coordInput, setCoordInput] = useState('114.1694,22.3193');
     const [panError, setPanError] = useState('');
+    const [cursorCoordsHK, setCursorCoordsHK] = useState(null);
 
     useEffect(() => {
         activeLayersRef.current = activeLayers;
@@ -108,13 +111,23 @@ export default function Map() {
                     center: initialCenter,
                     zoom: initialZoom,
                     maxZoom: 22,
+                    maxBounds: [[113.60, 22.00], [114.70, 22.80]], // Looser Hong Kong bounds [minLng, minLat], [maxLng, maxLat]
                     attributionControl: false,
                     pitchWithRotate: false,
                     dragPitch: false
                 });
 
-                map.addControl(new maplibregl.AttributionControl({ customAttribution: 'Map information from Lands Department' }));
-                map.addControl(new maplibregl.ScaleControl({ maxWidth: 200, unit: 'metric' }));
+                map.addControl(new maplibregl.AttributionControl({ customAttribution: 'Map information from Lands Department' }), 'bottom-right');
+                map.addControl(new maplibregl.NavigationControl({ showCompass: true, showZoom: true }), 'top-right');
+                map.addControl(new maplibregl.ScaleControl({ maxWidth: 200, unit: 'metric' }), 'bottom-right');
+
+                map.on('mousemove', (e) => {
+                    try {
+                        proj4.defs("EPSG:2326", "+proj=tmerc +lat_0=22.3121333333333 +lon_0=114.178555555556 +k=1 +x_0=836694.05 +y_0=819069.8 +ellps=intl +towgs84=-162.619,-276.959,-161.764,-0.067753,2.243648,1.158828,-1.094246 +units=m +no_defs +type=crs");
+                        const [x, y] = proj4('WGS84', 'EPSG:2326', [e.lngLat.lng, e.lngLat.lat]);
+                        setCursorCoordsHK({ x: x.toFixed(2), y: y.toFixed(2) });
+                    } catch (err) {}
+                });
 
                 map.on('load', () => {
                     mapInstanceRef.current = map;
@@ -273,6 +286,17 @@ export default function Map() {
         }
     };
 
+    const recenterHK = () => {
+        if (!mapInstanceRef.current) return;
+        // Default Hong Kong center (preserve current zoom)
+        const hkCenter = [114.1694, 22.3193];
+        try {
+            mapInstanceRef.current.jumpTo({ center: hkCenter });
+        } catch (e) {
+            console.warn('Failed to recenter map:', e);
+        }
+    };
+
     // Apply Visibility Overlays
     useEffect(() => {
         if (!mapLoaded || !mapInstanceRef.current) return;
@@ -319,35 +343,61 @@ export default function Map() {
         });
     };
 
+    const toggleAllLayers = (targetState) => {
+        setActiveLayers(prev => {
+            const next = new Set(prev);
+            const allLayers = Object.values(layersConfig).flat();
+            allLayers.forEach(layer => {
+                if (targetState) next.add(layer);
+                else next.delete(layer);
+            });
+            return next;
+        });
+    };
+
     return (
-        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-            <div ref={mapContainerRef} className="map-container" />
-            <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'white', padding: '8px', zIndex: 25, border: '1px solid #ccc', borderRadius: '4px', display: 'flex', gap: '6px', alignItems: 'center' }}>
-                <select value={crsInput} onChange={(e) => setCrsInput(e.target.value)} style={{ padding: '4px' }}>
-                    <option value="EPSG:4326">EPSG:4326</option>
-                    <option value="EPSG:3857">EPSG:3857</option>
-                    <option value="EPSG:2326">EPSG:2326 (HK1980 Grid)</option>
-                </select>
-                <input value={coordInput} onChange={(e) => setCoordInput(e.target.value)} placeholder="lng,lat or x,y" style={{ padding: '4px', minWidth: '160px' }} />
-                <button onClick={handlePanTo} style={{ padding: '6px 8px' }}>Go</button>
-                {panError && <div style={{ color: 'red', marginLeft: '6px' }}>{panError}</div>}
-            </div>
-            {mapLoaded && <MeasureTool map={mapInstanceRef.current} />}
-            <LayerControl
-                layersConfig={layersConfig}
-                activeLayers={activeLayers}
-                onToggleLayer={toggleLayer}
-                onToggleGroup={toggleGroup}
-                showRawPoints={showRawPoints}
-                onToggleShowRawPoints={(val) => setShowRawPoints(val)}
-            />
-            <div className="info legend" style={{
-                position: 'absolute', bottom: '20px', left: '10px',
-                background: 'white', padding: '5px 10px', border: '1px solid #ccc',
-                zIndex: 10, color: mapMessage.includes('Zoom in') ? 'red' : 'green',
-                borderRadius: '4px', fontSize: '13px', pointerEvents: 'none'
-            }}>
-                {mapMessage}
+        <div className="map-root" style={{ width: '100%', height: '100%' }}>
+            <Navbar />
+            <div className="map-layout">
+                <MapSidebar
+                    activeLayers={activeLayers}
+                    onToggleLayer={toggleLayer}
+                    onToggleGroup={toggleGroup}
+                    onToggleAllLayers={toggleAllLayers}
+                    showRawPoints={showRawPoints}
+                    onToggleShowRawPoints={(val) => setShowRawPoints(val)}
+                    crsInput={crsInput}
+                    setCrsInput={setCrsInput}
+                    coordInput={coordInput}
+                    setCoordInput={setCoordInput}
+                    onPanTo={handlePanTo}
+                    onRecenter={recenterHK}
+                    panError={panError}
+                />
+
+                <main className="map-main">
+                    <div ref={mapContainerRef} className="map-container" />
+                    {mapLoaded && <MeasureTool map={mapInstanceRef.current} />}
+                    <div className="info legend" style={{
+                        position: 'absolute', bottom: '20px', left: '10px',
+                        background: 'white', padding: '5px 10px', border: '1px solid #ccc',
+                        zIndex: 10, color: mapMessage.includes('Zoom in') ? 'red' : 'green',
+                        borderRadius: '4px', fontSize: '13px', pointerEvents: 'none',
+                        boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
+                    }}>
+                        {mapMessage}
+                    </div>
+                    {cursorCoordsHK && (
+                        <div style={{
+                            position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
+                            background: 'rgba(255,255,255,0.9)', padding: '4px 10px', border: '1px solid #ddd',
+                            zIndex: 10, fontSize: '13px', borderRadius: '4px', pointerEvents: 'none',
+                            fontFamily: 'monospace', color: '#333', boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
+                        }}>
+                            EPSG:2326  E: {cursorCoordsHK.x}  N: {cursorCoordsHK.y}
+                        </div>
+                    )}
+                </main>
             </div>
         </div>
     );

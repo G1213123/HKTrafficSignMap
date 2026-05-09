@@ -888,19 +888,22 @@
     {
         "signNumber": "1175",
         "letterHeight": 800,
-        "characterHeight": 1350
+        "characterHeight": 1350,
+        "angleCorrection": -90
     },
     {
         "signNumber": "1176",
         "letterHeight": 800,
-        "characterHeight": 1350
+        "characterHeight": 1350,
+        "angleCorrection": -90
     },
     {
         "signNumber": "1177",
         "minLetterHeight": 1600,
         "maxLetterHeight": 2800,
         "minCharacterHeight": 2700,
-        "maxCharacterHeight": 4700
+        "maxCharacterHeight": 4700,
+        "angleCorrection": 90
     },
     {
         "signNumber": "1178",
