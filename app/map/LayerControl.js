@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { layersConfig } from './mapConfig';
+import { layersConfig } from './layerConfig';
 
 const LayerControl = ({ activeLayers, onToggleLayer, onToggleGroup, showRawPoints, onToggleShowRawPoints }) => {
     const [collapsed, setCollapsed] = useState(false);
@@ -7,15 +7,15 @@ const LayerControl = ({ activeLayers, onToggleLayer, onToggleGroup, showRawPoint
     return (
         <div className="layer-control-panel" style={{
             position: 'absolute', top: 10, right: 10, zIndex: 10,
-            background: 'rgba(255, 255, 255, 0.95)', padding: collapsed ? '10px' : '15px', 
+            background: 'rgba(255, 255, 255, 0.95)', padding: collapsed ? '10px' : '15px',
             borderRadius: '6px', boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
             maxHeight: '80vh', overflowY: 'auto', minWidth: '200px',
             fontFamily: 'system-ui, sans-serif', color: '#000000'
         }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: collapsed ? '0' : '10px' }}>
                 <strong style={{ fontSize: '14px' }}>Map Overlays</strong>
-                <button 
-                    onClick={() => setCollapsed(!collapsed)} 
+                <button
+                    onClick={() => setCollapsed(!collapsed)}
                     style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', lineHeight: 1 }}
                 >
                     {collapsed ? '▼' : '▲'}
@@ -24,16 +24,16 @@ const LayerControl = ({ activeLayers, onToggleLayer, onToggleGroup, showRawPoint
             {!collapsed && Object.entries(layersConfig).map(([groupName, layerList]) => {
                 const isGroupActive = layerList.every(layer => activeLayers.has(layer));
                 const isGroupPartiallyActive = layerList.some(layer => activeLayers.has(layer)) && !isGroupActive;
-                
+
                 return (
                     <div key={groupName} className="layer-group" style={{ marginBottom: '12px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', marginBottom: '6px', borderBottom: '1px solid #ddd', paddingBottom: '3px' }}>
-                            <input 
-                                type="checkbox" 
-                                checked={isGroupActive} 
+                            <input
+                                type="checkbox"
+                                checked={isGroupActive}
                                 ref={input => { if (input) input.indeterminate = isGroupPartiallyActive; }}
-                                onChange={(e) => onToggleGroup(layerList, e.target.checked)} 
-                                style={{ marginRight: '6px' }} 
+                                onChange={(e) => onToggleGroup(layerList, e.target.checked)}
+                                style={{ marginRight: '6px' }}
                             />
                             <strong style={{ fontSize: '13px' }}>
                                 {groupName}

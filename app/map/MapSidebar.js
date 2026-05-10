@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { layersConfig } from './mapConfig';
+import { layersConfig } from './layerConfig';
 
 const MapSidebar = ({
     activeLayers,
@@ -38,6 +38,12 @@ const MapSidebar = ({
     const allLayers = Object.values(layersConfig).flat();
     const isAllActive = allLayers.length > 0 && allLayers.every(layer => activeLayers.has(layer));
     const isAllPartiallyActive = allLayers.some(layer => activeLayers.has(layer)) && !isAllActive;
+
+    const [collapsedGroups, setCollapsedGroups] = useState({});
+
+    const toggleGroupCollapse = (groupName) => {
+        setCollapsedGroups(prev => ({ ...prev, [groupName]: !prev[groupName] }));
+    };
 
     return (
         <aside className={`map-sidebar ${open ? 'open' : 'closed'}`}>
@@ -87,23 +93,37 @@ const MapSidebar = ({
                         {Object.entries(layersConfig).map(([groupName, layerList]) => {
                             const isGroupActive = layerList.every(layer => activeLayers.has(layer));
                             const isGroupPartiallyActive = layerList.some(layer => activeLayers.has(layer)) && !isGroupActive;
+                            const isCollapsed = collapsedGroups[groupName];
                             return (
                                 <div key={groupName} className="layer-group">
-                                    <div className="layer-group-header">
-                                        <input type="checkbox" checked={isGroupActive} ref={input => { if (input) input.indeterminate = isGroupPartiallyActive; }} onChange={(e) => onToggleGroup(layerList, e.target.checked)} />
-                                        <span>{groupName}</span>
+                                    <div className="layer-group-header" onClick={() => toggleGroupCollapse(groupName)}>
+                                        <input 
+                                            type="checkbox" 
+                                            checked={isGroupActive} 
+                                            ref={input => { if (input) input.indeterminate = isGroupPartiallyActive; }} 
+                                            onChange={(e) => onToggleGroup(layerList, e.target.checked)} 
+                                            onClick={(e) => e.stopPropagation()}
+                                        />
+                                        <span style={{ flex: 1 }}>{groupName}</span>
+                                        <span style={{ fontSize: '0.8rem', marginLeft: 'auto', userSelect: 'none', transform: isCollapsed ? 'rotate(-90deg)' : 'none', transition: 'transform 0.2s' }}>
+                                            ▼
+                                        </span>
                                     </div>
-                                    <div className="layer-items">
-                                        {layerList.map(layer => {
-                                            const label = layer.replace('csdi:', '').replace('DTAD_', '').replace(/_/g, ' ');
-                                            const isActive = activeLayers.has(layer);
-                                            return (
-                                                <label key={layer} className="layer-item">
-                                                    <input type="checkbox" checked={!!isActive} onChange={() => onToggleLayer(layer)} />
-                                                    <span>{label}</span>
-                                                </label>
-                                            );
-                                        })}
+                                    <div className={`layer-items-wrapper ${isCollapsed ? '' : 'expanded'}`}>
+                                        <div className="layer-items-inner">
+                                            <div className="layer-items">
+                                                {layerList.map(layer => {
+                                                    const label = layer.replace('csdi:', '').replace('DTAD_', '').replace(/_/g, ' ');
+                                                    const isActive = activeLayers.has(layer);
+                                                    return (
+                                                        <label key={layer} className="layer-item">
+                                                            <input type="checkbox" checked={!!isActive} onChange={() => onToggleLayer(layer)} />
+                                                            <span>{label}</span>
+                                                        </label>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             );

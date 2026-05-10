@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { getMetersPerPixel } from './mapUtils';
-import { layersConfig } from './mapConfig';
+import { layersConfig } from './layerConfig';
 import proj4 from 'proj4';
 import LayerControl from './LayerControl';
 import Navbar from '../components/Navbar';
@@ -24,6 +24,7 @@ export default function Map() {
     const [activeLayers, setActiveLayers] = useState(new Set());
     const activeLayersRef = useRef(activeLayers);
     const [mapMessage, setMapMessage] = useState('Initializing map...');
+    const [pendingFetches, setPendingFetches] = useState(0);
     const [mapLoaded, setMapLoaded] = useState(false);
     const [showRawPoints, setShowRawPoints] = useState(false);
     const showRawPointsRef = useRef(showRawPoints);
@@ -118,7 +119,8 @@ export default function Map() {
                 });
 
                 map.addControl(new maplibregl.AttributionControl({ customAttribution: 'Map information from Lands Department' }), 'bottom-right');
-                map.addControl(new maplibregl.NavigationControl({ showCompass: true, showZoom: true }), 'top-right');
+                // Add a single navigation control
+                map.addControl(new maplibregl.NavigationControl({ showCompass: true, showZoom: true, visualizePitch: true }), 'top-right');
                 map.addControl(new maplibregl.ScaleControl({ maxWidth: 200, unit: 'metric' }), 'bottom-right');
 
                 map.on('mousemove', (e) => {
@@ -126,7 +128,7 @@ export default function Map() {
                         proj4.defs("EPSG:2326", "+proj=tmerc +lat_0=22.3121333333333 +lon_0=114.178555555556 +k=1 +x_0=836694.05 +y_0=819069.8 +ellps=intl +towgs84=-162.619,-276.959,-161.764,-0.067753,2.243648,1.158828,-1.094246 +units=m +no_defs +type=crs");
                         const [x, y] = proj4('WGS84', 'EPSG:2326', [e.lngLat.lng, e.lngLat.lat]);
                         setCursorCoordsHK({ x: x.toFixed(2), y: y.toFixed(2) });
-                    } catch (err) {}
+                    } catch (err) { }
                 });
 
                 map.on('load', () => {
@@ -156,7 +158,7 @@ export default function Map() {
                     if (zoom < 16) {
                         setMapMessage('Zoom in to level 16+ to load data');
                     } else {
-                        setMapMessage('Data loading/active');
+                        setMapMessage(''); // Let the render handle Data Active / Data Loading display
                     }
                 };
 
@@ -173,13 +175,14 @@ export default function Map() {
 
                     if (map.getZoom() >= 16) {
                         Array.from(activeLayersRef.current).forEach(layer => {
+                            setPendingFetches(prev => prev + 1);
                             loadLayerData(layer, {
                                 map: mapInstanceRef.current,
                                 abortControllers,
                                 markersRef,
                                 activeLayersRef,
                                 showRawPoints: showRawPointsRef.current
-                            });
+                            })?.finally(() => setPendingFetches(prev => Math.max(0, prev - 1)));
                         });
                     }
                 });
@@ -225,13 +228,14 @@ export default function Map() {
     }, []);
 
     const fetchLayerData = useCallback((typeName) => {
+        setPendingFetches(prev => prev + 1);
         loadLayerData(typeName, {
             map: mapInstanceRef.current,
             abortControllers,
             markersRef,
             activeLayersRef,
             showRawPoints: showRawPointsRef.current
-        });
+        })?.finally(() => setPendingFetches(prev => Math.max(0, prev - 1)));
     }, []);
 
     const parseAndConvertToWGS84 = (crs, coordStr) => {
@@ -383,12 +387,24 @@ export default function Map() {
                         background: 'white', padding: '5px 10px', border: '1px solid #ccc',
                         zIndex: 10, color: mapMessage.includes('Zoom in') ? 'red' : 'green',
                         borderRadius: '4px', fontSize: '13px', pointerEvents: 'none',
-                        boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
+                        boxShadow: '0 2px 5px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', gap: '6px'
                     }}>
-                        {mapMessage}
+                        {mapMessage ? (
+                            mapMessage
+                        ) : pendingFetches > 0 ? (
+                            <>
+                                <span className="spinner" style={{
+                                    width: '12px', height: '12px', border: '2px solid #ccc',
+                                    borderTopColor: '#333', borderRadius: '50%', animation: 'spin 1s linear infinite'
+                                }} />
+                                <span>Data loading...</span>
+                            </>
+                        ) : (
+                            <span>Data active</span>
+                        )}
                     </div>
                     {cursorCoordsHK && (
-                        <div style={{
+                        <div className="coord-show-box" style={{
                             position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
                             background: 'rgba(255,255,255,0.9)', padding: '4px 10px', border: '1px solid #ddd',
                             zIndex: 10, fontSize: '13px', borderRadius: '4px', pointerEvents: 'none',

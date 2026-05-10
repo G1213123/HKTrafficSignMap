@@ -1,5 +1,5 @@
 import { fetchWithRetry } from './mapUtils';
-import { layersConfig } from './mapConfig';
+import { layersConfig } from './layerConfig';
 import { renderLines } from './rendererLine';
 import { renderPoints } from './rendererPoint';
 import { renderTsPolePt } from './rendererTsPolePt';
@@ -22,7 +22,7 @@ const getPointRenderer = (typeName) => pointRenderers[typeName] || renderPoints;
 const getAnnoRenderer = (typeName) => annoRenderers[typeName] || null;
 
 export const loadLayerData = (typeName, { map, abortControllers, markersRef, activeLayersRef, showRawPoints = false }) => {
-    if (!map || map.getZoom() < 16) return;
+    if (!map || map.getZoom() < 16) return Promise.resolve();
 
     if (abortControllers.current[typeName]) {
         abortControllers.current[typeName].abort();
@@ -34,7 +34,7 @@ export const loadLayerData = (typeName, { map, abortControllers, markersRef, act
     const bbox = `${bounds.getSouth()},${bounds.getWest()},${bounds.getNorth()},${bounds.getEast()}`;
     const wfsUrl = `/api/layers?typeName=${encodeURIComponent(typeName)}&bbox=${encodeURIComponent(bbox)}`;
 
-    fetchWithRetry(wfsUrl, { signal: controller.signal }, 2).then(data => {
+    return fetchWithRetry(wfsUrl, { signal: controller.signal }, 2).then(data => {
         if (!data || !data.features || !map) return;
 
         const isAnno = typeName === 'csdi:DTAD_RD_MARK_ANNO';

@@ -1,6 +1,6 @@
 import maplibregl from 'maplibre-gl';
 import { getIconUrl } from './mapUtils';
-import { rmDimensionDict } from './mapConfig';
+import { rmDimensionDict } from './layerConfig';
 
 export const renderPoints = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false) => {
     // 3. Purge old markers & Repopulate newly fetched MapLibre Point Markers

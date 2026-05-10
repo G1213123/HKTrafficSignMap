@@ -4,9 +4,16 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+.map-main {
+    position: relative;
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+}
+
 .map-container {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     position: absolute;
     top: 0;
     left: 0;
@@ -20,6 +27,8 @@ body {
     display: flex;
     flex-direction: column;
     background: #f4f6f8;
+    padding-top: 71px; /* Offset for fixed navbar */
+    box-sizing: border-box;
 }
 
 .map-layout {
@@ -96,6 +105,81 @@ body {
     padding: 0; /* Removing padding from body to let sections control it */
     overflow-y: auto;
     flex: 1;
+}
+
+/* Transparent container, buttons handle their own background */
+.maplibregl-ctrl-group {
+    background: transparent !important;
+    box-shadow: none !important;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center; /* Center the smaller zoom buttons under the larger compass */
+}
+
+.maplibregl-ctrl-group > button {
+    background-color: #fff !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
+    margin-bottom: 8px !important; /* Spacing between separated buttons */
+    display: block !important;
+    border: 1px solid #ddd;
+}
+
+/* Move top-right controls down slightly */
+.maplibregl-ctrl-top-right {
+    top: 10px;
+}
+
+/* Make map control compass look like an actual compass */
+.maplibregl-ctrl-group button.maplibregl-ctrl-compass {
+    order: -1; /* Move compass to the top of the group natively */
+    width: 48px;
+    height: 48px;
+    border-radius: 50% !important; /* Override the group button shape */
+    border: 2px solid #ccc !important;
+    background-color: #fff !important;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.1), 0 2px 5px rgba(0,0,0,0.2) !important;
+    position: relative;
+}
+
+/* Add a static letter 'N' at the top */
+.maplibregl-ctrl-group button.maplibregl-ctrl-compass::before {
+    content: "N";
+    position: absolute;
+    top: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    font-weight: 800;
+    color: #cc0000;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Optional: 'S' at the bottom */
+.maplibregl-ctrl-group button.maplibregl-ctrl-compass::after {
+    content: "S";
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    font-weight: 800;
+    color: #666;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Keep the spinning needle centered and scale it to fit nicely */
+.maplibregl-ctrl-group button.maplibregl-ctrl-compass .maplibregl-ctrl-icon {
+    transform-origin: center center;
+    position: relative;
+    z-index: 1; /* Spin over the N/S markers */
+    transform: scale(1.3);
 }
 
 /* Sidebar Sections styling */
@@ -187,6 +271,20 @@ body {
     color: #333;
 }
 
+.layer-items-wrapper {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.2s ease-in-out;
+}
+
+.layer-items-wrapper.expanded {
+    grid-template-rows: 1fr;
+}
+
+.layer-items-inner {
+    overflow: hidden;
+}
+
 .layer-items {
     padding: 8px 14px;
     display: flex;
@@ -245,6 +343,10 @@ body {
     
     .map-layout { flex-direction: column; }
     .map-main { flex: 1 1 auto; }
+    
+    .coord-show-box {
+        display: none !important;
+    }
 }
 
 /* Force map text color to override any global/homepage styles */
