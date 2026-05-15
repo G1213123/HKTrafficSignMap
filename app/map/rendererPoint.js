@@ -1,13 +1,12 @@
 import maplibregl from 'maplibre-gl';
 import { getIconUrl } from './mapUtils';
 import { rmDimensionDict } from './layerConfig';
+import { attachMarkerPopup, buildPopupContent, createMarkerElement } from './markerDom';
 
 export const renderPoints = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false) => {
-    // 3. Purge old markers & Repopulate newly fetched MapLibre Point Markers
-    if (markersRef.current[typeName]) {
-        markersRef.current[typeName].forEach(m => m.remove());
+    if (!markersRef.current[typeName]) {
+        markersRef.current[typeName] = [];
     }
-    markersRef.current[typeName] = [];
 
     points.forEach(feature => {
         let coords = [...feature.geometry.coordinates];
@@ -20,7 +19,7 @@ export const renderPoints = (map, typeName, points, markersRef, activeLayersRef,
         const refname = feature.properties?.REFNAME;
         const iconUrl = getIconUrl(typeName, refname);
 
-        const el = document.createElement('div');
+        const el = createMarkerElement({ className: 'custom-svg-icon-wrapper' });
 
         if (iconUrl) {
             let angle = (feature.properties && feature.properties.ANGLE != null) ? Number(feature.properties.ANGLE) - 90 : 0;
@@ -67,7 +66,6 @@ export const renderPoints = (map, typeName, points, markersRef, activeLayersRef,
                 }
             }
 
-            el.className = 'custom-svg-icon-wrapper';
             // Allow per-feature override of height using SYMBOL_SIZE (interpreted as meters)
             const rawSymbolSize = feature.properties && feature.properties.SYMBOL_SIZE;
             const parsedSymbolSize = rawSymbolSize != null ? Number(rawSymbolSize) : NaN;
@@ -101,23 +99,7 @@ export const renderPoints = (map, typeName, points, markersRef, activeLayersRef,
             rawMarker = new maplibregl.Marker({ element: rawEl, rotationAlignment: 'map', pitchAlignment: 'map' }).setLngLat([...feature.geometry.coordinates]);
         }
 
-        el.addEventListener('click', (e) => {
-            if (window.isMeasuringActive) return; // Prevent popup if measuring tool is active
-
-            e.stopPropagation();
-            let popupContent = `<b>${typeName.replace('csdi:DTAD_', '').replace(/_/g, ' ')}</b><br><div class="popup-content">`;
-            for (const key in feature.properties) {
-                if (feature.properties[key] !== null) {
-                    popupContent += `<b>${key}:</b> ${feature.properties[key]}<br>`;
-                }
-            }
-            popupContent += '</div>';
-
-            new maplibregl.Popup({ offset: 15 })
-                .setLngLat(coords)
-                .setHTML(popupContent)
-                .addTo(map);
-        });
+        attachMarkerPopup(el, map, coords, buildPopupContent(typeName, feature.properties || {}));
 
         if (activeLayersRef.current.has(typeName)) {
             marker.addTo(map);

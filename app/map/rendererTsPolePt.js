@@ -1,10 +1,10 @@
 import maplibregl from 'maplibre-gl';
+import { attachMarkerPopup, buildPopupContent, createMarkerElement } from './markerDom';
 
 export const renderTsPolePt = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false) => {
-    if (markersRef.current[typeName]) {
-        markersRef.current[typeName].forEach(m => m.remove());
+    if (!markersRef.current[typeName]) {
+        markersRef.current[typeName] = [];
     }
-    markersRef.current[typeName] = [];
 
     points.forEach(feature => {
         const coords = feature.geometry.coordinates;
@@ -26,8 +26,7 @@ export const renderTsPolePt = (map, typeName, points, markersRef, activeLayersRe
         const widthPx = svgWidthMeters / metersPerPx;
         const heightPx = svgHeightMeters / metersPerPx;
 
-        const el = document.createElement('div');
-        el.className = 'custom-svg-icon-wrapper';
+        const el = createMarkerElement({ className: 'custom-svg-icon-wrapper' });
         
         // Handle rotation if any (falling back to 0)
         let angle = (feature.properties && feature.properties.ANGLE != null) ? Number(feature.properties.ANGLE) : 0;
@@ -62,23 +61,7 @@ export const renderTsPolePt = (map, typeName, points, markersRef, activeLayersRe
             rawMarker = new maplibregl.Marker({ element: rawEl, rotationAlignment: 'map', pitchAlignment: 'map' }).setLngLat(coords);
         }
 
-        // Optional popup info mimicking rendererPoint
-        el.addEventListener('click', (e) => {
-            if (window.isMeasuringActive) return;
-            e.stopPropagation();
-            let popupContent = `<b>${typeName.replace('csdi:DTAD_', '').replace(/_/g, ' ')}</b><br><div class="popup-content">`;
-            for (const key in feature.properties) {
-                if (feature.properties[key] !== null) {
-                    popupContent += `<b>${key}:</b> ${feature.properties[key]}<br>`;
-                }
-            }
-            popupContent += '</div>';
-
-            new maplibregl.Popup({ offset: 15 })
-                .setLngLat(coords)
-                .setHTML(popupContent)
-                .addTo(map);
-        });
+        attachMarkerPopup(el, map, coords, buildPopupContent(typeName, feature.properties || {}));
 
         if (activeLayersRef.current.has(typeName)) {
             marker.addTo(map);

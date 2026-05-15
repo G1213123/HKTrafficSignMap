@@ -1,13 +1,13 @@
 import maplibregl from 'maplibre-gl';
 import { getMetersPerPixel } from './mapUtils';
 import { buildSvgForRefname } from './svgShapes';
+import { attachMarkerPopup, buildPopupContent, createMarkerElement } from './markerDom';
 
 // Renders traffic light point features using either inline-built SVGs or fallback proxy images
 export const renderTrafficLightPt = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false) => {
-    if (markersRef.current[typeName]) {
-        markersRef.current[typeName].forEach(m => m.remove());
+    if (!markersRef.current[typeName]) {
+        markersRef.current[typeName] = [];
     }
-    markersRef.current[typeName] = [];
 
     points.forEach(feature => {
         const coords = feature.geometry.coordinates;
@@ -31,8 +31,7 @@ export const renderTrafficLightPt = (map, typeName, points, markersRef, activeLa
 
         const refname = feature.properties?.REFNAME;
 
-        const el = document.createElement('div');
-        el.className = 'custom-svg-icon-wrapper';
+        const el = createMarkerElement({ className: 'custom-svg-icon-wrapper' });
 
         // Build inline SVG like renderTsPolePt: size by SYMBOL_SIZE (meters) -> px
         const inlineSvg = buildSvgForRefname(refname);
@@ -43,8 +42,7 @@ export const renderTrafficLightPt = (map, typeName, points, markersRef, activeLa
             let angle = (feature.properties && feature.properties.ANGLE != null) ? Number(feature.properties.ANGLE) : 0;
             let customStyle = `transform: rotate(${angle + 90}deg); width: calc(${widthPx}px * var(--map-icon-scale, 1)); height: calc(${heightPx}px * var(--map-icon-scale, 1)); pointer-events: auto;`;
 
-            el.innerHTML =  `<div class="custom-svg-icon" style="${customStyle}">${inlineSvg}</div>`;
-;
+            el.innerHTML = `<div class="custom-svg-icon" style="${customStyle}">${inlineSvg}</div>`;
         } else {
             el.className = 'default-circle-marker';
             el.style.width = '8px';
@@ -69,19 +67,7 @@ export const renderTrafficLightPt = (map, typeName, points, markersRef, activeLa
             rawMarker = new maplibregl.Marker({ element: rawEl, rotationAlignment: 'map', pitchAlignment: 'map' }).setLngLat(coords);
         }
 
-        el.addEventListener('click', (e) => {
-            if (window.isMeasuringActive) return;
-            e.stopPropagation();
-            let popupContent = `<b>${typeName.replace('csdi:DTAD_', '').replace(/_/g, ' ')}</b><br><div class="popup-content">`;
-            for (const key in feature.properties) {
-                if (feature.properties[key] !== null) {
-                    popupContent += `<b>${key}:</b> ${feature.properties[key]}<br>`;
-                }
-            }
-            popupContent += '</div>';
-
-            new maplibregl.Popup({ offset: 15 }).setLngLat(coords).setHTML(popupContent).addTo(map);
-        });
+        attachMarkerPopup(el, map, coords, buildPopupContent(typeName, feature.properties || {}));
 
         if (activeLayersRef.current.has(typeName)) {
             marker.addTo(map);

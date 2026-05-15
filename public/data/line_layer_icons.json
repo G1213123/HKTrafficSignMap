@@ -1,0 +1,140 @@
+{
+  "csdi:DTAD_RD_MARK_LINE_C": [
+    {
+      "lineType": "ULSTUD4",
+      "iconType": "triangle",
+      "iconInterval": 4000,
+      "iconSize": 500,
+      "iconSvg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,14 106,100 14,100' fill='none' stroke='black' stroke-width='2'/></svg>"
+    },
+    {
+      "lineType": "ULSTUD6",
+      "iconType": "triangle",
+      "iconInterval": 6000,
+      "iconSize": 500,
+      "iconSvg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,14 106,100 14,100' fill='none' stroke='black' stroke-width='2'/></svg>"
+    },
+    {
+      "lineType": "ULSTUD8",
+      "iconType": "triangle",
+      "iconInterval": 8000,
+      "iconSize": 500,
+      "iconSvg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,14 106,100 14,100' fill='none' stroke='black' stroke-width='2'/></svg>"
+    },
+    {
+      "lineType": "ULSTUD9",
+      "iconType": "triangle",
+      "iconInterval": 9000,
+      "iconSize": 500,
+      "iconSvg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,14 106,100 14,100' fill='none' stroke='black' stroke-width='2'/></svg>"
+    },
+    {
+      "lineType": "ULSTUD12",
+      "iconType": "triangle",
+      "iconInterval": 12000,
+      "iconSize": 500,
+      "iconSvg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,14 106,100 14,100' fill='none' stroke='black' stroke-width='2'/></svg>"
+    },
+    {
+      "lineType": "ULSTUD15",
+      "iconType": "triangle",
+      "iconInterval": 15000,
+      "iconSize": 500,
+      "iconSvg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,14 106,100 14,100' fill='none' stroke='black' stroke-width='2'/></svg>"
+    },
+    {
+      "lineType": "ULSTUD18",
+      "iconType": "triangle",
+      "iconInterval": 18000,
+      "iconSize": 500,
+      "iconSvg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,14 106,100 14,100' fill='none' stroke='black' stroke-width='20'/></svg>"
+    },
+    {
+      "lineType": "URSTUD4",
+      "iconType": "triangle",
+      "iconInterval": 4000,
+      "iconSize": 500,
+      "iconSvg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 106,14 14,14' fill='none' stroke='black' stroke-width='2'/></svg>"
+    },
+    {
+      "lineType": "URSTUD6",
+      "iconType": "triangle",
+      "iconInterval": 6000,
+      "iconSize": 500,
+      "iconSvg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 106,14 14,14' fill='none' stroke='black' stroke-width='2'/></svg>"
+    },
+    {
+      "lineType": "URSTUD8",
+      "iconType": "triangle",
+      "iconInterval": 8000,
+      "iconSize": 500,
+      "iconSvg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 106,14 14,14' fill='none' stroke='black' stroke-width='2'/></svg>"
+    },
+    {
+      "lineType": "URSTUD9",
+      "iconType": "triangle",
+      "iconInterval": 9000,
+      "iconSize": 500,
+      "iconSvg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 106,14 14,14' fill='none' stroke='black' stroke-width='2'/></svg>"
+    },
+    {
+      "lineType": "URSTUD12",
+      "iconType": "triangle",
+      "iconInterval": 12000,
+      "iconSize": 500,
+      "iconSvg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 106,14 14,14' fill='none' stroke='black' stroke-width='2'/></svg>"
+    },
+    {
+      "lineType": "URSTUD15",
+      "iconType": "triangle",
+      "iconInterval": 15000,
+      "iconSize": 500,
+      "iconSvg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 106,14 14,14' fill='none' stroke='black' stroke-width='2'/></svg>"
+    },
+    {
+      "lineType": "URSTUD18",
+      "iconType": "triangle",
+      "iconInterval": 18000,
+      "iconSize": 500,
+      "iconSvg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 106,14 14,14' fill='none' stroke='black' stroke-width='20'/></svg>"
+    },
+    {
+      "lineType": "BSTUD4",
+      "iconType": "diamond",
+      "iconInterval": 4000,
+      "iconSize": 500,
+      "iconSvg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 100,60 60,20 20,60' fill='none' stroke='black' stroke-width='20'/></svg>"
+    },
+    {
+      "lineType": "BSTUD6",
+      "iconType": "diamond",
+      "iconInterval": 6000,
+      "iconSize": 500,
+      "iconSvg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 100,60 60,20 20,60' fill='none' stroke='black' stroke-width='20'/></svg>"
+    },
+    {
+      "lineType": "BSTUD8",
+      "iconType": "diamond",
+      "iconInterval": 8000,
+      "iconSize": 500,
+      "iconSvg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 100,60 60,20 20,60' fill='none' stroke='black' stroke-width='20'/></svg>"
+    },
+    {
+      "lineType": "ZIGZAGL",
+      "iconType": "zigzag",
+      "iconInterval": 4300,
+      "iconSize": 4300,
+      "iconSvg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='-500 0 1000 4500'><path d='M 0 0 L -300 2000 M -300 2300 L 0 4300' fill='none' stroke='black' stroke-width='50' stroke-linecap='round'/></svg>"
+    },
+    {
+      "lineType": "ZIGZAGR",
+      "iconType": "zigzag",
+      "iconInterval": 4300,
+      "iconSize": 4300,
+      "iconSvg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='-500 0 1000 4500'><path d='M 0 0 L 300 2000 M 300 2300 L 0 4300' fill='none' stroke='black' stroke-width='50' stroke-linecap='round'/></svg>"
+    }
+  ],
+  "csdi:DTAD_LV22_LINE": [],
+  "csdi:DTAD_TG_PATH_LINE": [],
+  "csdi:DTAD_RAILING_LINE": []
+}

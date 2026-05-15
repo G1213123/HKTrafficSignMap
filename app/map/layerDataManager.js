@@ -42,6 +42,12 @@ export const loadLayerData = (typeName, { map, abortControllers, markersRef, act
         const points = [];
         const annos = [];
 
+        // 0. Purge ANY old HTML markers for this layer first so renderers don't fight over cleaning it
+        if (markersRef.current[typeName]) {
+            markersRef.current[typeName].forEach(m => m.remove());
+        }
+        markersRef.current[typeName] = [];
+
         data.features.forEach(f => {
             if (isAnno && f.geometry.type === 'Polygon' || f.geometry.type === 'MultiPolygon') {
                 annos.push(f);
@@ -53,7 +59,7 @@ export const loadLayerData = (typeName, { map, abortControllers, markersRef, act
         });
 
         // Render Lines and Polygons
-        renderLines(map, typeName, nonPoints);
+        renderLines(map, typeName, nonPoints, markersRef);
 
         // Render Points and Markers via dispatch
         const pointRenderer = getPointRenderer(typeName);
