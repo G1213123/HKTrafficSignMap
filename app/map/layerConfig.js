@@ -1,26 +1,10 @@
 import rmDimensions from '../../public/data/rm_dimension.json';
-import lineLayerIcons from '../../public/data/line_layer_icons.json';
 
 // Build lookup dictionary for road marking physical dimensions
 export const rmDimensionDict = {};
 if (Array.isArray(rmDimensions)) {
     rmDimensions.forEach(item => {
         rmDimensionDict[item.signNumber] = item;
-    });
-}
-
-export const lineIconDefinitionDict = {};
-if (lineLayerIcons && typeof lineLayerIcons === 'object') {
-    Object.entries(lineLayerIcons).forEach(([layerTypeName, definitions]) => {
-        const layerDict = {};
-        if (Array.isArray(definitions)) {
-            definitions.forEach(def => {
-                const key = String(def.lineType || '__default');
-                layerDict[key] = def;
-                layerDict[key.toUpperCase()] = def;
-            });
-        }
-        lineIconDefinitionDict[layerTypeName] = layerDict;
     });
 }
 

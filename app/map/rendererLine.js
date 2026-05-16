@@ -1,8 +1,7 @@
 import * as turf from '@turf/turf';
 import maplibregl from 'maplibre-gl';
-import { getLineStyles } from './lineStyles';
+import { getLineDefinition } from './lineStyles';
 import { getMetersPerPixel } from './mapUtils';
-import { lineIconDefinitionDict } from './layerConfig';
 import { attachMarkerPopup, buildPopupContent, createMarkerElement } from './markerDom';
 
 const ICON_LINE_LAYERS = new Set([
@@ -37,35 +36,19 @@ const createIconMarker = (svg, sizePxAtZoom21) => {
     });
 };
 
-const getLineIconDefinition = (typeName, properties = {}) => {
-    const layerDefs = lineIconDefinitionDict[typeName];
-    if (!layerDefs) return null;
-
-    const candidates = [
-        properties.LINETYPE,
-        properties.REFNAME,
-        properties.TYPE,
-        properties.SUBTYPE
-    ].filter(v => v !== undefined && v !== null && v !== '');
-
-    for (const rawCandidate of candidates) {
-        const candidate = String(rawCandidate);
-        if (layerDefs[candidate]) return layerDefs[candidate];
-        const upper = candidate.toUpperCase();
-        if (layerDefs[upper]) return layerDefs[upper];
-    }
-
-    return layerDefs.__default || null;
-};
-
 const renderIconLineMarkers = (map, typeName, features, markersRef) => {
     if (!markersRef.current[typeName]) {
         markersRef.current[typeName] = [];
     }
 
     features.forEach(feature => {
-        const dim = getLineIconDefinition(typeName, feature.properties || {});
-
+        const linetype = feature.properties && feature.properties.LINETYPE;
+        if (!linetype) return;
+        
+        const lineDefn = getLineDefinition(typeName, linetype);
+        if (!lineDefn || lineDefn.length === 0) return;
+        
+        const dim = lineDefn[0];
         if (!dim || !dim.iconSvg || !dim.iconInterval) return;
 
         const coordsList = feature.geometry.type === 'LineString' ? [feature.geometry.coordinates] : feature.geometry.coordinates;
@@ -120,8 +103,10 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
         const isLineGeometry = f.geometry.type === 'LineString' || f.geometry.type === 'MultiLineString';
 
         if (isLineGeometry) {
-            const iconDim = isIconLineLayer ? getLineIconDefinition(typeName, f.properties || {}) : null;
-            if (iconDim && iconDim.iconSvg && iconDim.iconInterval) {
+            const linetype = f.properties && f.properties.LINETYPE;
+            const lineDefn = linetype ? getLineDefinition(typeName, linetype) : null;
+            const hasIcon = isIconLineLayer && lineDefn && lineDefn.length > 0 && lineDefn[0].iconSvg && lineDefn[0].iconInterval;
+            if (hasIcon) {
                 iconLineFeatures.push(f);
                 return; // Stop here so it doesn't render as a normal line
             }
@@ -129,7 +114,7 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
 
         if (linetype && isLineGeometry) {
 
-            const styles = getLineStyles(linetype);
+            const styles = getLineDefinition(typeName, linetype);
 
             if (styles && styles.length > 0) {
                 styles.forEach((styleConfig, idx) => {
@@ -200,7 +185,7 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
         });
 
         uniqueLinetypes.forEach(linetype => {
-            const styles = getLineStyles(linetype);
+            const styles = getLineDefinition(typeName, linetype);
             styles.forEach((styleConfig, idx) => {
                 const layerId = `line-style-${typeName.replace(':', '-')}-${linetype.replace(/[^A-Za-z0-9]/g, '_')}-${idx}`;
 

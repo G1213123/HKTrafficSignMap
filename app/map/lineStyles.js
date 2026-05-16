@@ -1,9 +1,10 @@
-// Library for Road Marking Line Styles
-// This file maps the 'LINETYPE' attribute from the data to visual styles (dash patterns)
+// Library for Road Marking Line Styles and Icons
+// Maps 'LINETYPE' attribute to both visual styles (dashes, colors) and icon definitions
 // Format based on Leaflet Path options: https://leafletjs.com/reference.html#path
+// Icon fields: iconType, iconInterval (ms), iconSize (pixels), iconSvg (embedded SVG)
 
-
-const roadMarkingStyles = {
+const roadMarkingStylesByLayer = {
+    'csdi:DTAD_RD_MARK_LINE_C': {
 
     // RM1107: Lane Line 
     "RM1107": [
@@ -461,7 +462,11 @@ const roadMarkingStyles = {
             dashMeters: null,
             weight: 2,
             color: "#000000",
-            opacity: 0.8
+            opacity: 0.8,
+            iconType: "triangle",
+            iconInterval: 12000,
+            iconSize: 500,
+            iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,14 106,100 14,100' fill='none' stroke='black' stroke-width='2'/></svg>"
         }
     ],
 
@@ -471,7 +476,11 @@ const roadMarkingStyles = {
             dashMeters: null,
             weight: 2,
             color: "#000000",
-            opacity: 0.8
+            opacity: 0.8,
+            iconType: "triangle",
+            iconInterval: 18000,
+            iconSize: 500,
+            iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,14 106,100 14,100' fill='none' stroke='black' stroke-width='20'/></svg>"
         }
     ],
 
@@ -481,7 +490,11 @@ const roadMarkingStyles = {
             dashMeters: null,
             weight: 2,
             color: "#000000",
-            opacity: 0.8
+            opacity: 0.8,
+            iconType: "triangle",
+            iconInterval: 6000,
+            iconSize: 500,
+            iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,14 106,100 14,100' fill='none' stroke='black' stroke-width='2'/></svg>"
         }
     ],
 
@@ -491,7 +504,11 @@ const roadMarkingStyles = {
             dashMeters: null,
             weight: 2,
             color: "#000000",
-            opacity: 0.8
+            opacity: 0.8,
+            iconType: "triangle",
+            iconInterval: 9000,
+            iconSize: 500,
+            iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,14 106,100 14,100' fill='none' stroke='black' stroke-width='2'/></svg>"
         }
     ],
 
@@ -501,7 +518,11 @@ const roadMarkingStyles = {
             dashMeters: null,
             weight: 2,
             color: "#000000",
-            opacity: 0.8
+            opacity: 0.8,
+            iconType: "triangle",
+            iconInterval: 18000,
+            iconSize: 500,
+            iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 106,14 14,14' fill='none' stroke='black' stroke-width='20'/></svg>"
         }
     ],
 
@@ -511,7 +532,11 @@ const roadMarkingStyles = {
             dashMeters: null,
             weight: 2,
             color: "#000000",
-            opacity: 0.8
+            opacity: 0.8,
+            iconType: "triangle",
+            iconInterval: 6000,
+            iconSize: 500,
+            iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 106,14 14,14' fill='none' stroke='black' stroke-width='2'/></svg>"
         }
     ],
 
@@ -521,7 +546,151 @@ const roadMarkingStyles = {
             dashMeters: null,
             weight: 2,
             color: "#000000",
-            opacity: 0.8
+            opacity: 0.8,
+            iconType: "triangle",
+            iconInterval: 9000,
+            iconSize: 500,
+            iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 106,14 14,14' fill='none' stroke='black' stroke-width='2'/></svg>"
+        }
+    ],
+
+    // ULSTUD4
+    "ULSTUD4": [
+        {
+            dashMeters: null,
+            weight: 2,
+            color: "#000000",
+            opacity: 0.8,
+            iconType: "triangle",
+            iconInterval: 4000,
+            iconSize: 500,
+            iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,14 106,100 14,100' fill='none' stroke='black' stroke-width='2'/></svg>"
+        }
+    ],
+
+    // ULSTUD8
+    "ULSTUD8": [
+        {
+            dashMeters: null,
+            weight: 2,
+            color: "#000000",
+            opacity: 0.8,
+            iconType: "triangle",
+            iconInterval: 8000,
+            iconSize: 500,
+            iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,14 106,100 14,100' fill='none' stroke='black' stroke-width='2'/></svg>"
+        }
+    ],
+
+    // ULSTUD15
+    "ULSTUD15": [
+        {
+            dashMeters: null,
+            weight: 2,
+            color: "#000000",
+            opacity: 0.8,
+            iconType: "triangle",
+            iconInterval: 15000,
+            iconSize: 500,
+            iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,14 106,100 14,100' fill='none' stroke='black' stroke-width='2'/></svg>"
+        }
+    ],
+
+    // URSTUD4
+    "URSTUD4": [
+        {
+            dashMeters: null,
+            weight: 2,
+            color: "#000000",
+            opacity: 0.8,
+            iconType: "triangle",
+            iconInterval: 4000,
+            iconSize: 500,
+            iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 106,14 14,14' fill='none' stroke='black' stroke-width='2'/></svg>"
+        }
+    ],
+
+    // URSTUD8
+    "URSTUD8": [
+        {
+            dashMeters: null,
+            weight: 2,
+            color: "#000000",
+            opacity: 0.8,
+            iconType: "triangle",
+            iconInterval: 8000,
+            iconSize: 500,
+            iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 106,14 14,14' fill='none' stroke='black' stroke-width='2'/></svg>"
+        }
+    ],
+
+    // URSTUD12
+    "URSTUD12": [
+        {
+            dashMeters: null,
+            weight: 2,
+            color: "#000000",
+            opacity: 0.8,
+            iconType: "triangle",
+            iconInterval: 12000,
+            iconSize: 500,
+            iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 106,14 14,14' fill='none' stroke='black' stroke-width='2'/></svg>"
+        }
+    ],
+
+    // URSTUD15
+    "URSTUD15": [
+        {
+            dashMeters: null,
+            weight: 2,
+            color: "#000000",
+            opacity: 0.8,
+            iconType: "triangle",
+            iconInterval: 15000,
+            iconSize: 500,
+            iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 106,14 14,14' fill='none' stroke='black' stroke-width='2'/></svg>"
+        }
+    ],
+
+    // BSTUD4
+    "BSTUD4": [
+        {
+            dashMeters: null,
+            weight: 2,
+            color: "#000000",
+            opacity: 0.8,
+            iconType: "diamond",
+            iconInterval: 4000,
+            iconSize: 500,
+            iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 100,60 60,20 20,60' fill='none' stroke='black' stroke-width='20'/></svg>"
+        }
+    ],
+
+    // BSTUD6
+    "BSTUD6": [
+        {
+            dashMeters: null,
+            weight: 2,
+            color: "#000000",
+            opacity: 0.8,
+            iconType: "diamond",
+            iconInterval: 6000,
+            iconSize: 500,
+            iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 100,60 60,20 20,60' fill='none' stroke='black' stroke-width='20'/></svg>"
+        }
+    ],
+
+    // BSTUD8
+    "BSTUD8": [
+        {
+            dashMeters: null,
+            weight: 2,
+            color: "#000000",
+            opacity: 0.8,
+            iconType: "diamond",
+            iconInterval: 8000,
+            iconSize: 500,
+            iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 100,60 60,20 20,60' fill='none' stroke='black' stroke-width='20'/></svg>"
         }
     ],
 
@@ -581,7 +750,11 @@ const roadMarkingStyles = {
             dashMeters: null,
             weight: 2,
             color: "#000000",
-            opacity: 0.8
+            opacity: 0.8,
+            iconType: "zigzag",
+            iconInterval: 4300,
+            iconSize: 4300,
+            iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='-500 0 1000 4500'><path d='M 0 0 L -300 2000 M -300 2300 L 0 4300' fill='none' stroke='black' stroke-width='50' stroke-linecap='round'/></svg>"
         }
     ],
 
@@ -591,7 +764,11 @@ const roadMarkingStyles = {
             dashMeters: null,
             weight: 2,
             color: "#000000",
-            opacity: 0.8
+            opacity: 0.8,
+            iconType: "zigzag",
+            iconInterval: 4300,
+            iconSize: 4300,
+            iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='-500 0 1000 4500'><path d='M 0 0 L 300 2000 M 300 2300 L 0 4300' fill='none' stroke='black' stroke-width='50' stroke-linecap='round'/></svg>"
         }
     ],
 
@@ -604,6 +781,40 @@ const roadMarkingStyles = {
             opacity: 0.8
         }
     ]
+    },
+    'csdi:DTAD_LV22_LINE': {
+    // Default Fallback for LV22 - references same styles as RD_MARK_LINE_C
+    "DEFAULT": [
+        {
+            dashMeters: null,
+            weight: 2,
+            color: "#000000",
+            opacity: 0.8
+        }
+    ]
+    },
+    'csdi:DTAD_TG_PATH_LINE': {
+    // Default Fallback for TG_PATH - references same styles as RD_MARK_LINE_C
+    "DEFAULT": [
+        {
+            dashMeters: null,
+            weight: 2,
+            color: "#000000",
+            opacity: 0.8
+        }
+    ]
+    },
+    'csdi:DTAD_RAILING_LINE': {
+    // Default Fallback for RAILING - references same styles as RD_MARK_LINE_C
+    "DEFAULT": [
+        {
+            dashMeters: null,
+            weight: 2,
+            color: "#000000",
+            opacity: 0.8
+        }
+    ]
+    }
 };
 
 /**
@@ -668,12 +879,20 @@ export function getOffsetLatLngs(latlngs, offsetMeters, map) {
 }
 
 /**
- * Retrieves the styles array.
- * Converts config format to Leaflet style options.
+ * Retrieves the styles and icons for a line type on a specific layer.
+ * Returns config with both visual styles (dashes, colors) and icon definitions.
+ * Converts config format to Leaflet style options plus icon properties.
+ * 
+ * @param {string} layerName - The layer name (e.g., 'csdi:DTAD_RD_MARK_LINE_C')
+ * @param {string} lineType - The line type code (e.g., 'ULSTUD12', 'ZIGZAGL')
+ * @returns {Array} Array of style configs with icon definitions
  */
-export function getLineStyles(lineType) {
+export function getLineDefinition(layerName, lineType) {
+    // Get layer-specific styles, fallback to RD_MARK_LINE_C if layer not found
+    const layerStyles = roadMarkingStylesByLayer[layerName] || roadMarkingStylesByLayer['csdi:DTAD_RD_MARK_LINE_C'];
+    
     // Get config (array or single object fallback)
-    let config = roadMarkingStyles[lineType] || roadMarkingStyles["DEFAULT"];
+    let config = layerStyles[lineType] || layerStyles["DEFAULT"];
 
     // Ensure array
     if (!Array.isArray(config)) {
@@ -683,13 +902,26 @@ export function getLineStyles(lineType) {
     // Process each component
     return config.map(styleDef => {
         // Enforce Black Color if not explicitly overridden
-        let style = {
+        let def = {
             color: "#000000",
             opacity: 0.8,
             weight: 2,
             ...styleDef
         };
 
-        return style;
+        // Optionally capitalize key colors
+        if (!styleDef.color && def.color !== "#000000") {
+            def.color = def.color.toUpperCase();
+        }
+
+        return def;
     });
+}
+
+/**
+ * Retrieves the styles array (legacy, for backward compatibility).
+ * Converts config format to Leaflet style options.
+ */
+export function getLineStyles(layerName, lineType) {
+    return getLineDefinition(layerName, lineType);
 }
