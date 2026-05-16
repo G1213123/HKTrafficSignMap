@@ -136,5 +136,18 @@
   ],
   "csdi:DTAD_LV22_LINE": [],
   "csdi:DTAD_TG_PATH_LINE": [],
-  "csdi:DTAD_RAILING_LINE": []
+  "csdi:DTAD_RAILING_LINE": [
+    {
+      "lineType": "CRAIL1",
+      "iconInterval": 1500,
+      "iconSize": 1500,
+      "iconSvg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='-500 0 1000 4500'><path d='M -250 0 L 250 0 M 0 250 L 0 1250 M -250 1500 L 250 1500' fill='none' stroke='black' stroke-width='50' stroke-linecap='round'/></svg>"
+    },
+    {
+      "lineType": "CRAIL2",
+      "iconInterval": 1500,
+      "iconSize": 1500,
+      "iconSvg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='-500 0 1000 4500'><path d='M -250 0 L 250 0 M 0 250 L 0 1250 M -250 1500 L 250 1500' fill='none' stroke='black' stroke-width='50' stroke-linecap='round'/></svg>"
+    }
+  ]
 }

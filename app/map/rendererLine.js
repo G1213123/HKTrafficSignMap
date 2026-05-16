@@ -13,6 +13,34 @@ const ICON_LINE_LAYERS = new Set([
 
 const normalizeBearing = bearing => ((bearing % 360) + 360) % 360;
 
+/**
+ * Convert MM coordinates in iconGeometry to lat/lng coordinates
+ * Rotates and positions geometry relative to a point with a given bearing
+ * @param {Array} centerCoord - [lng, lat] center point
+ * @param {number} bearingDegrees - bearing in degrees (0 = north along line)
+ * @param {number} xMM - x offset in mm (perpendicular to line, positive = right)
+ * @param {number} yMM - y offset in mm (along line, positive = forward)
+ * @returns {Array} [lng, lat] transformed coordinate
+ */
+const transformMMCoordinate = (centerCoord, bearingDegrees, xMM, yMM) => {
+    // Convert mm to meters
+    const xMeters = xMM / 1000;
+    const yMeters = yMM / 1000;
+    
+    if (xMeters === 0 && yMeters === 0) return centerCoord;
+    
+    // Bearing perpendicular to line direction (90 degrees to the right)
+    const perpBearing = (bearingDegrees + 90) % 360;
+    
+    // Step 1: Move perpendicular to line (x offset)
+    let result = turf.destination(centerCoord, xMeters, perpBearing);
+    
+    // Step 2: Move along line direction (y offset)
+    result = turf.destination(result, yMeters, bearingDegrees);
+    
+    return result.geometry.coordinates;
+};
+
 const getLineBearingAtDistance = (line, distance, totalLength) => {
     if (totalLength <= 0) return 0;
 
@@ -36,11 +64,49 @@ const createIconMarker = (svg, sizePxAtZoom21) => {
     });
 };
 
-const renderIconLineMarkers = (map, typeName, features, markersRef) => {
-    if (!markersRef.current[typeName]) {
-        markersRef.current[typeName] = [];
-    }
+/**
+ * Create GeoJSON LineString features from iconGeometry
+ * @param {Object} iconGeometry - geometry with shapes array
+ * @param {Array} centerCoord - [lng, lat] center point
+ * @param {number} bearing - line bearing in degrees
+ * @param {Array} properties - feature properties
+ * @returns {Array} Array of GeoJSON LineString features
+ */
+const createIconLineFeatures = (iconGeometry, centerCoord, bearing, properties) => {
+    if (!iconGeometry || !iconGeometry.shapes) return [];
+    
+    const features = [];
+    
+    iconGeometry.shapes.forEach(shape => {
+        if (shape.type === 'line') {
+            // Transform both endpoints using rotation and position
+            const coord1 = transformMMCoordinate(centerCoord, bearing, shape.x1, shape.y1);
+            const coord2 = transformMMCoordinate(centerCoord, bearing, shape.x2, shape.y2);
+            
+            const feature = {
+                type: 'Feature',
+                geometry: {
+                    type: 'LineString',
+                    coordinates: [coord1, coord2]
+                },
+                properties: {
+                    ...properties,
+                    _iconGeometry: true,
+                    _strokeWidth: shape.strokeWidth || 2
+                }
+            };
+            
+            features.push(feature);
+        }
+    });
+    
+    return features;
+};
 
+const renderIconLineMarkers = (map, typeName, features, markersRef) => {
+    // Collect all icon line features from all input features
+    const iconLineFeatures = [];
+    
     features.forEach(feature => {
         const linetype = feature.properties && feature.properties.LINETYPE;
         if (!linetype) return;
@@ -49,7 +115,7 @@ const renderIconLineMarkers = (map, typeName, features, markersRef) => {
         if (!lineDefn || lineDefn.length === 0) return;
         
         const dim = lineDefn[0];
-        if (!dim || !dim.iconSvg || !dim.iconInterval) return;
+        if (!dim || !dim.iconInterval || !dim.iconGeometry) return;
 
         const coordsList = feature.geometry.type === 'LineString' ? [feature.geometry.coordinates] : feature.geometry.coordinates;
 
@@ -65,28 +131,63 @@ const renderIconLineMarkers = (map, typeName, features, markersRef) => {
                 const point = turf.along(line, distance, { units: 'meters' });
                 const bearing = getLineBearingAtDistance(line, distance, totalLength);
                 
-                // Get strictly zoom 21 size and apply Map.js CSS dynamic modifier
-                const lat = point.geometry.coordinates[1];
-                const metersPerPxAtZoom21 = 40075016.686 * Math.cos(lat * Math.PI / 180) / Math.pow(2, 21 + 9);
-                const sizePxAtZoom21 = (Number(dim.iconSize) || 120) / 1000 / metersPerPxAtZoom21;
-                const markerElement = createIconMarker(dim.iconSvg, sizePxAtZoom21);
-                attachMarkerPopup(markerElement, map, point.geometry.coordinates, buildPopupContent(typeName, feature.properties || {}));
-
-                const marker = new maplibregl.Marker({
-                    element: markerElement,
-                    anchor: 'center',
-                    rotationAlignment: 'map',
-                    pitchAlignment: 'map'
-                })
-                    .setLngLat(point.geometry.coordinates)
-                    .setRotation(bearing)
-                    .addTo(map);
-
-                markersRef.current[typeName].push(marker);
+                // Create line features from iconGeometry
+                const iconFeatures = createIconLineFeatures(
+                    dim.iconGeometry,
+                    point.geometry.coordinates,
+                    bearing,
+                    feature.properties || {}
+                );
+                
+                iconLineFeatures.push(...iconFeatures);
             }
-
         });
     });
+    
+    // Add icon line features as a new layer if any were created
+    if (iconLineFeatures.length > 0) {
+        const sourceId = `${typeName}-icon-lines`;
+        const layerId = `${typeName}-icon-lines-layer`;
+        
+        // Create or update GeoJSON source
+        if (!map.getSource(sourceId)) {
+            map.addSource(sourceId, {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: iconLineFeatures
+                }
+            });
+        } else {
+            map.getSource(sourceId).setData({
+                type: 'FeatureCollection',
+                features: iconLineFeatures
+            });
+        }
+        
+        // Create or update layer
+        if (!map.getLayer(layerId)) {
+            map.addLayer({
+                id: layerId,
+                type: 'line',
+                source: sourceId,
+                paint: {
+                    'line-color': '#000000',
+                    'line-width': [
+                        'case',
+                        ['has', '_strokeWidth'],
+                        ['/', ['get', '_strokeWidth'], 100],  // strokeWidth in mm / 100 = reasonable pixel width
+                        1
+                    ],
+                    'line-opacity': 0.8
+                },
+                layout: {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                }
+            });
+        }
+    }
 };
 
 export const renderLines = (map, typeName, features, markersRef = { current: {} }) => {
@@ -105,10 +206,13 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
         if (isLineGeometry) {
             const linetype = f.properties && f.properties.LINETYPE;
             const lineDefn = linetype ? getLineDefinition(typeName, linetype) : null;
-            const hasIcon = isIconLineLayer && lineDefn && lineDefn.length > 0 && lineDefn[0].iconSvg && lineDefn[0].iconInterval;
+            const hasIcon = isIconLineLayer && lineDefn && lineDefn.length > 0 && lineDefn[0].iconGeometry && lineDefn[0].iconInterval;
             if (hasIcon) {
+                // Keep the original line feature so it can render its dash/weight
+                // while also collecting the feature to generate icon line segments.
                 iconLineFeatures.push(f);
-                return; // Stop here so it doesn't render as a normal line
+                // DO NOT return here; allow the feature to continue through
+                // the normal processing so the base line is also rendered.
             }
         }
 
