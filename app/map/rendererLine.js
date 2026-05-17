@@ -22,22 +22,19 @@ const normalizeBearing = bearing => ((bearing % 360) + 360) % 360;
  * @param {number} yMM - y offset in mm (along line, positive = forward)
  * @returns {Array} [lng, lat] transformed coordinate
  */
-const transformMMCoordinate = (centerCoord, bearingDegrees, xMM, yMM) => {
-    // Convert mm to meters
-    const xMeters = xMM / 1000;
-    const yMeters = yMM / 1000;
-    
-    if (xMeters === 0 && yMeters === 0) return centerCoord;
-    
+const transformMMCoordinate = (centerCoord, bearingDegrees, xMeters, yMeters) => {
+    // Icon geometry coordinates are now expressed in meters.
+    if ((xMeters === 0 || xMeters === undefined) && (yMeters === 0 || yMeters === undefined)) return centerCoord;
+
     // Bearing perpendicular to line direction (90 degrees to the right)
-    const perpBearing = (bearingDegrees + 90) % 360;
-    
-    // Step 1: Move perpendicular to line (x offset)
-    let result = turf.destination(centerCoord, xMeters, perpBearing);
-    
+    const perpBearing = normalizeBearing(bearingDegrees + 90);
+
+    // Step 1: Move perpendicular to line (x offset) using meters
+    let result = turf.destination(centerCoord, xMeters, perpBearing, { units: 'meters' });
+
     // Step 2: Move along line direction (y offset)
-    result = turf.destination(result, yMeters, bearingDegrees);
-    
+    result = turf.destination(result, yMeters, bearingDegrees, { units: 'meters' });
+
     return result.geometry.coordinates;
 };
 
@@ -78,7 +75,24 @@ const createIconLineFeatures = (iconGeometry, centerCoord, bearing, properties) 
     const features = [];
     
     iconGeometry.shapes.forEach(shape => {
-        if (shape.type === 'line') {
+        if (shape.type === 'circle') {
+            // Circle: create a Point feature at the transformed center
+            const centerOffset = transformMMCoordinate(centerCoord, bearing, shape.x || 0, shape.y || 0);
+            const feature = {
+                type: 'Feature',
+                geometry: {
+                    type: 'Point',
+                    coordinates: centerOffset
+                },
+                properties: {
+                    ...properties,
+                    _iconGeometry: true,
+                    _circleRadius: shape.radius || 0.1,
+                    _strokeWidth: shape.strokeWidth || 0.02
+                }
+            };
+            features.push(feature);
+        } else if (shape.type === 'line') {
             // Transform both endpoints using rotation and position
             const coord1 = transformMMCoordinate(centerCoord, bearing, shape.x1, shape.y1);
             const coord2 = transformMMCoordinate(centerCoord, bearing, shape.x2, shape.y2);
@@ -113,8 +127,8 @@ const renderIconLineMarkers = (map, typeName, features, markersRef) => {
         
         const lineDefn = getLineDefinition(typeName, linetype);
         if (!lineDefn || lineDefn.length === 0) return;
-        
-        const dim = lineDefn[0];
+
+        const dim = lineDefn.find(def => def && def.iconGeometry && def.iconInterval);
         if (!dim || !dim.iconInterval || !dim.iconGeometry) return;
 
         const coordsList = feature.geometry.type === 'LineString' ? [feature.geometry.coordinates] : feature.geometry.coordinates;
@@ -124,8 +138,16 @@ const renderIconLineMarkers = (map, typeName, features, markersRef) => {
 
             const line = turf.lineString(lineCoords);
             const totalLength = turf.length(line, { units: 'meters' });
-            const interval = Math.max(1, Number(dim.iconInterval) / 1000);
-            const startDistance = Math.min(interval / 2, totalLength / 2);
+            // `iconInterval` and `startDistance` in `lineStyles` are now in meters.
+            const interval = Math.max(1, Number(dim.iconInterval));
+
+            // startDistance for icon entries: optional, in meters. Default to 0.
+            let startDistance = 0;
+            if (dim.startDistance !== undefined && dim.startDistance !== null) {
+                startDistance = Number(dim.startDistance);
+            }
+            // Clamp
+            startDistance = Math.max(0, Math.min(startDistance, totalLength));
 
             for (let distance = startDistance; distance < totalLength; distance += interval) {
                 const point = turf.along(line, distance, { units: 'meters' });
@@ -165,18 +187,44 @@ const renderIconLineMarkers = (map, typeName, features, markersRef) => {
             });
         }
         
-        // Create or update layer
+        // Create or update layer (handles both line and circle features)
         if (!map.getLayer(layerId)) {
+            // Circle layer for Point features
             map.addLayer({
                 id: layerId,
+                type: 'circle',
+                source: sourceId,
+                filter: ['==', ['geometry-type'], 'Point'],
+                paint: {
+                    'circle-radius': [
+                        'case',
+                        ['has', '_circleRadius'],
+                        ['*', ['get', '_circleRadius'], 100],
+                        5
+                    ],
+                    'circle-color': '#000000',
+                    'circle-opacity': 0.8,
+                    'circle-stroke-width': [
+                        'case',
+                        ['has', '_strokeWidth'],
+                        ['/', ['get', '_strokeWidth'], 100],
+                        0.5
+                    ],
+                    'circle-stroke-color': '#000000'
+                }
+            });
+            // Line layer for LineString features
+            map.addLayer({
+                id: layerId + '-lines',
                 type: 'line',
                 source: sourceId,
+                filter: ['!=', ['geometry-type'], 'Point'],
                 paint: {
                     'line-color': '#000000',
                     'line-width': [
                         'case',
                         ['has', '_strokeWidth'],
-                        ['/', ['get', '_strokeWidth'], 100],  // strokeWidth in mm / 100 = reasonable pixel width
+                        ['/', ['get', '_strokeWidth'], 100],
                         1
                     ],
                     'line-opacity': 0.8
@@ -206,13 +254,11 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
         if (isLineGeometry) {
             const linetype = f.properties && f.properties.LINETYPE;
             const lineDefn = linetype ? getLineDefinition(typeName, linetype) : null;
-            const hasIcon = isIconLineLayer && lineDefn && lineDefn.length > 0 && lineDefn[0].iconGeometry && lineDefn[0].iconInterval;
+            const hasIcon = isIconLineLayer && lineDefn && lineDefn.some(def => def && def.iconGeometry && def.iconInterval);
             if (hasIcon) {
-                // Keep the original line feature so it can render its dash/weight
-                // while also collecting the feature to generate icon line segments.
+                // Route this feature to icon renderer, while allowing non-icon
+                // style entries of the same linetype to continue below.
                 iconLineFeatures.push(f);
-                // DO NOT return here; allow the feature to continue through
-                // the normal processing so the base line is also rendered.
             }
         }
 
@@ -222,6 +268,10 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
 
             if (styles && styles.length > 0) {
                 styles.forEach((styleConfig, idx) => {
+                    // Icon geometry is rendered by renderIconLineMarkers only.
+                    // Do not emit a base line feature for this style entry.
+                    if (styleConfig.iconGeometry && styleConfig.iconInterval) return;
+
                     const clonedFeature = JSON.parse(JSON.stringify(f));
                     clonedFeature.properties._styleIndex = idx; // Differentiate identical linestyles
 
@@ -234,7 +284,13 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
                             try {
                                 const line = turf.lineString(lineCoords);
                                 const totalLength = turf.length(line, { units: 'meters' });
+                                // Allow per-style startDistance for dash/solid entries.
+                                // Here startDistance is expected in meters (same units
+                                // as dashMeters). Default to 0.
                                 let currentLen = 0;
+                                if (styleConfig.startDistance !== undefined && styleConfig.startDistance !== null) {
+                                    currentLen = Number(styleConfig.startDistance);
+                                }
                                 let isDash = true; // start with a dash
                                 const dashLen = styleConfig.dashMeters[0];
                                 const gapLen = styleConfig.dashMeters[1] || dashLen;
@@ -284,13 +340,21 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
     // 2. Discover Linestyles explicitly and apply un-data-drivabble parameters
     if (nonPoints.length > 0) {
         const uniqueLinetypes = new Set();
+        let hasMissingLinetype = false;
         nonPoints.forEach(f => {
-            if (f.properties && f.properties.LINETYPE) uniqueLinetypes.add(f.properties.LINETYPE);
+            const linetype = f.properties && f.properties.LINETYPE;
+            if (linetype) {
+                uniqueLinetypes.add(linetype);
+            } else {
+                hasMissingLinetype = true;
+            }
         });
 
         uniqueLinetypes.forEach(linetype => {
             const styles = getLineDefinition(typeName, linetype);
             styles.forEach((styleConfig, idx) => {
+                if (styleConfig.iconGeometry && styleConfig.iconInterval) return;
+
                 const layerId = `line-style-${typeName.replace(':', '-')}-${linetype.replace(/[^A-Za-z0-9]/g, '_')}-${idx}`;
 
                 if (!map.getLayer(layerId)) {
@@ -335,36 +399,24 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
             });
         });
 
-        // Fallback rendering
-        if (!map.getLayer(`${typeName}-poly-fill`)) {
-            map.addLayer({
-                id: `${typeName}-poly-fill`,
-                type: 'fill',
-                source: typeName,
-                filter: ['==', ['geometry-type'], 'Polygon'],
-                paint: {
-                    'fill-color': '#000000',
-                    'fill-opacity': 0.8
-                }
-            });
+        if (hasMissingLinetype) {
+            const fallbackLayerId = `line-style-${typeName.replace(':', '-')}-fallback-no-linetype`;
+
+            if (!map.getLayer(fallbackLayerId)) {
+                map.addLayer({
+                    id: fallbackLayerId,
+                    type: 'line',
+                    source: typeName,
+                    filter: ['!', ['has', 'LINETYPE']],
+                    paint: {
+                        'line-color': '#000000',
+                        'line-width': 2,
+                        'line-opacity': 0.85
+                    },
+                    layout: { 'line-join': 'round', 'line-cap': 'round' }
+                });
+            }
         }
 
-        if (!map.getLayer(`${typeName}-line-fallback`)) {
-            map.addLayer({
-                id: `${typeName}-line-fallback`,
-                type: 'line',
-                source: typeName,
-                filter: [
-                    'all',
-                    ['any', ['==', ['geometry-type'], 'LineString'], ['==', ['geometry-type'], 'MultiLineString']],
-                    ['!', ['has', '_styleIndex']]
-                ],
-                paint: {
-                    'line-color': '#000000', // Default fallback color
-                    'line-width': 2,
-                    'line-opacity': 0.8
-                }
-            });
-        }
     }
 };
