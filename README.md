@@ -42,6 +42,25 @@ Due to browser security restrictions (CORS), you may not be able to fetch the da
   - It runs daily (`0 2 * * *`) and can also be triggered manually.
   - The workflow refreshes cache files and auto-commits updates back to `main`.
 
+## Vector Tile Build Job
+- Purpose: Precompile cached WFS GeoJSON into Mapbox Vector Tiles (`.pbf`) for faster map loading.
+- Command:
+   ```bash
+   npm run build-mvt
+   ```
+- Input:
+   - Layer `raw.json` files under `public/data/wfs/<layer>/raw.json`.
+- Output:
+   - Per-layer vector tiles under `public/data/mvt/<layer>/<z>/<x>/<y>.pbf`.
+   - Build metadata at `public/data/mvt/metadata.json`.
+- Optional zoom tuning via environment variables:
+   - `MVT_MIN_ZOOM` (default: `12`)
+   - `MVT_MAX_ZOOM` (default: `18`)
+   - Example:
+      ```bash
+      MVT_MIN_ZOOM=10 MVT_MAX_ZOOM=18 npm run build-mvt
+      ```
+
 ## Internal Layer API
 - Endpoint: `GET /api/layers?typeName=<layer>&bbox=<south,west,north,east>`
 - `typeName` is required.

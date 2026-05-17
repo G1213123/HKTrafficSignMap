@@ -1,6 +1,7 @@
 import os
 import time
 import sys
+import subprocess
 
 # Import job modules
 # Ensure the current directory is in sys.path to allow imports if running from root
@@ -31,6 +32,14 @@ def run_pipeline():
     except Exception as e:
         print(f"Warning in Step 1: {e}")
         # Proceed with the rest of the pipeline even if WFS sync fails.
+
+    # Step 1.5: Build Vector Tiles from synced WFS cache
+    print("\n[STEP 1.5] Building vector tiles from cached WFS GeoJSON...")
+    try:
+        subprocess.run(["npm", "run", "build-mvt"], cwd=os.path.join(current_dir, ".."), check=True)
+    except Exception as e:
+        print(f"Warning in Step 1.5: {e}")
+        # Keep pipeline resilient; downstream steps can still run.
 
     # Step 2: Download Index Plan PDFs
     print("\n[STEP 2] Downloading Index Plan PDFs...")

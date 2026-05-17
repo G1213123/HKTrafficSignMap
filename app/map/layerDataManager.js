@@ -32,9 +32,10 @@ export const loadLayerData = (typeName, { map, abortControllers, markersRef, act
 
     const bounds = map.getBounds();
     const bbox = `${bounds.getSouth()},${bounds.getWest()},${bounds.getNorth()},${bounds.getEast()}`;
-    const wfsUrl = `/api/layers?typeName=${encodeURIComponent(typeName)}&bbox=${encodeURIComponent(bbox)}`;
+    const z = Math.max(0, Math.floor(map.getZoom() || 16));
+    const layerUrl = `/api/layers?typeName=${encodeURIComponent(typeName)}&bbox=${encodeURIComponent(bbox)}&format=pbf&z=${z}`;
 
-    return fetchWithRetry(wfsUrl, { signal: controller.signal }, 2).then(data => {
+    return fetchWithRetry(layerUrl, { signal: controller.signal }, 2).then(data => {
         if (!data || !data.features || !map) return;
 
         const isAnno = typeName === 'csdi:DTAD_RD_MARK_ANNO';

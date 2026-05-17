@@ -1,11 +1,40 @@
 import { NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
+import Pbf from 'pbf';
+import { VectorTile } from '@mapbox/vector-tile';
 import { generateSignedUrlGoogle } from '../../lib/generateSignedUrlGoogle';
 
 const layerCache = globalThis.__layerApiCache || new Map();
 globalThis.__layerApiCache = layerCache;
-const ZOOM_LEVEL = 16;
+const DEFAULT_ZOOM = 16;
+const MIN_MVT_ZOOM = Number.parseInt(process.env.MVT_MIN_ZOOM || '12', 10);
+const MAX_MVT_ZOOM = Number.parseInt(process.env.MVT_MAX_ZOOM || '18', 10);
+
+function normalizeMvtLayerName(typeName) {
+  return typeName.replace(/[^A-Za-z0-9_]/g, '_');
+}
+
+function decodePbfTileToFeatureCollection(tileBuffer, typeName, x, y, z) {
+  const layerName = normalizeMvtLayerName(typeName);
+  const tile = new VectorTile(new Pbf(tileBuffer));
+  const layer = tile.layers[layerName];
+
+  if (!layer) {
+    return { type: 'FeatureCollection', features: [] };
+  }
+
+  const features = [];
+  for (let i = 0; i < layer.length; i += 1) {
+    const feature = layer.feature(i);
+    features.push(feature.toGeoJSON(x, y, z));
+  }
+
+  return {
+    type: 'FeatureCollection',
+    features,
+  };
+}
 
 function getDataSource() {
   // Use local storage in development, Google Cloud Storage in production
@@ -106,16 +135,16 @@ function getTile(lon, lat, zoom) {
 
 
 
-async function getLayerTileFromCache(typeName, x, y) {
-  const filename = `${x}_${y}.json`;
+async function getLayerTileFromCache(typeName, z, x, y) {
+  const filename = `${y}.pbf`;
   const dirName = typeName.replace(':', '_');
-  const cacheKey = `${typeName}_${x}_${y}`;
+  const cacheKey = `${typeName}_${z}_${x}_${y}`;
   const dataSource = getDataSource();
 
   // In development, try local first. In production, go straight to cloud.
   if (dataSource === 'local') {
     try {
-      const filePath = path.join(process.cwd(), 'public', 'data', 'wfs', dirName, filename);
+      const filePath = path.join(process.cwd(), 'public', 'data', 'mvt', dirName, String(z), String(x), filename);
       const fileStat = await fs.stat(filePath);
       const mtimeMs = fileStat.mtimeMs;
 
@@ -124,8 +153,8 @@ async function getLayerTileFromCache(typeName, x, y) {
         return cached.featureCollection;
       }
 
-      const fileData = await fs.readFile(filePath, 'utf-8');
-      const featureCollection = JSON.parse(fileData);
+      const fileData = await fs.readFile(filePath);
+      const featureCollection = decodePbfTileToFeatureCollection(fileData, typeName, x, y, z);
 
       layerCache.set(cacheKey, { mtimeMs, featureCollection });
       return featureCollection;
@@ -138,13 +167,20 @@ async function getLayerTileFromCache(typeName, x, y) {
   // In production (cloud mode), fetch from Google Cloud Storage using a signed URL (no public fallback)
   try {
     const bucketName = process.env.GCS_BUCKET_NAME || 'road-sign-factory-asset';
-    const objectName = `public/data/wfs/${dirName}/${filename}`;
+    const objectName = `public/data/mvt/${dirName}/${z}/${x}/${filename}`;
 
     try {
       const signedUrl = await generateSignedUrlGoogle({ bucketName, objectName });
       const response = await fetch(signedUrl);
       if (response.ok) {
-        const featureCollection = await response.json();
+        const tileArrayBuffer = await response.arrayBuffer();
+        const featureCollection = decodePbfTileToFeatureCollection(
+          Buffer.from(tileArrayBuffer),
+          typeName,
+          x,
+          y,
+          z,
+        );
         layerCache.set(cacheKey, { mtimeMs: Date.now(), featureCollection });
         return featureCollection;
       }
@@ -165,6 +201,7 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const typeName = searchParams.get('typeName');
   const bboxText = searchParams.get('bbox');
+  const format = (searchParams.get('format') || 'pbf').toLowerCase();
 
   if (!typeName) {
     return NextResponse.json({ error: 'Missing typeName parameter' }, { status: 400 });
@@ -174,9 +211,25 @@ export async function GET(request) {
     return NextResponse.json({ error: 'Invalid typeName parameter' }, { status: 400 });
   }
 
+  if (format !== 'pbf') {
+    return NextResponse.json({ error: 'Invalid format parameter. Expected format=pbf' }, { status: 400 });
+  }
+
   const queryBounds = parseBbox(bboxText);
   if (bboxText && !queryBounds) {
     return NextResponse.json({ error: 'Invalid bbox parameter' }, { status: 400 });
+  }
+
+  // Determine tile zoom to use for fetching vector tiles. Allow client to request a zoom
+  // via `z` query param; otherwise use server default. Validate against build config.
+  let z = DEFAULT_ZOOM;
+  const zText = searchParams.get('z');
+  if (zText) {
+    const parsed = Number(zText);
+    if (!Number.isInteger(parsed) || parsed < MIN_MVT_ZOOM || parsed > MAX_MVT_ZOOM) {
+      return NextResponse.json({ error: `Invalid z parameter; expected integer between ${MIN_MVT_ZOOM} and ${MAX_MVT_ZOOM}` }, { status: 400 });
+    }
+    z = parsed;
   }
 
   try {
@@ -189,10 +242,10 @@ export async function GET(request) {
         return NextResponse.json({ error: 'Bbox parameter required for tiled WFS API' }, { status: 400 });
     }
     
-    const maxYT = getTile(queryBounds.minX, queryBounds.minY, ZOOM_LEVEL).y;
-    const minXT = getTile(queryBounds.minX, queryBounds.minY, ZOOM_LEVEL).x;
-    const minYT = getTile(queryBounds.maxX, queryBounds.maxY, ZOOM_LEVEL).y;
-    const maxXT = getTile(queryBounds.maxX, queryBounds.maxY, ZOOM_LEVEL).x;
+    const maxYT = getTile(queryBounds.minX, queryBounds.minY, z).y;
+    const minXT = getTile(queryBounds.minX, queryBounds.minY, z).x;
+    const minYT = getTile(queryBounds.maxX, queryBounds.maxY, z).y;
+    const maxXT = getTile(queryBounds.maxX, queryBounds.maxY, z).x;
     
     const tilesToLoad = [];
     for (let x = minXT; x <= maxXT; x++) {
@@ -202,7 +255,7 @@ export async function GET(request) {
     }
     
     const tilePromises = tilesToLoad.map(async tile => {
-        const featureCollection = await getLayerTileFromCache(typeName, tile.x, tile.y);
+      const featureCollection = await getLayerTileFromCache(typeName, z, tile.x, tile.y);
         if (!featureCollection) return;
         
         if (!resultCrs && featureCollection.crs) {

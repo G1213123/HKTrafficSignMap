@@ -5,6 +5,7 @@
   "scripts": {
     "update-version": "node scripts/update-version.js",
     "sync-wfs": "python jobs/sync_wfs_layers.py",
+    "build-mvt": "node --max-old-space-size=7168 jobs/build_vector_tiles.js",
     "dev": "npm run update-version && next dev",
     "build": "npm run update-version && next build",
     "start": "next start",
@@ -13,13 +14,17 @@
   "dependencies": {
     "@google-cloud/storage": "^7.17.2",
     "@mapbox/geojson-normalize": "^0.0.1",
+    "@mapbox/vector-tile": "^2.0.4",
     "@turf/turf": "^7.3.5",
     "dotenv": "^17.2.1",
+    "geojson-vt": "^4.0.3",
     "lucide-react": "latest",
     "maplibre-gl": "^5.23.0",
     "next": "^16.1.6",
+    "pbf": "^4.0.1",
     "proj4": "^2.20.8",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react-dom": "^19.2.4",
+    "vt-pbf": "^3.1.3"
   }
 }
