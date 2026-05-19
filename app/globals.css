@@ -573,7 +573,7 @@ body {
   justify-content: center;
   /* Counter MapLibre's translate(-100%, -50%) by translating half width
      then apply rotation around the center so the text stays centered after rotate */
-  transform: translateX(-50%) rotate(var(--angle, 0));
+  transform: translateX(0%) rotate(var(--angle, 0));
   transform-origin: center center;
   width: calc(var(--w, 20px) * var(--map-icon-scale, 1));
   height: calc(var(--h, 20px) * var(--map-icon-scale, 1));

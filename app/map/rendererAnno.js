@@ -46,69 +46,7 @@ const buildRawOutlineFeatures = (feature) => {
         }));
 };
 
-const wrapEnglishText = (text, maxCharsPerLine) => {
-    const words = String(text || '')
-        .replace(/\s+/g, ' ')
-        .trim()
-        .split(' ')
-        .filter(Boolean);
-
-    if (words.length === 0) return [];
-
-    const lines = [];
-    let currentLine = '';
-
-    const pushCurrentLine = () => {
-        if (currentLine) {
-            lines.push(currentLine);
-            currentLine = '';
-        }
-    };
-
-    const appendWord = (word) => {
-        if (!currentLine) {
-            currentLine = word;
-            return;
-        }
-
-        if ((currentLine.length + word.length + 0.5) <= maxCharsPerLine) {
-            currentLine += ' ' + word;
-            return;
-        }
-
-        pushCurrentLine();
-        currentLine = word;
-    };
-
-    words.forEach(word => {
-        if (word.length <= 6) {
-            appendWord(word);
-            return;
-        }
-
-        if (currentLine && (currentLine.length + word.length + 0.5) > maxCharsPerLine) {
-            pushCurrentLine();
-        }
-
-        let remaining = word;
-        while (remaining.length > maxCharsPerLine) {
-            const chunk = remaining.slice(0, maxCharsPerLine);
-            if (currentLine) pushCurrentLine();
-            lines.push(chunk);
-            remaining = remaining.slice(maxCharsPerLine);
-        }
-
-        if (remaining.length > 0) {
-            appendWord(remaining);
-        }
-    });
-
-    pushCurrentLine();
-    return lines;
-};
-
 export const renderAnno = (map, typeName, annos, markersRef, activeLayersRef, showRawPoints = false) => {
-    // 3. Purge old markers & Repopulate newly fetched MapLibre Point Markers
     if (!markersRef.current[typeName]) {
         markersRef.current[typeName] = [];
     }
@@ -142,82 +80,40 @@ export const renderAnno = (map, typeName, annos, markersRef, activeLayersRef, sh
         const el = document.createElement('div');
         let angle = (feature.properties.Angle != null) ? Number(feature.properties.Angle) : 0;
 
-        // Strip out any <fnt> tags or HTML formatting included in the text string (e.g. Chinese string formatting)
+        // Strip out any <fnt> tags or HTML formatting included in the text string
         let textStr = feature.properties.TextString;
         if (typeof textStr === 'string') {
             textStr = textStr.replace(/<[^>]*>?/gm, '');
         }
 
-        const ring = polyCoords[0];
-        const p0 = turf.point(ring[0]);
-        const p1 = turf.point(ring[1]);
-        const p2 = turf.point(ring[2]);
-
-        const l1 = turf.distance(p0, p1, { units: 'meters' });
-        const l2 = turf.distance(p1, p2, { units: 'meters' });
-
-        const wMeters = Math.min(l1, l2);
-        const hMeters = Math.max(l1, l2);
+        const fontSizeRaw = feature.properties.FontSize || 200; // Default if not present
+        const fontMeters = fontSizeRaw * 0.015;                 // Convert to meters
+        
+        let lines = textStr.split(/\r|\n/);
 
         const lat = coords[1];
         const metersPerPx = 40075016.686 * Math.cos(lat * Math.PI / 180) / Math.pow(2, 21 + 9);
+        
+        const fontPx = fontMeters / metersPerPx * 10;
+        
+        const isCjk = /[\u4E00-\u9FFF]/.test(textStr);
+        const wrapperClass = isCjk ? 'svg-wrapper cjk' : 'svg-wrapper';
 
-        const wPx = wMeters / metersPerPx;
-        const hPx = hMeters / metersPerPx;
+        const charAspect = isCjk ? 1.0 : 0.6;
+        const maxChars = Math.max(...lines.map(l => l.length));
+        
+        const wPx = (maxChars * fontPx * charAspect) + 4;
+        const hPx = (lines.length * fontPx * 1.2) + 4;
 
         el.className = 'custom-svg-icon-wrapper';
-        // Detect CJK characters and add a class so CSS can select a different font
-        const isCjk = /[\u4E00-\u9FFF]/.test(textStr);
-        const isEnglish = /^[A-Za-z0-9\s\-.,'()/]+$/.test(textStr);
-        const wrapperClass = isCjk ? 'svg-wrapper cjk' : 'svg-wrapper';
-        const cjkLines = isCjk
-            ? textStr.split(/\s+/).map(part => part.trim()).filter(Boolean)
-            : [];
-
-        // Calculate line wrapping using meters, then convert the longest line back to SVG width units.
-        let linesToRender = [textStr];
-        if (isCjk && cjkLines.length > 1) {
-            linesToRender = cjkLines;
-        } else if (isEnglish) {
-            const englishCharWidthMeters = 0.5;
-            const maxCharsPerLine = Math.max(1, Math.floor(wMeters / englishCharWidthMeters));
-            linesToRender = wrapEnglishText(textStr, maxCharsPerLine);
-        }
-        const longestLineLength = Math.max(...linesToRender.map(l => l.length));
-        const charWidthEstimate = isEnglish ? 0.5 : (feature.properties.CharacterWidth * 1.25); // meters for English, SVG units for CJK
-        const textLengthSvg = isEnglish
-            ? ((longestLineLength * charWidthEstimate) / Math.max(wMeters, 0.000001)) * 100
-            : ((longestLineLength * charWidthEstimate));
-
-        const textSvg = isCjk
-            ? (() => {
-                const lineStep = 80;
-                const startY = feature.properties.FontSize * 10 || 60 ;
-                const tspans = cjkLines
-                    .map((line, idx) => idx === 0
-                        ? `<tspan x="0" y="${startY}">${escapeSvgText(line)}</tspan>`
-                        : `<tspan x="0" dy="${lineStep}">${escapeSvgText(line)}</tspan>`)
-                    .join('');
-                return `<text transform="scale(1, ${1/cjkLines.length})" text-anchor="middle" font-size="${feature.properties.FontSize * 10 || 60}" fill="black" stroke="none" textLength="100" lengthAdjust="spacingAndGlyphs">${tspans}</text>`;
-            })()
-            : isEnglish 
-                ? (() => {
-                    const lineStep = feature.properties.FontSize * 7.5 || 40;
-                    const startY = feature.properties.FontSize * 10 || 60;
-                    const tspans = linesToRender
-                        .map((line, idx) => idx === 0
-                            ? `<tspan x="0" y="${startY}">${escapeSvgText(line)}</tspan>`
-                            : `<tspan x="0" dy="${lineStep}">${escapeSvgText(line)}</tspan>`)
-                        .join('');
-                    return `<text transform="scale(1, ${1/linesToRender.length})" text-anchor="middle" font-size="${feature.properties.FontSize * 15 || 60}" fill="black" stroke="none">${tspans}</text>`;
-                })()
-                : `<text transform="scale(0.5, 1.5)" x="100" y="25" dominant-baseline="central" text-anchor="middle" font-size="${feature.properties.FontSize * 10 || 60}" fill="black" stroke="none" textLength="100" lengthAdjust="spacingAndGlyphs">${escapeSvgText(textStr)}</text>`;
-        // Set CSS variables for dynamic sizing/rotation and let globals.css provide the styling
+        
+        const spanLines = lines.map(line => `<div style="white-space: pre; text-align: center;">${escapeSvgText(line)}</div>`).join('');
+        
         el.innerHTML = `
-            <div class="${wrapperClass}" style="--angle:${-angle}deg; --w:${wPx}px; --h:${hPx}px;">
-                <svg viewBox="0 0 100 100" preserveAspectRatio="none" overflow="visible">
-                    ${textSvg}
-                </svg>
+            <div class="${wrapperClass}" style="--angle:${-angle}deg; --w:${wPx}px; --h:${hPx}px; font-size: calc(${fontPx}px * var(--map-icon-scale, 1)); color: black; font-family: ${isCjk ? "'Noto Sans SC', 'Microsoft YaHei', 'PingFang SC', sans-serif" : "sans-serif"}; font-weight: 600; line-height: 1.2; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <div style="transform: scale(0.66, ${isCjk?2:2.5}); transform-origin: center center; display: flex; flex-direction: column; align-items: center;">
+                    ${spanLines}
+                </div>
             </div>
         `;
 
@@ -228,7 +124,7 @@ export const renderAnno = (map, typeName, annos, markersRef, activeLayersRef, sh
         }).setLngLat(coords);
 
         el.addEventListener('click', (e) => {
-            if (window.isMeasuringActive) return; // Prevent popup if measuring tool is active
+            if (window.isMeasuringActive) return;
 
             e.stopPropagation();
             let popupContent = `<b>${typeName.replace('csdi:DTAD_', '').replace(/_/g, ' ')}</b><br><div class="popup-content">`;
