@@ -571,7 +571,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transform: rotate(var(--angle, 0));
+  /* Counter MapLibre's translate(-100%, -50%) by translating half width
+     then apply rotation around the center so the text stays centered after rotate */
+  transform: translateX(-50%) rotate(var(--angle, 0));
+  transform-origin: center center;
   width: calc(var(--w, 20px) * var(--map-icon-scale, 1));
   height: calc(var(--h, 20px) * var(--map-icon-scale, 1));
 }
@@ -594,5 +597,5 @@ body {
 /* Use a CJK-capable font when text is Chinese */
 .custom-svg-icon-wrapper .svg-wrapper.cjk svg text {
   font-family: 'Noto Sans SC', 'Microsoft YaHei', 'PingFang SC', sans-serif;
-  font-weight: 400;
+  font-weight: 600;
 }

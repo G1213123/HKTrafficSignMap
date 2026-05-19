@@ -32,7 +32,8 @@ export const loadLayerData = (typeName, { map, abortControllers, markersRef, act
 
     const bounds = map.getBounds();
     const bbox = `${bounds.getSouth()},${bounds.getWest()},${bounds.getNorth()},${bounds.getEast()}`;
-    const z = Math.max(0, Math.floor(map.getZoom() || 16));
+    // WFS only supports zoom level 18 - force all requests to zoom 18
+    const z = 18;
     const layerUrl = `/api/layers?typeName=${encodeURIComponent(typeName)}&bbox=${encodeURIComponent(bbox)}&format=pbf&z=${z}`;
 
     return fetchWithRetry(layerUrl, { signal: controller.signal }, 2).then(data => {
@@ -71,7 +72,7 @@ export const loadLayerData = (typeName, { map, abortControllers, markersRef, act
         // Render Annotations via dispatch
         const annoRenderer = getAnnoRenderer(typeName);
         if (annoRenderer && annos.length > 0) {
-            annoRenderer(map, typeName, annos, markersRef, activeLayersRef);
+            annoRenderer(map, typeName, annos, markersRef, activeLayersRef, showRawPoints);
         }
 
     }).catch(err => {
@@ -82,12 +83,16 @@ export const loadLayerData = (typeName, { map, abortControllers, markersRef, act
 export const applyVisibilityOverlays = ({ map, activeLayers, markersRef }) => {
     Object.values(layersConfig).flat().forEach(typeName => {
         const isActive = activeLayers.has(typeName);
+        const rawOutlineLayerId = `${typeName}-raw-perimeter-layer`;
 
         // Sync MapLibre layer visibility 
         if (map.getStyle()) {
             const layers = map.getStyle().layers;
             layers.forEach(l => {
                 if (l.source === typeName) {
+                    map.setLayoutProperty(l.id, 'visibility', isActive ? 'visible' : 'none');
+                }
+                if (l.id === rawOutlineLayerId) {
                     map.setLayoutProperty(l.id, 'visibility', isActive ? 'visible' : 'none');
                 }
             });

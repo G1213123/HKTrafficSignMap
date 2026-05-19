@@ -8,6 +8,7 @@ const BASE_DIR = path.resolve(__dirname, '..');
 const WFS_DIR = path.join(BASE_DIR, 'public', 'data', 'wfs');
 const MVT_DIR = path.join(BASE_DIR, 'public', 'data', 'mvt');
 const MVT_METADATA_PATH = path.join(MVT_DIR, 'metadata.json');
+const { spawn } = require('child_process');
 
 const MIN_ZOOM = Number.parseInt(process.env.MVT_MIN_ZOOM || '12', 10);
 const MAX_ZOOM = Number.parseInt(process.env.MVT_MAX_ZOOM || '18', 10);
@@ -18,8 +19,8 @@ const MAX_ZOOM = Number.parseInt(process.env.MVT_MAX_ZOOM || '18', 10);
 // - high: minimal simplification for high zooms (preserve line detail)
 const TILE_INDEX_SETS = {
   low: {
-    // coarse: higher tolerance -> fewer vertices
-    tolerance: 10,
+    // coarse: higher tolerance -> fewer vertices (lower zooms don't need high detail)
+    tolerance: 6,
     extent: 4096,
     buffer: 64,
     lineMetrics: false,
@@ -29,7 +30,8 @@ const TILE_INDEX_SETS = {
     indexMaxPoints: 100000,
   },
   mid: {
-    tolerance: 3,
+    // balanced simplification for medium zoom levels
+    tolerance: 2,
     extent: 4096,
     buffer: 64,
     lineMetrics: false,
@@ -39,8 +41,8 @@ const TILE_INDEX_SETS = {
     indexMaxPoints: 200000,
   },
   high: {
-    // preserve detail: small tolerance
-    tolerance: 0.5,
+    // preserve detail: very small tolerance to keep all line segments at high zoom
+    tolerance: 0.1,
     extent: 4096,
     buffer: 64,
     lineMetrics: false,
@@ -161,20 +163,33 @@ async function buildLayerTiles(layerDirName, minZoom, maxZoom) {
     return { skipped: true, reason: 'missing raw.json', layerDirName };
   }
 
-  const rawText = await fs.readFile(rawPath, 'utf8');
-  const featureCollection = JSON.parse(rawText);
-  const features = Array.isArray(featureCollection.features)
-    ? featureCollection.features
-    : [];
+  let rawText = await fs.readFile(rawPath, 'utf8');
+  let featureCollection = JSON.parse(rawText);
+  rawText = null; // Clear memory after parsing
+  let features = Array.isArray(featureCollection.features) ? featureCollection.features : [];
+  const featureCount = features.length;
 
-  if (features.length === 0) {
+  if (featureCount === 0) {
+    featureCollection = null;
+    features = null;
     return { skipped: true, reason: 'empty features', layerDirName };
   }
+
+  // Log feature types for debugging line loss issues
+  const featureTypes = {};
+  features.forEach((f) => {
+    const geomType = f && f.geometry && f.geometry.type ? f.geometry.type : 'unknown';
+    featureTypes[geomType] = (featureTypes[geomType] || 0) + 1;
+  });
+  console.log(`  Feature types: ${JSON.stringify(featureTypes)}`);
 
   const typeName = typeNameFromDirName(layerDirName);
   const mvtLayerName = normalizeMvtLayerName(typeName);
   const bounds = getFeatureCollectionBounds(featureCollection);
   if (!bounds) {
+    console.log(`  ERROR: No valid geometry bounds found for ${layerDirName}. Feature details:`, featureTypes);
+    featureCollection = null;
+    features = null;
     return { skipped: true, reason: 'no valid geometry bounds', layerDirName };
   }
 
@@ -184,54 +199,121 @@ async function buildLayerTiles(layerDirName, minZoom, maxZoom) {
   const nByZoom = {};
   let tilesWritten = 0;
 
-  // Determine split ranges for low/mid/high based on overall min/max
-  const lowMax = Math.min(minZoom + 2, maxZoom);
-  const midMin = lowMax + 1;
-  const midMax = Math.max(midMin, Math.min(maxZoom - 1, maxZoom));
-  const highMin = Math.max(midMax + 1, minZoom);
+  // Build a single high-detail index once and reuse for all zooms to reduce memory spikes
+  const indexOptions = Object.assign({}, TILE_INDEX_SETS.high);
 
-  const sets = [
-    { name: 'low', zStart: minZoom, zEnd: lowMax, options: TILE_INDEX_SETS.low },
-    { name: 'mid', zStart: midMin, zEnd: Math.min(maxZoom - 1, maxZoom), options: TILE_INDEX_SETS.mid },
-    { name: 'high', zStart: Math.max(highMin, minZoom), zEnd: maxZoom, options: TILE_INDEX_SETS.high },
-  ];
+  // Prepare index input and release raw references to lower peak memory
+  const indexInput = { type: 'FeatureCollection', features: featureCollection.features };
+  featureCollection = null;
+  features = null;
 
-  for (const set of sets) {
-    if (set.zStart > set.zEnd) continue;
-    // Build an index tuned for this detail set
-    const index = geojsonvt(featureCollection, set.options);
+  // Only build tiles at zoom 18 to reduce processing and memory usage
+  const zTarget = 18;
 
-    for (let z = set.zStart; z <= set.zEnd; z += 1) {
-      const maxTile = Math.pow(2, z) - 1;
-      const minX = Math.max(0, Math.min(maxTile, toTileX(bounds.minLon, z)));
-      const maxX = Math.max(0, Math.min(maxTile, toTileX(bounds.maxLon, z)));
-      const minY = Math.max(0, Math.min(maxTile, toTileY(bounds.maxLat, z)));
-      const maxY = Math.max(0, Math.min(maxTile, toTileY(bounds.minLat, z)));
+  // Use on-disk per-tile NDJSON buffering to avoid large in-memory maps
+  const tmpLayerDir = path.join(outLayerDir, 'tmp', String(zTarget));
+  await ensureDir(tmpLayerDir);
 
-      let zoomCount = 0;
-      for (let x = minX; x <= maxX; x += 1) {
-        for (let y = minY; y <= maxY; y += 1) {
-          const tile = index.getTile(z, x, y);
-          if (!tile || !tile.features || tile.features.length === 0) continue;
+  function getFeatureBounds(feature) {
+    const geom = feature && feature.geometry;
+    if (!geom || !geom.coordinates) return null;
+    const bounds = { minLon: Infinity, minLat: Infinity, maxLon: -Infinity, maxLat: -Infinity };
 
-          const tileBuffer = vtpbf.fromGeojsonVt({ [mvtLayerName]: tile });
-          const tilePath = path.join(outLayerDir, String(z), String(x), `${y}.pbf`);
-          await ensureDir(path.dirname(tilePath));
-          await fs.writeFile(tilePath, tileBuffer);
-          zoomCount += 1;
-          tilesWritten += 1;
-          nByZoom[z] = (nByZoom[z] || 0) + 1;
+    function collect(coords) {
+      if (!Array.isArray(coords)) return;
+      if (typeof coords[0] === 'number' && typeof coords[1] === 'number') {
+        const lon = coords[0];
+        const lat = coords[1];
+        if (lon < bounds.minLon) bounds.minLon = lon;
+        if (lon > bounds.maxLon) bounds.maxLon = lon;
+        if (lat < bounds.minLat) bounds.minLat = lat;
+        if (lat > bounds.maxLat) bounds.maxLat = lat;
+        return;
+      }
+      for (const c of coords) collect(c);
+    }
+
+    collect(geom.coordinates);
+    if (!isFinite(bounds.minLon)) return null;
+    return bounds;
+  }
+
+  // Stream features into per-tile NDJSON files at zTarget
+  for (const feature of indexInput.features) {
+    const fb = getFeatureBounds(feature);
+    if (!fb) continue;
+    const minX = toTileX(fb.minLon, zTarget);
+    const maxX = toTileX(fb.maxLon, zTarget);
+    const minY = toTileY(fb.maxLat, zTarget);
+    const maxY = toTileY(fb.minLat, zTarget);
+
+    for (let x = minX; x <= maxX; x += 1) {
+      for (let y = minY; y <= maxY; y += 1) {
+        const filePath = path.join(tmpLayerDir, `${x}_${y}.ndjson`);
+        // Append feature as one JSON line
+        try {
+          await fs.appendFile(filePath, `${JSON.stringify(feature)}\n`, 'utf8');
+        } catch (e) {
+          // ignore write errors per tile to keep going
         }
       }
     }
   }
+
+  // Free the large feature array to help GC
+  try { indexInput.features = null; } catch (e) {}
+
+  // Read each per-tile NDJSON file, build a tiny index, and emit the pbf
+  const tmpFiles = await fs.readdir(tmpLayerDir).catch(() => []);
+  for (const fname of tmpFiles) {
+    if (!fname.endsWith('.ndjson')) continue;
+    const [xStr, yWithExt] = fname.split('_');
+    const yStr = (yWithExt || '').replace('.ndjson', '');
+    const x = Number(xStr);
+    const y = Number(yStr);
+    const filePath = path.join(tmpLayerDir, fname);
+    const fileText = await fs.readFile(filePath, 'utf8').catch(() => '');
+    const lines = fileText.split('\n').filter(Boolean);
+    const tileFeatures = lines.map((l) => {
+      try { return JSON.parse(l); } catch (e) { return null; }
+    }).filter(Boolean);
+
+    if (tileFeatures.length === 0) {
+      await fs.unlink(filePath).catch(() => {});
+      continue;
+    }
+
+    const smallCollection = { type: 'FeatureCollection', features: tileFeatures };
+    const smallIndex = geojsonvt(smallCollection, { tolerance: indexOptions.tolerance, extent: indexOptions.extent, buffer: indexOptions.buffer, maxZoom: zTarget, indexMaxZoom: zTarget });
+    const tile = smallIndex.getTile(zTarget, x, y);
+    if (!tile || !tile.features || tile.features.length === 0) {
+      await fs.unlink(filePath).catch(() => {});
+      continue;
+    }
+
+    const tileBuffer = vtpbf.fromGeojsonVt({ [mvtLayerName]: tile });
+    const tilePath = path.join(outLayerDir, String(zTarget), String(x), `${y}.pbf`);
+    await ensureDir(path.dirname(tilePath));
+    await fs.writeFile(tilePath, tileBuffer);
+    tilesWritten += 1;
+    nByZoom[zTarget] = (nByZoom[zTarget] || 0) + 1;
+
+    // delete the temp file to free disk and reduce later reads
+    await fs.unlink(filePath).catch(() => {});
+  }
+
+  // remove tmp dir if empty
+  try { await fs.rmdir(tmpLayerDir); } catch (e) {}
+
+  console.log(`  Zoom ${zTarget}: wrote ${nByZoom[zTarget] || 0} tiles from ${featureCount} features`);
 
   return {
     skipped: false,
     layerDirName,
     typeName,
     mvtLayerName,
-    featureCount: features.length,
+    featureCount,
+    featureTypes,
     bounds,
     minZoom,
     maxZoom,
@@ -250,25 +332,43 @@ async function main() {
   console.log(`Building vector tiles for ${layerDirs.length} layer directories...`);
   console.log(`Zoom range: ${MIN_ZOOM}-${MAX_ZOOM}`);
 
+  // CLI single-layer mode: if script called with `--single <layerDir>` process just that layer
+  const singleArgIndex = process.argv.indexOf('--single');
+  if (singleArgIndex !== -1 && process.argv.length > singleArgIndex + 1) {
+    const singleLayer = process.argv[singleArgIndex + 1];
+    console.log(`Running single-layer build for ${singleLayer}`);
+    const res = await buildLayerTiles(singleLayer, MIN_ZOOM, MAX_ZOOM);
+    console.log(res.skipped ? `skipped: ${res.reason}` : `wrote ${res.tilesWritten} tiles from ${res.featureCount} features`);
+    return;
+  }
+
   const results = [];
+
+  // Process each layer in a fresh Node process to bound memory per-layer
   for (const layerDirName of layerDirs) {
     console.log(`- ${layerDirName}`);
-    try {
-      const res = await buildLayerTiles(layerDirName, MIN_ZOOM, MAX_ZOOM);
-      if (res.skipped) {
-        console.log(`  skipped: ${res.reason}`);
-      } else {
-        console.log(`  wrote ${res.tilesWritten} tiles from ${res.featureCount} features`);
-      }
-      results.push(res);
-    } catch (err) {
-      console.error(`  failed: ${err.message}`);
-      results.push({
-        skipped: true,
-        layerDirName,
-        reason: `error: ${err.message}`,
+    // Spawn a child process that runs this script in single-layer mode
+    const args = [
+      `--max-old-space-size=${Math.max(2048, Number(process.env.BUILD_MVT_MEM) || 7168)}`,
+      path.join('jobs', 'build_vector_tiles.js'),
+      '--single',
+      layerDirName,
+    ];
+
+    const node = process.execPath; // path to node
+    await new Promise((resolve) => {
+      const child = spawn(node, args, { cwd: BASE_DIR, stdio: 'inherit' });
+      child.on('close', (code) => {
+        if (code !== 0) {
+          console.error(`  child process for ${layerDirName} exited with ${code}`);
+          results.push({ skipped: true, layerDirName, reason: `child exit ${code}` });
+        } else {
+          // Success - the child already printed summary
+          results.push({ skipped: false, layerDirName });
+        }
+        resolve();
       });
-    }
+    });
   }
 
   const metadata = {

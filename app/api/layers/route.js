@@ -7,8 +7,9 @@ import { generateSignedUrlGoogle } from '../../lib/generateSignedUrlGoogle';
 
 const layerCache = globalThis.__layerApiCache || new Map();
 globalThis.__layerApiCache = layerCache;
-const DEFAULT_ZOOM = 16;
-const MIN_MVT_ZOOM = Number.parseInt(process.env.MVT_MIN_ZOOM || '12', 10);
+// WFS only supports zoom level 18 - force all requests to use this level
+const FORCED_ZOOM = 18;
+const MIN_MVT_ZOOM = Number.parseInt(process.env.MVT_MIN_ZOOM || '18', 10);
 const MAX_MVT_ZOOM = Number.parseInt(process.env.MVT_MAX_ZOOM || '18', 10);
 
 function normalizeMvtLayerName(typeName) {
@@ -220,17 +221,9 @@ export async function GET(request) {
     return NextResponse.json({ error: 'Invalid bbox parameter' }, { status: 400 });
   }
 
-  // Determine tile zoom to use for fetching vector tiles. Allow client to request a zoom
-  // via `z` query param; otherwise use server default. Validate against build config.
-  let z = DEFAULT_ZOOM;
-  const zText = searchParams.get('z');
-  if (zText) {
-    const parsed = Number(zText);
-    if (!Number.isInteger(parsed) || parsed < MIN_MVT_ZOOM || parsed > MAX_MVT_ZOOM) {
-      return NextResponse.json({ error: `Invalid z parameter; expected integer between ${MIN_MVT_ZOOM} and ${MAX_MVT_ZOOM}` }, { status: 400 });
-    }
-    z = parsed;
-  }
+  // WFS only supports zoom level 18 - ignore any client-provided z parameter
+  const z = FORCED_ZOOM;
+  // Note: client may send ?z=X but it will be ignored; all requests use zoom 18
 
   try {
     let resultFeatures = [];
