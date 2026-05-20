@@ -635,7 +635,7 @@
         "length": 3125,
         "offset": {
             "x": -2000,
-            "y": -2000
+            "y": -1600
         }
     },
     {
@@ -646,7 +646,7 @@
         "length": 3125,
         "offset": {
             "x": 2000,
-            "y": -2000
+            "y": -1600
         }
     },
     {
@@ -676,8 +676,9 @@
         "angleCorrection": -90,
         "offset": {
             "x": 0,
-            "y": -1000
-        }
+            "y": -800
+        },
+        "symbolSizeScale": 0.8
     },
     {
         "signNumber": "1141",
@@ -774,7 +775,8 @@
         "minCharacterHeight": 1000,
         "maxCharacterHeight": 1750,
         "minNumeralHeight": 1600,
-        "maxNumeralHeight": 2800
+        "maxNumeralHeight": 2800,
+        "angleCorrection": -90
     },
     {
         "signNumber": "1156",
@@ -919,7 +921,8 @@
         "signNumber": "1176",
         "letterHeight": 800,
         "characterHeight": 1350,
-        "angleCorrection": -90
+        "angleCorrection": -90,
+        "symbolSizeScale": 0.75
     },
     {
         "signNumber": "1177",

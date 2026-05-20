@@ -25,6 +25,7 @@ export const renderPoints = (map, typeName, points, markersRef, activeLayersRef,
             let angle = (feature.properties && feature.properties.ANGLE != null) ? Number(feature.properties.ANGLE) - 90 : 0;
             let customStyle = `transform: rotate(${-angle}deg);`;
             let extraClass = '';
+            let dimScale = 1;
 
             if (typeName.includes('DTAD_RD_MARK') && refname) {
                 extraClass = ' rd-mark-icon';
@@ -63,11 +64,14 @@ export const renderPoints = (map, typeName, points, markersRef, activeLayersRef,
                         const lengthPx = (lengthValue / 1000) / metersPerPx;
                         customStyle += ` height: calc(${lengthPx}px * var(--map-icon-scale, 1)); width: auto; max-width: none;`;
                     } 
+                    if (dim.symbolSizeScale) {
+                        dimScale = dim.symbolSizeScale;
+                    }
                 }
             }
 
             // Allow per-feature override of height using SYMBOL_SIZE (interpreted as meters)
-            const rawSymbolSize = feature.properties && feature.properties.SYMBOL_SIZE;
+            const rawSymbolSize = feature.properties && feature.properties.SYMBOL_SIZE * dimScale;
             const parsedSymbolSize = rawSymbolSize != null ? Number(rawSymbolSize) : NaN;
             if (!isNaN(parsedSymbolSize)) {
                 const finalHeightPx = parsedSymbolSize / metersPerPx / 2;

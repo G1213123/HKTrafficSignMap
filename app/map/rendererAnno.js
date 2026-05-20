@@ -87,31 +87,32 @@ export const renderAnno = (map, typeName, annos, markersRef, activeLayersRef, sh
         }
 
         const fontSizeRaw = feature.properties.FontSize || 200; // Default if not present
-        const fontMeters = fontSizeRaw * 0.015;                 // Convert to meters
+        const characterWidth = feature.properties.CharacterWidth / 50 || 1; // Default character width if not specified
         
         let lines = textStr.split(/\r|\n/);
-
+        
         const lat = coords[1];
         const metersPerPx = 40075016.686 * Math.cos(lat * Math.PI / 180) / Math.pow(2, 21 + 9);
         
-        const fontPx = fontMeters / metersPerPx * 10;
         
         const isCjk = /[\u4E00-\u9FFF]/.test(textStr);
+        const fontMeters = fontSizeRaw * (isCjk ? 0.015 : 0.02);                 // Convert to meters
         const wrapperClass = isCjk ? 'svg-wrapper cjk' : 'svg-wrapper';
-
+        
+        const fontPx = fontMeters / metersPerPx * 10;
         const charAspect = isCjk ? 1.0 : 0.6;
         const maxChars = Math.max(...lines.map(l => l.length));
-        
+
         const wPx = (maxChars * fontPx * charAspect) + 4;
         const hPx = (lines.length * fontPx * 1.2) + 4;
 
         el.className = 'custom-svg-icon-wrapper';
-        
+
         const spanLines = lines.map(line => `<div style="white-space: pre; text-align: center;">${escapeSvgText(line)}</div>`).join('');
-        
+
         el.innerHTML = `
-            <div class="${wrapperClass}" style="--angle:${-angle}deg; --w:${wPx}px; --h:${hPx}px; font-size: calc(${fontPx}px * var(--map-icon-scale, 1)); color: black; font-family: ${isCjk ? "'Noto Sans SC', 'Microsoft YaHei', 'PingFang SC', sans-serif" : "sans-serif"}; font-weight: 600; line-height: 1.2; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                <div style="transform: scale(0.66, ${isCjk?2:2.5}); transform-origin: center center; display: flex; flex-direction: column; align-items: center;">
+            <div class="${wrapperClass}" style="--angle:${-angle}deg; --w:${wPx}px; --h:${hPx}px; font-size: calc(${fontPx}px * var(--map-icon-scale, 1)); color: black; font-family: ${isCjk ? "'Noto Sans SC', 'Microsoft YaHei', 'PingFang SC', sans-serif" : "sans-serif"}; font-weight: 600; line-height: ${isCjk?1.2:1}; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <div style="transform: scale(${0.75 * characterWidth}, ${isCjk ? 2 : 2}); transform-origin: center center; display: flex; flex-direction: column; align-items: center;">
                     ${spanLines}
                 </div>
             </div>

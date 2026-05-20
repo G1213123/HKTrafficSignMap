@@ -788,6 +788,27 @@ const roadMarkingStylesByLayer = {
             }
         ]
     },
+    'csdi:DTAD_RD_MARK_SYM_LINE': {
+        // Symbol line styles use REFNAME numeric keys (e.g., "1048")
+        // 1048 mirrors RM1048 from RD_MARK_LINE_C
+        "1048": [
+            {
+                dashMeters: [1, 1],
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ],
+        // Default fallback for symbol-line layer
+        "DEFAULT": [
+            {
+                dashMeters: null,
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ]
+    },
     'csdi:DTAD_LV22_LINE': {
         // Default Fallback for LV22 - references same styles as RD_MARK_LINE_C
         "DEFAULT": [

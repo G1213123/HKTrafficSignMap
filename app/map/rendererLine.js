@@ -248,11 +248,11 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
     if (!markersRef.current[typeName]) markersRef.current[typeName] = [];
 
     features.forEach(f => {
-        const linetype = f.properties && f.properties.LINETYPE;
+        const linetype = f.properties && (f.properties.LINETYPE || f.properties.REFNAME); // ROADCLASS is fallback for older data without LINETYPE
         const isLineGeometry = f.geometry.type === 'LineString' || f.geometry.type === 'MultiLineString';
 
         if (isLineGeometry) {
-            const linetype = f.properties && f.properties.LINETYPE;
+            const linetype = f.properties && (f.properties.LINETYPE || f.properties.REFNAME);
             const lineDefn = linetype ? getLineDefinition(typeName, linetype) : null;
             const hasIcon = isIconLineLayer && lineDefn && lineDefn.some(def => def && def.iconGeometry && def.iconInterval);
             if (hasIcon) {

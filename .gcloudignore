@@ -12,6 +12,7 @@ permenant/
 /data/
 public/data/svgs/
 public/data/wfs/
+public/data/mvt/
 __pycache__/
 *.pyc
 *.py
