@@ -1050,7 +1050,7 @@ const roadMarkingStylesByLayer = {
                 }
             },
             {
-                dashMeters: [2, 0.25],
+                dashMeters: [2, 2],
                 startDistance: 0,
                 weight: 2,
                 color: "#000000",

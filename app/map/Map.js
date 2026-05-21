@@ -6,14 +6,25 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { getMetersPerPixel } from './mapUtils';
 import { layersConfig } from './layerConfig';
 import proj4 from 'proj4';
-import LayerControl from './LayerControl';
 import Navbar from '../components/Navbar';
 import MapSidebar from './MapSidebar';
 import MeasureTool from './MeasureTool';
+import { useI18n } from '../components/I18nProvider';
 import { loadLayerData, renderLayerData, applyVisibilityOverlays } from './layerDataManager';
 import './map.css';
 
+const BASEMAP_LABEL_SOURCE_ID = 'geodata-basemap-labels';
+const BASEMAP_LABEL_LAYER_ID = 'geodata-basemap-labels-layer';
+
+const escapeHtml = (value = '') => String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
 export default function Map() {
+    const { locale, t } = useI18n();
     const mapContainerRef = useRef(null);
     const mapInstanceRef = useRef(null);
     const isInitializingRef = useRef(false);
@@ -23,7 +34,7 @@ export default function Map() {
 
     const [activeLayers, setActiveLayers] = useState(new Set());
     const activeLayersRef = useRef(activeLayers);
-    const [mapMessage, setMapMessage] = useState('Initializing map...');
+    const [mapMessage, setMapMessage] = useState(t('Initializing map...'));
     const [pendingFetches, setPendingFetches] = useState(0);
     const [mapLoaded, setMapLoaded] = useState(false);
     const [showInfoOverlay, setShowInfoOverlay] = useState(false);
@@ -39,6 +50,39 @@ export default function Map() {
     const [cursorCoordsHK, setCursorCoordsHK] = useState(null);
     const isLocalDataSource = typeof process !== 'undefined' && process.env && process.env.NEXT_PUBLIC_DATA_SOURCE === 'local';
     const dataLoadMinZoom = isLocalDataSource ? 16 : 18;
+
+    const syncBasemapLabels = useCallback((map) => {
+        if (!map) return;
+
+        const lang = locale === 'zh' ? 'tc' : 'en';
+        const labelTiles = [
+            `https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/label/hk/${lang}/WGS84/{z}/{x}/{y}.png`
+        ];
+
+        if (map.getLayer(BASEMAP_LABEL_LAYER_ID)) {
+            map.removeLayer(BASEMAP_LABEL_LAYER_ID);
+        }
+        if (map.getSource(BASEMAP_LABEL_SOURCE_ID)) {
+            map.removeSource(BASEMAP_LABEL_SOURCE_ID);
+        }
+
+        map.addSource(BASEMAP_LABEL_SOURCE_ID, {
+            type: 'raster',
+            tiles: labelTiles,
+            tileSize: 256,
+            minzoom: 0,
+            maxzoom: 22,
+        });
+
+        map.addLayer({
+            id: BASEMAP_LABEL_LAYER_ID,
+            type: 'raster',
+            source: BASEMAP_LABEL_SOURCE_ID,
+            paint: {
+                'raster-opacity': 1,
+            },
+        });
+    }, [locale]);
 
     useEffect(() => {
         activeLayersRef.current = activeLayers;
@@ -146,6 +190,7 @@ export default function Map() {
                 map.on('load', () => {
                     mapInstanceRef.current = map;
                     setMapLoaded(true);
+                    syncBasemapLabels(map);
                     updateScaleIndicator();
                 });
 
@@ -168,7 +213,7 @@ export default function Map() {
                     });
 
                     if (zoom < dataLoadMinZoom) {
-                        setMapMessage(`Zoom in to level ${dataLoadMinZoom}+ to load data`);
+                        setMapMessage(t('Zoom in to level {{zoom}}+ to load data').replace('{{zoom}}', dataLoadMinZoom));
                     } else {
                         setMapMessage(''); // Let the render handle Data Active / Data Loading display
                     }
@@ -232,11 +277,11 @@ export default function Map() {
                         }
                         popupContent += '</div>';
 
-                        new maplibregl.Popup()
-                            .setLngLat(e.lngLat)
-                            .setHTML(popupContent)
-                            .addTo(map);
-                    }
+                            new maplibregl.Popup()
+                                .setLngLat(e.lngLat)
+                                .setHTML(popupContent)
+                                .addTo(map);
+                        }
                 });
 
                 map.on('mousemove', (e) => {
@@ -254,6 +299,11 @@ export default function Map() {
             }
         };
     }, []);
+
+    useEffect(() => {
+        if (!mapLoaded || !mapInstanceRef.current) return;
+        syncBasemapLabels(mapInstanceRef.current);
+    }, [mapLoaded, syncBasemapLabels]);
 
     const fetchLayerData = useCallback((typeName) => {
         setPendingFetches(prev => prev + 1);
@@ -367,16 +417,16 @@ export default function Map() {
 
     const panToMyLocation = () => {
         if (!mapInstanceRef.current) {
-            setMapMessage('Map not ready');
+            setMapMessage(t('Map not ready'));
             return;
         }
         if (!('geolocation' in navigator)) {
-            setMapMessage('Geolocation not supported');
+            setMapMessage(t('Geolocation not supported'));
             return;
         }
 
         setGeolocInProgress(true);
-        setMapMessage('Locating...');
+        setMapMessage(t('Locating...'));
 
         navigator.geolocation.getCurrentPosition((pos) => {
             try {
@@ -387,13 +437,13 @@ export default function Map() {
                 setMapMessage('');
             } catch (err) {
                 console.error('Error centering map to GPS:', err);
-                setMapMessage('Failed to center to GPS');
+                setMapMessage(t('Failed to center to GPS'));
             } finally {
                 setGeolocInProgress(false);
             }
         }, (err) => {
             console.warn('Geolocation error:', err);
-            setMapMessage(err.message || 'Geolocation error');
+            setMapMessage(err.message || t('Geolocation error'));
             setGeolocInProgress(false);
         }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
     };
@@ -509,10 +559,10 @@ export default function Map() {
                                     width: '12px', height: '12px', border: '2px solid #ccc',
                                     borderTopColor: '#333', borderRadius: '50%', animation: 'spin 1s linear infinite'
                                 }} />
-                                <span>Data loading...</span>
+                                <span>{t('Data loading...')}</span>
                             </>
                         ) : (
-                            <span>Data active</span>
+                            <span>{t('Data active')}</span>
                         )}
                     </div>
                     {cursorCoordsHK && (
@@ -536,7 +586,7 @@ export default function Map() {
                             display: 'flex', justifyContent: 'center', alignItems: 'center',
                             cursor: 'pointer', zIndex: 11, fontSize: '16px', color: '#333'
                         }}
-                        title="Center map on my GPS location"
+                        title={t('Center map on my GPS location')}
                     >
                         {geolocInProgress ? (
                             <span style={{ width: '16px', height: '16px', border: '2px solid #ccc', borderTopColor: '#333', borderRadius: '50%', display: 'inline-block', animation: 'spin 1s linear infinite' }} />
@@ -556,7 +606,7 @@ export default function Map() {
                             cursor: 'pointer', zIndex: 10, fontWeight: 'bold', fontFamily: 'serif',
                             fontSize: '16px', color: '#333'
                         }}
-                        title="About Map Data"
+                        title={t('About Map Data')}
                     >
                         i
                     </div>
@@ -582,27 +632,27 @@ export default function Map() {
                                 >
                                     &times;
                                 </button>
-                                <h3 style={{ marginTop: 0, marginBottom: '15px', color: '#333' }}>Map Information & Open Data</h3>
+                                <h3 style={{ marginTop: 0, marginBottom: '15px', color: '#333' }}>{t('Map Information & Open Data')}</h3>
                                 
                                 <p style={{ fontSize: '14px', lineHeight: '1.5', color: '#444' }}>
-                                    This map aggregates and visualizes spatial data from the following Open Data sources provided by the Government of the Hong Kong Special Administrative Region:
+                                    {t('Map open data intro')}
                                 </p>
                                 <ul style={{ fontSize: '14px', lineHeight: '1.5', color: '#444', paddingLeft: '20px' }}>
                                     <li style={{ marginBottom: '8px' }}>
-                                        <strong>Base Map & Vector Map Styles:</strong> Lands Department Open Map Data (GeoData Store API).
+                                        <strong>{t('Base Map & Vector Map Styles')}:</strong> {t('Lands Department Open Map Data (GeoData Store API).')}
                                     </li>
                                     <li style={{ marginBottom: '8px' }}>
-                                        <strong>Traffic Signs & Road Markings:</strong> Transport Department (via CSDI Portal).
+                                        <strong>{t('Traffic Signs & Road Markings')}:</strong> {t('Transport Department (via CSDI Portal).')}
                                     </li>
                                 </ul>
 
                                 <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '20px 0' }} />
                                 
-                                <h4 style={{ margin: '0 0 10px 0', color: '#333' }}>Disclaimer & Legal Notice</h4>
+                                <h4 style={{ margin: '0 0 10px 0', color: '#333' }}>{t('Disclaimer & Legal Notice')}</h4>
                                 <p style={{ fontSize: '13px', lineHeight: '1.5', color: '#666', textAlign: 'justify' }}>
-                                    The spatial data, signs, labels, and related information provided on this map are consolidated from publicly available open data sources for reference and visualization purposes only. <br/><br/>
-                                    <strong>No Warranty of Accuracy:</strong> While every effort has been made to ensure the mapping works correctly, we cannot guarantee the accuracy, completeness, timeliness, or exact positioning of the data presented. The open data may be subject to delays or inaccuracies from the source providers.<br/><br/>
-                                    <strong>Limitation of Liability:</strong> By using this map, you acknowledge that the creator(s) and maintainer(s) of this tool shall not be held liable for any errors, omissions, misrepresentations, or any direct, indirect, or consequential losses and damages arising from your reliance on or use of this map. This map should not be used as a primary source for critical navigation, legal, or construction decisions.
+                                    {t('Map disclaimer paragraph 1')} <br/><br/>
+                                    <strong>{t('No Warranty of Accuracy:')}</strong> {t('Map disclaimer paragraph 2')}<br/><br/>
+                                    <strong>{t('Limitation of Liability:')}</strong> {t('Map disclaimer paragraph 3')}
                                 </p>
                             </div>
                         </div>

@@ -1,11 +1,20 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import Link from 'next/link';
+import { useI18n } from '../components/I18nProvider';
+
+function MapLoading() {
+  const { t } = useI18n();
+  return (
+    <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      {t('Loading Map...')}
+    </div>
+  );
+}
 
 const Map = dynamic(() => import('./Map'), {
   ssr: false,
-  loading: () => <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Loading Map...</div>,
+  loading: () => <MapLoading />,
 });
 
 export default function MapPage() {

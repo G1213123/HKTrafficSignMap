@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { layersConfig } from './layerConfig';
+import { useI18n } from '../components/I18nProvider';
 
 const LayerControl = ({ activeLayers, onToggleLayer, onToggleGroup, showRawPoints, onToggleShowRawPoints }) => {
+    const { t } = useI18n();
     const [collapsed, setCollapsed] = useState(false);
 
     return (
@@ -13,7 +15,7 @@ const LayerControl = ({ activeLayers, onToggleLayer, onToggleGroup, showRawPoint
             fontFamily: 'system-ui, sans-serif', color: '#000000'
         }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: collapsed ? '0' : '10px' }}>
-                <strong style={{ fontSize: '14px' }}>Map Overlays</strong>
+                <strong style={{ fontSize: '14px' }}>{t('Map Overlays')}</strong>
                 <button
                     onClick={() => setCollapsed(!collapsed)}
                     style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', lineHeight: 1 }}
@@ -36,7 +38,7 @@ const LayerControl = ({ activeLayers, onToggleLayer, onToggleGroup, showRawPoint
                                 style={{ marginRight: '6px' }}
                             />
                             <strong style={{ fontSize: '13px' }}>
-                                {groupName}
+                                {t(groupName)}
                             </strong>
                         </div>
                         {layerList.map(layer => {
@@ -45,7 +47,7 @@ const LayerControl = ({ activeLayers, onToggleLayer, onToggleGroup, showRawPoint
                             return (
                                 <label key={layer} style={{ display: 'flex', alignItems: 'center', fontSize: '12px', cursor: 'pointer', margin: '4px 0', paddingLeft: '18px' }}>
                                     <input type="checkbox" checked={isActive} onChange={() => onToggleLayer(layer)} style={{ marginRight: '6px' }} />
-                                    {label}
+                                    {t(label)}
                                 </label>
                             );
                         })}
@@ -55,7 +57,7 @@ const LayerControl = ({ activeLayers, onToggleLayer, onToggleGroup, showRawPoint
             <div style={{ marginTop: '8px', borderTop: '1px solid #eee', paddingTop: '8px' }}>
                 <label style={{ display: 'flex', alignItems: 'center', fontSize: '12px', cursor: 'pointer' }}>
                     <input type="checkbox" checked={!!showRawPoints} onChange={(e) => onToggleShowRawPoints && onToggleShowRawPoints(e.target.checked)} style={{ marginRight: '8px' }} />
-                    Show raw points (debug)
+                    {t('Show raw points (debug)')}
                 </label>
             </div>
         </div>

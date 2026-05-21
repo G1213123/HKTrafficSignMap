@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useI18n } from '../components/I18nProvider';
 import { layersConfig } from './layerConfig';
 
 const MapSidebar = ({
@@ -18,6 +19,7 @@ const MapSidebar = ({
     onRecenter,
     panError
 }) => {
+    const { t } = useI18n();
     // Open by default on larger screens, closed on mobile
     const [open, setOpen] = useState(true);
 
@@ -52,38 +54,38 @@ const MapSidebar = ({
             <button 
                 className="sidebar-arrow-toggle" 
                 onClick={() => setOpen(!open)}
-                aria-label={open ? "Close sidebar" : "Open sidebar"}
-                title={open ? "Close Controls" : "Open Controls"}
+                aria-label={open ? t('Close sidebar') : t('Open sidebar')}
+                title={open ? t('Close Controls') : t('Open Controls')}
             >
                 {open ? '◀' : '▶'}
             </button>
             <div className="sidebar-header">
-                <h3>Map Controls</h3>
+                <h3>{t('Map Controls')}</h3>
             </div>
 
             <div className="sidebar-body">
                     <section className="sidebar-section sidebar-crs">
-                        <label>CRS</label>
+                        <label>{t('CRS')}</label>
                         <select value={crsInput} onChange={(e) => setCrsInput(e.target.value)}>
-                            <option value="EPSG:4326">EPSG:4326 (WGS84)</option>
-                            <option value="EPSG:3857">EPSG:3857 (Web Mercator)</option>
-                            <option value="EPSG:2326">EPSG:2326 (HK1980 Grid)</option>
+                            <option value="EPSG:4326">{t('EPSG:4326 (WGS84)')}</option>
+                            <option value="EPSG:3857">{t('EPSG:3857 (Web Mercator)')}</option>
+                            <option value="EPSG:2326">{t('EPSG:2326 (HK1980 Grid)')}</option>
                         </select>
-                        <label>Coordinates</label>
-                        <input value={coordInput} onChange={(e) => setCoordInput(e.target.value)} placeholder="lng,lat or x,y" />
+                        <label>{t('Coordinates')}</label>
+                        <input value={coordInput} onChange={(e) => setCoordInput(e.target.value)} placeholder={t('lng,lat or x,y')} />
                         {panError && <div style={{ color: '#dc3545', fontSize: '0.8rem', marginTop: '-8px', marginBottom: '8px' }}>{panError}</div>}
                         <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                            <button onClick={onPanTo}>Go</button>
-                            <button onClick={onRecenter}>Center HK</button>
+                            <button onClick={onPanTo}>{t('Go')}</button>
+                            <button onClick={onRecenter}>{t('Center HK')}</button>
                         </div>
                     </section>
 
                     <section className="sidebar-section">
-                        <strong style={{ display: 'block', marginBottom: '8px' }}>Elevation</strong>
+                        <strong style={{ display: 'block', marginBottom: '8px' }}>{t('Elevation')}</strong>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                             {[
-                                { value: 'ALL', label: 'All' },
-                                { value: 'AT-GRADE', label: 'At-grade' },
+                                { value: 'ALL', label: t('All') },
+                                { value: 'AT-GRADE', label: t('At-grade') },
                                 { value: 'A01', label: 'A01' },
                                 { value: 'A02', label: 'A02' },
                             ].map(option => {
@@ -113,7 +115,7 @@ const MapSidebar = ({
 
                     <section className="sidebar-section sidebar-layers">
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                            <strong style={{ margin: 0 }}>Layers</strong>
+                            <strong style={{ margin: 0 }}>{t('Layers')}</strong>
                             <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.85rem', cursor: 'pointer', color: '#007bff' }}>
                                 <input 
                                     type="checkbox" 
@@ -122,7 +124,7 @@ const MapSidebar = ({
                                     onChange={(e) => onToggleAllLayers(e.target.checked)} 
                                     style={{ marginRight: '6px' }}
                                 />
-                                Toggle All
+                                {t('Toggle All')}
                             </label>
                         </div>
                         {Object.entries(layersConfig).map(([groupName, layerList]) => {
@@ -139,7 +141,7 @@ const MapSidebar = ({
                                             onChange={(e) => onToggleGroup(layerList, e.target.checked)} 
                                             onClick={(e) => e.stopPropagation()}
                                         />
-                                        <span style={{ flex: 1 }}>{groupName}</span>
+                                        <span style={{ flex: 1 }}>{t(groupName)}</span>
                                         <span style={{ fontSize: '0.8rem', marginLeft: 'auto', userSelect: 'none', transform: isCollapsed ? 'rotate(-90deg)' : 'none', transition: 'transform 0.2s' }}>
                                             ▼
                                         </span>
@@ -153,7 +155,7 @@ const MapSidebar = ({
                                                     return (
                                                         <label key={layer} className="layer-item">
                                                             <input type="checkbox" checked={!!isActive} onChange={() => onToggleLayer(layer)} />
-                                                            <span>{label}</span>
+                                                            <span>{t(label)}</span>
                                                         </label>
                                                     );
                                                 })}
@@ -167,7 +169,7 @@ const MapSidebar = ({
                         <div style={{ marginTop: '16px' }}>
                             <label className="layer-item" style={{display: 'flex', alignItems: 'center'}}>
                                 <input type="checkbox" checked={!!showRawPoints} onChange={(e) => onToggleShowRawPoints && onToggleShowRawPoints(e.target.checked)} />
-                                <span style={{fontWeight: 500, color: '#333'}}>Show raw points</span>
+                                <span style={{fontWeight: 500, color: '#333'}}>{t('Show raw points')}</span>
                             </label>
                         </div>
                     </section>
