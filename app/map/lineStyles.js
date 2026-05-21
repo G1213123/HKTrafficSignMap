@@ -818,11 +818,206 @@ const roadMarkingStylesByLayer = {
                 color: "#000000",
                 opacity: 0.8
             }
-        ]
+        ],
+        "( DASHED )": [
+            {
+                dashMeters: [1, 1],
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ],
+        "1013": [
+            {
+                dashMeters: [0.6, 0.3], // Solid
+                weight: 2,
+                offset: -0.2 // Offset 0.5m to the left
+            },
+            // Right line
+            {
+                dashMeters: [0.6, 0.3], // Solid
+                weight: 2,
+                offset: 0.2 // Offset 0.5m to the right
+            }
+        ],
+        "1049":[
+            // Left line
+            {
+                dashMeters: [1, 1], // Solid
+                weight: 2,
+                offset: 0 // Offset 0.5m to the left
+            },
+            // Right line
+            {
+                dashMeters: [1, 1], // Solid
+                weight: 2,
+                offset: 0, // Offset 0.5m to the right
+                shift: 1,
+                color: "#FFFF00",
+            }
+        ],
+        "1101":[
+            {
+                dashMeters: [1, 5],
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ],
+        "1102":[
+            {
+                dashMeters: [2, 7],
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ],
+        "1103":[
+            {
+                dashMeters: [3, 5],
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ], 
+        "1104":[
+            {
+                dashMeters: [4, 2],
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ], 
+        "1105":[
+            {
+                dashMeters: [6, 3],
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ], 
+        "1106":[
+            {
+                dashMeters: [0.6, 0.3],
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ], 
+        "1107":[
+            {
+                dashMeters: [1, 1],
+                weight: 2
+            }
+        ], 
+        "1161":[
+            {
+                dashMeters: [2, 1],
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ], 
+        "RM1007":[
+            {
+                dashMeters: [1, 1],
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ], 
+        "RM1012":[
+            // Left line
+            {
+                dashMeters: null, // Solid
+                weight: 2,
+                offset: -0.25 // Offset 0.5m to the left
+            },
+            // Right line
+            {
+                dashMeters: null, // Solid
+                weight: 2,
+                offset: 0.25 // Offset 0.5m to the right
+            }
+        ], 
+
+        "RM1013":[
+            // Left line
+            {
+                dashMeters: [0.6, 0.3], // Solid
+                weight: 2,
+                offset: -0.2 // Offset 0.5m to the left
+            },
+            // Right line
+            {
+                dashMeters: [0.6, 0.3], // Solid
+                weight: 2,
+                offset: 0.2 // Offset 0.5m to the right
+            }
+        ], 
+
+        "RM1048":[
+            {
+                dashMeters: [1, 1],
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ], 
+
+        "RM1104":[
+            {
+                dashMeters: [4, 2],
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ], 
+
+        "RM1107":[
+            {
+                dashMeters: [1, 1],
+                weight: 2
+            }
+        ], 
+
+        "RM1133":[
+            {
+                dashMeters: [4, 2],
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ], 
+
+        "RM1162":[
+            {
+                dashMeters: null,
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ], 
+
     },
     'csdi:DTAD_TG_PATH_LINE': {
         // Default Fallback for TG_PATH - references same styles as RD_MARK_LINE_C
         "DEFAULT": [
+            {
+                iconType: "sequare",
+                iconInterval: 1.25,
+                // Geometry in meters. Renderer expects meters for iconGeometry.
+                iconGeometry: {
+                    shapes: [
+                        // Horizontal tick at top (0.5m wide)
+                        { type: 'line', x1: -0.25, y1: -0.25, x2: 0.25, y2: -0.25, strokeWidth: 200 },
+                        { type: 'line', x1: 0.25, y1: -0.25, x2: 0.25, y2: 0.25, strokeWidth: 200 },
+                        { type: 'line', x1: 0.25, y1: 0.25, x2: -0.25, y2: 0.25, strokeWidth: 200 },
+                        { type: 'line', x1: -0.25, y1: -0.25, x2: -0.25, y2: -0.25, strokeWidth: 200 },
+                    ],
+                    stroke: '#000000'
+                }
+            },
             {
                 dashMeters: null,
                 weight: 2,
@@ -843,64 +1038,8 @@ const roadMarkingStylesByLayer = {
         ],
         "AMT": [
             {
-                iconType: "circle",
-                iconInterval: 1.5,
-                iconGeometry: {
-                    shapes: [
-                        { type: 'circle', x: 0, y: 0, radius: 0.025, strokeWidth: 0.02 }
-                    ],
-                    stroke: '#000000'
-                }
-            }
-        ],
-        "AMT1": [
-            {
-                iconType: "circle",
-                iconInterval: 1.5,
-                iconGeometry: {
-                    shapes: [
-                        { type: 'circle', x: 0, y: 0, radius: 0.025, strokeWidth: 0.02 }
-                    ],
-                    stroke: '#000000'
-                }
-            }
-        ],
-        "AMT-1.5": [
-            {
-                iconType: "circle",
-                iconInterval: 1.5,
-                iconGeometry: {
-                    shapes: [
-                        { type: 'circle', x: 0, y: 0, radius: 0.025, strokeWidth: 0.02 }
-                    ],
-                    stroke: '#000000'
-                }
-            }
-        ],
-        "CBARRIER": [
-            {
-                iconType: "line",
-                iconInterval: 2.5,
-                iconGeometry: {
-                    shapes: [
-                        { type: 'line', x1: -0.25, y1: -0.25, x2: 0.25, y2: 0.25, strokeWidth: 200 },
-                        { type: 'line', x1: -0.25, y1: 0.25, x2: 0.25, y2: -0.25, strokeWidth: 200 },
-                    ],
-                    stroke: '#000000'
-                }
-            },
-            {
-                dashMeters: [1.8, 0.7],
-                startDistance: 0.35,
-                weight: 2,
-                color: "#000000",
-                opacity: 0.8
-            }
-        ],
-        "CRAIL1": [
-            {
                 iconType: "rail",
-                iconInterval: 1.25,
+                iconInterval: 2,
                 // Geometry in meters. Renderer expects meters for iconGeometry.
                 iconGeometry: {
                     shapes: [
@@ -911,7 +1050,253 @@ const roadMarkingStylesByLayer = {
                 }
             },
             {
-                dashMeters: [0.75, 0.5],
+                dashMeters: [2, 0.25],
+                startDistance: 0,
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ],
+        "AMT1": [
+            {
+                iconType: "rail",
+                iconInterval: 3,
+                // Geometry in meters. Renderer expects meters for iconGeometry.
+                iconGeometry: {
+                    shapes: [
+                        // Horizontal tick at top (0.5m wide)
+                        { type: 'line', x1: -0.25, y1: 0, x2: 0.25, y2: 0, strokeWidth: 200 },
+                        { type: 'line', x1: -0.25, y1: 2, x2: 0.25, y2: 2, strokeWidth: 200 },
+                    ],
+                    stroke: '#000000'
+                }
+            },
+            {
+                dashMeters: [1.6, 1.4],
+                startDistance: 0.2,
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ],
+        "AMT-1.5": [
+            {
+                iconType: "rail",
+                iconInterval: 2,
+                // Geometry in meters. Renderer expects meters for iconGeometry.
+                iconGeometry: {
+                    shapes: [
+                        // Horizontal tick at top (0.5m wide)
+                        { type: 'line', x1: -0.25, y1: 0, x2: 0.25, y2: 0, strokeWidth: 200 },
+                    ],
+                    stroke: '#000000'
+                }
+            },
+            {
+                iconType: "rail",
+                iconInterval: 3,
+                // Geometry in meters. Renderer expects meters for iconGeometry.
+                iconGeometry: {
+                    shapes: [
+                        // Horizontal tick at top (0.5m wide)
+                        { type: 'line', x1: -0.25, y1: 0.1, x2: 0.25, y2: 0.1, strokeWidth: 200 },
+                        { type: 'line', x1: -0.25, y1: 1.4, x2: 0.25, y2: 1.4, strokeWidth: 200 },
+                    ],
+                    stroke: '#000000'
+                }
+            },
+            {
+                dashMeters: [0.9, 1.9],
+                startDistance: 0.2,
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ],
+        "AMT1.5_1.0": [
+            {
+                iconType: "rail",
+                iconInterval: 2.5,
+                // Geometry in meters. Renderer expects meters for iconGeometry.
+                iconGeometry: {
+                    shapes: [
+                        // Horizontal tick at top (0.5m wide)
+                        { type: 'line', x1: -0.25, y1: 0, x2: 0.25, y2: 0, strokeWidth: 200 },
+                        { type: 'line', x1: -0.25, y1: 1.5, x2: 0.25, y2: 1.5, strokeWidth: 200 },
+                    ],
+                    stroke: '#000000'
+                }
+            },
+            {
+                dashMeters: [1.5, 1.5],
+                startDistance: 0.25,
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ],
+        "AMT2_1.5": [
+            {
+                iconType: "rail",
+                iconInterval: 3.5,
+                // Geometry in meters. Renderer expects meters for iconGeometry.
+                iconGeometry: {
+                    shapes: [
+                        // Horizontal tick at top (0.5m wide)
+                        { type: 'line', x1: -0.25, y1: 0, x2: 0.25, y2: 0, strokeWidth: 200 },
+                        { type: 'line', x1: -0.25, y1: 2, x2: 0.25, y2: 2, strokeWidth: 200 },
+                    ],
+                    stroke: '#000000'
+                }
+            },
+            {
+                dashMeters: [1.5, 2],
+                startDistance: 0.25,
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ],
+        "AMT-COM-1_7": [
+            {
+                iconType: "rail",
+                iconInterval: 1.7,
+                // Geometry in meters. Renderer expects meters for iconGeometry.
+                iconGeometry: {
+                    shapes: [
+                        // Horizontal tick at top (0.5m wide)
+                        { type: 'line', x1: -0.25, y1: 0, x2: 0.25, y2: 0, strokeWidth: 200 },
+                    ],
+                    stroke: '#000000'
+                }
+            },
+            {
+                dashMeters: [0.7, 1],
+                startDistance: 0.5,
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ],
+        "bollard0": [
+            {
+                iconType: "circle",
+                iconInterval: 3,
+                iconGeometry: {
+                    shapes: [
+                        { type: 'circle', x: 0, y: 0, radius: 0.025, strokeWidth: 0.02 }
+                    ],
+                    stroke: '#000000'
+                }
+            }
+        ],
+        "bollard1": [
+            {
+                iconType: "circle",
+                iconInterval: 3,
+                iconGeometry: {
+                    shapes: [
+                        { type: 'circle', x: 0, y: 0, radius: 0.025, strokeWidth: 0.02 }
+                    ],
+                    stroke: '#000000'
+                }
+            },
+            {
+                dashMeters: null,
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ],
+        "bollard2": [
+            {
+                iconType: "circle",
+                iconInterval: 3,
+                iconGeometry: {
+                    shapes: [
+                        { type: 'circle', x: 0, y: 0, radius: 0.025, strokeWidth: 0.02 }
+                    ],
+                    stroke: '#000000'
+                }
+            },
+            {
+                dashMeters: null,
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ],
+        "bollard3": [
+            {
+                iconType: "circle",
+                iconInterval: 3,
+                iconGeometry: {
+                    shapes: [
+                        { type: 'circle', x: 0, y: 0, radius: 0.025, strokeWidth: 0.02 }
+                    ],
+                    stroke: '#000000'
+                }
+            },
+            {
+                dashMeters: null,
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ],
+        "BOLLSTL3M": [
+            {
+                iconType: "circle",
+                iconInterval: 3,
+                iconGeometry: {
+                    shapes: [
+                        { type: 'circle', x: 0, y: 0, radius: 0.025, strokeWidth: 0.02 }
+                    ],
+                    stroke: '#000000'
+                }
+            },
+            {
+                dashMeters: [1.5, 1.5],
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ],
+        "CBARRIER": [
+            {
+                iconType: "line",
+                iconInterval: 5,
+                iconGeometry: {
+                    shapes: [
+                        { type: 'line', x1: -0.25, y1: -0.25, x2: 0.25, y2: 0.25, strokeWidth: 200 },
+                        { type: 'line', x1: -0.25, y1: 0.25, x2: 0.25, y2: -0.25, strokeWidth: 200 },
+                    ],
+                    stroke: '#000000'
+                }
+            },
+            {
+                dashMeters: [3, 2],
+                startDistance: 1,
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ],
+        "CRAIL1": [
+            {
+                iconType: "rail",
+                iconInterval: 2,
+                // Geometry in meters. Renderer expects meters for iconGeometry.
+                iconGeometry: {
+                    shapes: [
+                        // Horizontal tick at top (0.5m wide)
+                        { type: 'line', x1: -0.25, y1: 0, x2: 0.25, y2: 0, strokeWidth: 200 },
+                    ],
+                    stroke: '#000000'
+                }
+            },
+            {
+                dashMeters: [1.5, 0.5],
                 startDistance: 0.25,
                 weight: 2,
                 color: "#000000",
@@ -934,6 +1319,25 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [0.75, 0.5],
                 startDistance: 0.25,
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ],
+        "CRASHGATE": [
+            {
+                iconType: "circle",
+                iconInterval: 3.5,
+                iconGeometry: {
+                    shapes: [
+                        { type: 'circle', x: 0, y: 0, radius: 0.025, strokeWidth: 0.02 }
+                    ],
+                    stroke: '#000000'
+                }
+            },
+            {
+                dashMeters: [3, 0.5],
+                startDistance: 0.5,
                 weight: 2,
                 color: "#000000",
                 opacity: 0.8

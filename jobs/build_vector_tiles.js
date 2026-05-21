@@ -1,8 +1,9 @@
 /* eslint-disable no-console */
 const fs = require('fs/promises');
 const path = require('path');
-const geojsonvt = require('geojson-vt').default;
-const vtpbf = require('vt-pbf');
+const geojsonvt = import ('geojson-vt')
+const vtpbf = import('vt-pbf');
+
 
 const BASE_DIR = path.resolve(__dirname, '..');
 const WFS_DIR = path.join(BASE_DIR, 'public', 'data', 'wfs');
