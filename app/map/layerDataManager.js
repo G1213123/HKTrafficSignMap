@@ -3,6 +3,7 @@ import { layersConfig } from './layerConfig';
 import { renderLines } from './rendererLine';
 import { renderPoints } from './rendererPoint';
 import { renderTsPolePt } from './rendererTsPolePt';
+import { renderTsAbvPt } from './rendererTsAbvPt';
 import { renderDsPolePt } from './rendererDsPolePt';
 import { renderTrafficLightPt } from './rendererTrafficLightPt';
 import { renderAnno } from './rendererAnno';
@@ -10,6 +11,7 @@ import { renderAnno } from './rendererAnno';
 // Renderer dispatch maps allow easy extension by typeName
 const pointRenderers = {
     'csdi:DTAD_TS_POLE_PT': renderTsPolePt,
+    'csdi:DTAD_TS_ABV_PT': renderTsAbvPt,
     'csdi:DTAD_DS_POLE_PT': renderDsPolePt,
     'csdi:DTAD_TRAFFIC_LIGHT_PT': renderTrafficLightPt,
 };
@@ -21,7 +23,55 @@ const annoRenderers = {
 const getPointRenderer = (typeName) => pointRenderers[typeName] || renderPoints;
 const getAnnoRenderer = (typeName) => annoRenderers[typeName] || null;
 
-export const loadLayerData = (typeName, { map, abortControllers, markersRef, activeLayersRef, showRawPoints = false }) => {
+const normalizeElevationValue = (value) => {
+    if (value === null || value === undefined || String(value).trim() === '') return 'AT-GRADE';
+    return String(value).trim().toUpperCase();
+};
+
+const matchesElevationFilter = (feature, elevationFilter) => {
+    if (!elevationFilter || elevationFilter === 'ALL') return true;
+    return normalizeElevationValue(feature?.properties?.ELEVATION) === elevationFilter;
+};
+
+export const renderLayerData = (typeName, data, { map, markersRef, activeLayersRef, showRawPoints = false, elevationFilter = 'ALL' }) => {
+    if (!data || !data.features || !map) return;
+
+    const isAnno = typeName === 'csdi:DTAD_RD_MARK_ANNO';
+    const nonPoints = [];
+    const points = [];
+    const annos = [];
+
+    if (markersRef.current[typeName]) {
+        markersRef.current[typeName].forEach(m => m.remove());
+    }
+    markersRef.current[typeName] = [];
+
+    const filteredFeatures = data.features.filter(f => matchesElevationFilter(f, elevationFilter));
+
+    filteredFeatures.forEach(f => {
+        if (isAnno && f.geometry.type === 'Polygon' || f.geometry.type === 'MultiPolygon') {
+            annos.push(f);
+        } else if (f.geometry.type === 'Point' || f.geometry.type === 'MultiPoint') {
+            points.push(f);
+        } else {
+            nonPoints.push(f);
+        }
+    });
+
+    renderLines(map, typeName, nonPoints, markersRef);
+
+    const pointRenderer = getPointRenderer(typeName);
+    if (pointRenderer) {
+        pointRenderer(map, typeName, points, markersRef, activeLayersRef, showRawPoints);
+    }
+
+    const annoRenderer = getAnnoRenderer(typeName);
+    if (annoRenderer && annos.length > 0) {
+        annoRenderer(map, typeName, annos, markersRef, activeLayersRef, showRawPoints);
+    }
+};
+
+export const loadLayerData = (typeName, { map, abortControllers, markersRef, activeLayersRef, showRawPoints = false, elevationFilter = 'ALL' }) => {
     if (!map || map.getZoom() < 16) return Promise.resolve();
 
     if (abortControllers.current[typeName]) {
@@ -38,42 +88,7 @@ export const loadLayerData = (typeName, { map, abortControllers, markersRef, act
 
     return fetchWithRetry(layerUrl, { signal: controller.signal }, 2).then(data => {
         if (!data || !data.features || !map) return;
-
-        const isAnno = typeName === 'csdi:DTAD_RD_MARK_ANNO';
-        const nonPoints = [];
-        const points = [];
-        const annos = [];
-
-        // 0. Purge ANY old HTML markers for this layer first so renderers don't fight over cleaning it
-        if (markersRef.current[typeName]) {
-            markersRef.current[typeName].forEach(m => m.remove());
-        }
-        markersRef.current[typeName] = [];
-
-        data.features.forEach(f => {
-            if (isAnno && f.geometry.type === 'Polygon' || f.geometry.type === 'MultiPolygon') {
-                annos.push(f);
-            } else if (f.geometry.type === 'Point' || f.geometry.type === 'MultiPoint') {
-                points.push(f);
-            } else {
-                nonPoints.push(f);
-            }
-        });
-
-        // Render Lines and Polygons
-        renderLines(map, typeName, nonPoints, markersRef);
-
-        // Render Points and Markers via dispatch
-        const pointRenderer = getPointRenderer(typeName);
-        if (pointRenderer) {
-            pointRenderer(map, typeName, points, markersRef, activeLayersRef, showRawPoints);
-        }
-
-        // Render Annotations via dispatch
-        const annoRenderer = getAnnoRenderer(typeName);
-        if (annoRenderer && annos.length > 0) {
-            annoRenderer(map, typeName, annos, markersRef, activeLayersRef, showRawPoints);
-        }
+        return data;
 
     }).catch(err => {
         if (err.name !== 'AbortError') console.error(`Error loading ${typeName}:`, err);
@@ -84,6 +99,9 @@ export const applyVisibilityOverlays = ({ map, activeLayers, markersRef }) => {
     Object.values(layersConfig).flat().forEach(typeName => {
         const isActive = activeLayers.has(typeName);
         const rawOutlineLayerId = `${typeName}-raw-perimeter-layer`;
+        const iconLineSourceId = `${typeName}-icon-lines`;
+        const iconLineLayerId = `${typeName}-icon-lines-layer`;
+        const iconLineLayerLinesId = `${iconLineLayerId}-lines`;
 
         // Sync MapLibre layer visibility 
         if (map.getStyle()) {
@@ -92,7 +110,13 @@ export const applyVisibilityOverlays = ({ map, activeLayers, markersRef }) => {
                 if (l.source === typeName) {
                     map.setLayoutProperty(l.id, 'visibility', isActive ? 'visible' : 'none');
                 }
+                if (l.source === iconLineSourceId) {
+                    map.setLayoutProperty(l.id, 'visibility', isActive ? 'visible' : 'none');
+                }
                 if (l.id === rawOutlineLayerId) {
+                    map.setLayoutProperty(l.id, 'visibility', isActive ? 'visible' : 'none');
+                }
+                if (l.id === iconLineLayerId || l.id === iconLineLayerLinesId) {
                     map.setLayoutProperty(l.id, 'visibility', isActive ? 'visible' : 'none');
                 }
             });

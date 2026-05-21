@@ -6,6 +6,8 @@ const MapSidebar = ({
     onToggleLayer,
     onToggleGroup,
     onToggleAllLayers,
+    elevationFilter,
+    onChangeElevationFilter,
     showRawPoints,
     onToggleShowRawPoints,
     crsInput,
@@ -73,6 +75,39 @@ const MapSidebar = ({
                         <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                             <button onClick={onPanTo}>Go</button>
                             <button onClick={onRecenter}>Center HK</button>
+                        </div>
+                    </section>
+
+                    <section className="sidebar-section">
+                        <strong style={{ display: 'block', marginBottom: '8px' }}>Elevation</strong>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                            {[
+                                { value: 'ALL', label: 'All' },
+                                { value: 'AT-GRADE', label: 'At-grade' },
+                                { value: 'A01', label: 'A01' },
+                                { value: 'A02', label: 'A02' },
+                            ].map(option => {
+                                const isActive = elevationFilter === option.value;
+                                return (
+                                    <button
+                                        key={option.value}
+                                        type="button"
+                                        onClick={() => onChangeElevationFilter(option.value)}
+                                        aria-pressed={isActive}
+                                        style={{
+                                            padding: '6px 10px',
+                                            borderRadius: '999px',
+                                            border: `1px solid ${isActive ? '#007bff' : '#d0d7de'}`,
+                                            background: isActive ? '#e7f1ff' : '#fff',
+                                            color: isActive ? '#0b5ed7' : '#333',
+                                            fontSize: '0.85rem',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        {option.label}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </section>
 

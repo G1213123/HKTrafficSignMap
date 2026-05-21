@@ -4,11 +4,11 @@ This is the markdown todo file for project map.
 
 ## UI
 
-- [ ] Map filter on elevation (A01, A02 etc.)
+- [X] Map filter on elevation (A01, A02 etc.)
+- [ ] I18n
 - [ ] legend of traffic signs and signal
-- [ ] gamify ui
 - [ ] glow / ping on selected object and related description
-- [ ] tooltip with sign face
-- [ ] rd marking polygon text styling
-- [ ] handle map stutter with large amount data
+- [X] tooltip with sign face
+- [X] rd marking polygon text styling
+- [X] handle map stutter with large amount data
 

@@ -10,7 +10,7 @@ import LayerControl from './LayerControl';
 import Navbar from '../components/Navbar';
 import MapSidebar from './MapSidebar';
 import MeasureTool from './MeasureTool';
-import { loadLayerData, applyVisibilityOverlays } from './layerDataManager';
+import { loadLayerData, renderLayerData, applyVisibilityOverlays } from './layerDataManager';
 import './map.css';
 
 export default function Map() {
@@ -26,12 +26,19 @@ export default function Map() {
     const [mapMessage, setMapMessage] = useState('Initializing map...');
     const [pendingFetches, setPendingFetches] = useState(0);
     const [mapLoaded, setMapLoaded] = useState(false);
+    const [showInfoOverlay, setShowInfoOverlay] = useState(false);
     const [showRawPoints, setShowRawPoints] = useState(false);
+    const [geolocInProgress, setGeolocInProgress] = useState(false);
     const showRawPointsRef = useRef(showRawPoints);
+    const [elevationFilter, setElevationFilter] = useState('ALL');
+    const elevationFilterRef = useRef(elevationFilter);
+    const layerDataRef = useRef({});
     const [crsInput, setCrsInput] = useState('EPSG:4326');
     const [coordInput, setCoordInput] = useState('114.1694,22.3193');
     const [panError, setPanError] = useState('');
     const [cursorCoordsHK, setCursorCoordsHK] = useState(null);
+    const isLocalDataSource = typeof process !== 'undefined' && process.env && process.env.NEXT_PUBLIC_DATA_SOURCE === 'local';
+    const dataLoadMinZoom = isLocalDataSource ? 16 : 18;
 
     useEffect(() => {
         activeLayersRef.current = activeLayers;
@@ -42,11 +49,16 @@ export default function Map() {
     }, [showRawPoints]);
 
     useEffect(() => {
+        elevationFilterRef.current = elevationFilter;
+    }, [elevationFilter]);
+
+    useEffect(() => {
         try {
             const savedState = localStorage.getItem('mapState');
             if (savedState) {
                 const state = JSON.parse(savedState);
                 if (typeof state.showRawPoints === 'boolean') setShowRawPoints(state.showRawPoints);
+                if (typeof state.elevationFilter === 'string') setElevationFilter(state.elevationFilter);
             }
         } catch (e) { }
     }, []);
@@ -155,8 +167,8 @@ export default function Map() {
                         }
                     });
 
-                    if (zoom < 16) {
-                        setMapMessage('Zoom in to level 16+ to load data');
+                    if (zoom < dataLoadMinZoom) {
+                        setMapMessage(`Zoom in to level ${dataLoadMinZoom}+ to load data`);
                     } else {
                         setMapMessage(''); // Let the render handle Data Active / Data Loading display
                     }
@@ -170,10 +182,11 @@ export default function Map() {
                         center: { lat: c.lat, lng: c.lng },
                         zoom: map.getZoom(),
                         activeLayers: Array.from(activeLayersRef.current),
-                        showRawPoints: showRawPointsRef.current
+                        showRawPoints: showRawPointsRef.current,
+                        elevationFilter: elevationFilterRef.current
                     }));
 
-                    if (map.getZoom() >= 16) {
+                    if (map.getZoom() >= dataLoadMinZoom) {
                         Array.from(activeLayersRef.current).forEach(layer => {
                             setPendingFetches(prev => prev + 1);
                             loadLayerData(layer, {
@@ -181,7 +194,22 @@ export default function Map() {
                                 abortControllers,
                                 markersRef,
                                 activeLayersRef,
-                                showRawPoints: showRawPointsRef.current
+                                showRawPoints: showRawPointsRef.current,
+                                elevationFilter: elevationFilterRef.current
+                            })?.then((data) => {
+                                if (data) {
+                                    layerDataRef.current[layer] = data;
+                                    if (mapInstanceRef.current && activeLayersRef.current.has(layer)) {
+                                        renderLayerData(layer, data, {
+                                            map: mapInstanceRef.current,
+                                            markersRef,
+                                            activeLayersRef,
+                                            showRawPoints: showRawPointsRef.current,
+                                            elevationFilter: elevationFilterRef.current,
+                                        });
+                                        applyVisibilityOverlays({ map: mapInstanceRef.current, activeLayers: activeLayersRef.current, markersRef });
+                                    }
+                                }
                             })?.finally(() => setPendingFetches(prev => Math.max(0, prev - 1)));
                         });
                     }
@@ -234,9 +262,45 @@ export default function Map() {
             abortControllers,
             markersRef,
             activeLayersRef,
-            showRawPoints: showRawPointsRef.current
+            showRawPoints: showRawPointsRef.current,
+            elevationFilter: elevationFilterRef.current,
+        })?.then((data) => {
+            if (data) {
+                layerDataRef.current[typeName] = data;
+                if (mapInstanceRef.current && activeLayersRef.current.has(typeName)) {
+                    renderLayerData(typeName, data, {
+                        map: mapInstanceRef.current,
+                        markersRef,
+                        activeLayersRef,
+                        showRawPoints: showRawPointsRef.current,
+                        elevationFilter: elevationFilterRef.current,
+                    });
+                    applyVisibilityOverlays({ map: mapInstanceRef.current, activeLayers: activeLayersRef.current, markersRef });
+                }
+            }
         })?.finally(() => setPendingFetches(prev => Math.max(0, prev - 1)));
     }, []);
+
+    const rerenderCachedLayers = useCallback(() => {
+        if (!mapLoaded || !mapInstanceRef.current) return;
+
+        const map = mapInstanceRef.current;
+        Object.values(layersConfig).flat().forEach(typeName => {
+            if (!activeLayersRef.current.has(typeName)) return;
+            const data = layerDataRef.current[typeName];
+            if (!data) return;
+
+            renderLayerData(typeName, data, {
+                map,
+                markersRef,
+                activeLayersRef,
+                showRawPoints: showRawPointsRef.current,
+                elevationFilter: elevationFilterRef.current,
+            });
+        });
+
+        applyVisibilityOverlays({ map, activeLayers: activeLayersRef.current, markersRef });
+    }, [mapLoaded]);
 
     const parseAndConvertToWGS84 = (crs, coordStr) => {
         const parts = coordStr.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
@@ -301,6 +365,39 @@ export default function Map() {
         }
     };
 
+    const panToMyLocation = () => {
+        if (!mapInstanceRef.current) {
+            setMapMessage('Map not ready');
+            return;
+        }
+        if (!('geolocation' in navigator)) {
+            setMapMessage('Geolocation not supported');
+            return;
+        }
+
+        setGeolocInProgress(true);
+        setMapMessage('Locating...');
+
+        navigator.geolocation.getCurrentPosition((pos) => {
+            try {
+                const { latitude, longitude } = pos.coords;
+                const map = mapInstanceRef.current;
+                const targetZoom = Math.max(map.getZoom(), 16);
+                map.easeTo({ center: [longitude, latitude], zoom: targetZoom });
+                setMapMessage('');
+            } catch (err) {
+                console.error('Error centering map to GPS:', err);
+                setMapMessage('Failed to center to GPS');
+            } finally {
+                setGeolocInProgress(false);
+            }
+        }, (err) => {
+            console.warn('Geolocation error:', err);
+            setMapMessage(err.message || 'Geolocation error');
+            setGeolocInProgress(false);
+        }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+    };
+
     // Apply Visibility Overlays
     useEffect(() => {
         if (!mapLoaded || !mapInstanceRef.current) return;
@@ -309,7 +406,8 @@ export default function Map() {
             center: map.getCenter(),
             zoom: map.getZoom(),
             activeLayers: Array.from(activeLayers),
-            showRawPoints
+            showRawPoints,
+            elevationFilter
         }));
 
         Object.values(layersConfig).flat().forEach(typeName => {
@@ -317,15 +415,23 @@ export default function Map() {
 
             // Fetch missing data if activated or force refetch to apply raw points visibility
             if (isActive) {
-                // If it's already there but we just toggled showRawPoints, it's easier to just re-fetch
-                // or we could decouple raw points logic. For now let's just trigger fetchLayerData to redraw
-                fetchLayerData(typeName);
+                const hasCachedData = !!layerDataRef.current[typeName];
+                if (!hasCachedData) {
+                    // Only fetch data when zoom threshold is met for data loading
+                    if (map.getZoom() >= dataLoadMinZoom) {
+                        fetchLayerData(typeName);
+                    }
+                }
             }
         });
 
         applyVisibilityOverlays({ map, activeLayers, markersRef });
 
     }, [activeLayers, mapLoaded, fetchLayerData, showRawPoints]);
+
+    useEffect(() => {
+        rerenderCachedLayers();
+    }, [elevationFilter, showRawPoints, rerenderCachedLayers]);
 
     const toggleLayer = (layerName) => {
         setActiveLayers(prev => {
@@ -359,6 +465,10 @@ export default function Map() {
         });
     };
 
+    const changeElevationFilter = (value) => {
+        setElevationFilter(value);
+    };
+
     return (
         <div className="map-root" style={{ width: '100%', height: '100%' }}>
             <Navbar />
@@ -368,6 +478,8 @@ export default function Map() {
                     onToggleLayer={toggleLayer}
                     onToggleGroup={toggleGroup}
                     onToggleAllLayers={toggleAllLayers}
+                    elevationFilter={elevationFilter}
+                    onChangeElevationFilter={changeElevationFilter}
                     showRawPoints={showRawPoints}
                     onToggleShowRawPoints={(val) => setShowRawPoints(val)}
                     crsInput={crsInput}
@@ -411,6 +523,88 @@ export default function Map() {
                             fontFamily: 'monospace', color: '#333', boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
                         }}>
                             EPSG:2326  E: {cursorCoordsHK.x}  N: {cursorCoordsHK.y}
+                        </div>
+                    )}
+
+                    <div
+                        className="map-geolocate-btn"
+                        onClick={(e) => { e.stopPropagation(); panToMyLocation(); }}
+                        style={{
+                            position: 'absolute', bottom: '120px', right: '10px',
+                            width: '32px', height: '32px', background: 'white',
+                            borderRadius: '6px', boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+                            display: 'flex', justifyContent: 'center', alignItems: 'center',
+                            cursor: 'pointer', zIndex: 11, fontSize: '16px', color: '#333'
+                        }}
+                        title="Center map on my GPS location"
+                    >
+                        {geolocInProgress ? (
+                            <span style={{ width: '16px', height: '16px', border: '2px solid #ccc', borderTopColor: '#333', borderRadius: '50%', display: 'inline-block', animation: 'spin 1s linear infinite' }} />
+                        ) : (
+                            <span style={{ fontSize: '18px' }}>📍</span>
+                        )}
+                    </div>
+
+                    <div 
+                        className="map-info-btn"
+                        onClick={(e) => { e.stopPropagation(); setShowInfoOverlay(true); }}
+                        style={{
+                            position: 'absolute', bottom: '80px', right: '10px',
+                            width: '29px', height: '29px', background: 'white',
+                            borderRadius: '4px', boxShadow: '0 0 0 2px rgba(0,0,0,0.1)',
+                            display: 'flex', justifyContent: 'center', alignItems: 'center',
+                            cursor: 'pointer', zIndex: 10, fontWeight: 'bold', fontFamily: 'serif',
+                            fontSize: '16px', color: '#333'
+                        }}
+                        title="About Map Data"
+                    >
+                        i
+                    </div>
+
+                    {showInfoOverlay && (
+                        <div style={{
+                            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                            background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex',
+                            justifyContent: 'center', alignItems: 'center'
+                        }}>
+                            <div style={{
+                                background: 'white', padding: '20px 30px', borderRadius: '8px',
+                                maxWidth: '500px', width: '90%', maxHeight: '90%', overflowY: 'auto',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.2)', position: 'relative'
+                            }}>
+                                <button 
+                                    onClick={() => setShowInfoOverlay(false)}
+                                    style={{
+                                        position: 'absolute', top: '15px', right: '15px',
+                                        background: 'none', border: 'none', fontSize: '20px',
+                                        cursor: 'pointer', color: '#555'
+                                    }}
+                                >
+                                    &times;
+                                </button>
+                                <h3 style={{ marginTop: 0, marginBottom: '15px', color: '#333' }}>Map Information & Open Data</h3>
+                                
+                                <p style={{ fontSize: '14px', lineHeight: '1.5', color: '#444' }}>
+                                    This map aggregates and visualizes spatial data from the following Open Data sources provided by the Government of the Hong Kong Special Administrative Region:
+                                </p>
+                                <ul style={{ fontSize: '14px', lineHeight: '1.5', color: '#444', paddingLeft: '20px' }}>
+                                    <li style={{ marginBottom: '8px' }}>
+                                        <strong>Base Map & Vector Map Styles:</strong> Lands Department Open Map Data (GeoData Store API).
+                                    </li>
+                                    <li style={{ marginBottom: '8px' }}>
+                                        <strong>Traffic Signs & Road Markings:</strong> Transport Department (via CSDI Portal).
+                                    </li>
+                                </ul>
+
+                                <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '20px 0' }} />
+                                
+                                <h4 style={{ margin: '0 0 10px 0', color: '#333' }}>Disclaimer & Legal Notice</h4>
+                                <p style={{ fontSize: '13px', lineHeight: '1.5', color: '#666', textAlign: 'justify' }}>
+                                    The spatial data, signs, labels, and related information provided on this map are consolidated from publicly available open data sources for reference and visualization purposes only. <br/><br/>
+                                    <strong>No Warranty of Accuracy:</strong> While every effort has been made to ensure the mapping works correctly, we cannot guarantee the accuracy, completeness, timeliness, or exact positioning of the data presented. The open data may be subject to delays or inaccuracies from the source providers.<br/><br/>
+                                    <strong>Limitation of Liability:</strong> By using this map, you acknowledge that the creator(s) and maintainer(s) of this tool shall not be held liable for any errors, omissions, misrepresentations, or any direct, indirect, or consequential losses and damages arising from your reliance on or use of this map. This map should not be used as a primary source for critical navigation, legal, or construction decisions.
+                                </p>
+                            </div>
                         </div>
                     )}
                 </main>

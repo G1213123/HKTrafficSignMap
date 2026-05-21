@@ -740,7 +740,12 @@
     {
         "signNumber": "1150",
         "width": 750,
-        "length": 1850
+        "length": 1850,
+        "angleCorrection": 180,
+        "offset": {
+            "x": 200,
+            "y": -3500
+        }
     },
     {
         "signNumber": "1151",

@@ -43,3 +43,9 @@ export const buildPopupContent = (typeName, properties) => {
     popupContent += '</div>';
     return popupContent;
 };
+
+export const buildPopupContentWithPreview = (typeName, properties, previewHtml) => {
+    const baseContent = buildPopupContent(typeName, properties);
+    if (!previewHtml) return baseContent;
+    return `${previewHtml}${baseContent}`;
+};

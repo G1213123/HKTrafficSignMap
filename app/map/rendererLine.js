@@ -165,76 +165,88 @@ const renderIconLineMarkers = (map, typeName, features, markersRef) => {
             }
         });
     });
+
+    const sourceId = `${typeName}-icon-lines`;
+    const layerId = `${typeName}-icon-lines-layer`;
+    const lineLayerId = `${layerId}-lines`;
+
+    if (iconLineFeatures.length === 0) {
+        if (map.getLayer(lineLayerId)) {
+            map.removeLayer(lineLayerId);
+        }
+        if (map.getLayer(layerId)) {
+            map.removeLayer(layerId);
+        }
+        if (map.getSource(sourceId)) {
+            map.removeSource(sourceId);
+        }
+        return;
+    }
     
     // Add icon line features as a new layer if any were created
-    if (iconLineFeatures.length > 0) {
-        const sourceId = `${typeName}-icon-lines`;
-        const layerId = `${typeName}-icon-lines-layer`;
-        
-        // Create or update GeoJSON source
-        if (!map.getSource(sourceId)) {
-            map.addSource(sourceId, {
-                type: 'geojson',
-                data: {
-                    type: 'FeatureCollection',
-                    features: iconLineFeatures
-                }
-            });
-        } else {
-            map.getSource(sourceId).setData({
+    // Create or update GeoJSON source
+    if (!map.getSource(sourceId)) {
+        map.addSource(sourceId, {
+            type: 'geojson',
+            data: {
                 type: 'FeatureCollection',
                 features: iconLineFeatures
-            });
-        }
-        
-        // Create or update layer (handles both line and circle features)
-        if (!map.getLayer(layerId)) {
-            // Circle layer for Point features
-            map.addLayer({
-                id: layerId,
-                type: 'circle',
-                source: sourceId,
-                filter: ['==', ['geometry-type'], 'Point'],
-                paint: {
-                    'circle-radius': [
-                        'case',
-                        ['has', '_circleRadius'],
-                        ['*', ['get', '_circleRadius'], 100],
-                        5
-                    ],
-                    'circle-color': '#000000',
-                    'circle-opacity': 0.8,
-                    'circle-stroke-width': [
-                        'case',
-                        ['has', '_strokeWidth'],
-                        ['/', ['get', '_strokeWidth'], 100],
-                        0.5
-                    ],
-                    'circle-stroke-color': '#000000'
-                }
-            });
-            // Line layer for LineString features
-            map.addLayer({
-                id: layerId + '-lines',
-                type: 'line',
-                source: sourceId,
-                filter: ['!=', ['geometry-type'], 'Point'],
-                paint: {
-                    'line-color': '#000000',
-                    'line-width': [
-                        'case',
-                        ['has', '_strokeWidth'],
-                        ['/', ['get', '_strokeWidth'], 100],
-                        1
-                    ],
-                    'line-opacity': 0.8
-                },
-                layout: {
-                    'line-join': 'round',
-                    'line-cap': 'round'
-                }
-            });
-        }
+            }
+        });
+    } else {
+        map.getSource(sourceId).setData({
+            type: 'FeatureCollection',
+            features: iconLineFeatures
+        });
+    }
+
+    // Create or update layer (handles both line and circle features)
+    if (!map.getLayer(layerId)) {
+        // Circle layer for Point features
+        map.addLayer({
+            id: layerId,
+            type: 'circle',
+            source: sourceId,
+            filter: ['==', ['geometry-type'], 'Point'],
+            paint: {
+                'circle-radius': [
+                    'case',
+                    ['has', '_circleRadius'],
+                    ['*', ['get', '_circleRadius'], 100],
+                    5
+                ],
+                'circle-color': '#000000',
+                'circle-opacity': 0.8,
+                'circle-stroke-width': [
+                    'case',
+                    ['has', '_strokeWidth'],
+                    ['/', ['get', '_strokeWidth'], 100],
+                    0.5
+                ],
+                'circle-stroke-color': '#000000'
+            }
+        });
+        // Line layer for LineString features
+        map.addLayer({
+            id: lineLayerId,
+            type: 'line',
+            source: sourceId,
+            filter: ['!=', ['geometry-type'], 'Point'],
+            paint: {
+                'line-color': '#000000',
+                'line-width': [
+                    'case',
+                    ['has', '_strokeWidth'],
+                    ['/', ['get', '_strokeWidth'], 100],
+                    1
+                ],
+                'line-opacity': 0.8
+            },
+            layout: {
+                'line-join': 'round',
+                'line-cap': 'round'
+            }
+        });
     }
 };
 
@@ -325,9 +337,7 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
         }
     });
 
-    if (iconLineFeatures.length > 0) {
-        renderIconLineMarkers(map, typeName, iconLineFeatures, markersRef);
-    }
+    renderIconLineMarkers(map, typeName, iconLineFeatures, markersRef);
 
     // 1. Install GeoJSON Source for Paths and Polygons
     const sourceData = { type: 'FeatureCollection', features: nonPoints };
