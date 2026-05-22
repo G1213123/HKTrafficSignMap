@@ -188,7 +188,7 @@ const MeasureTool = ({ map }) => {
     };
 
     return (
-        <div style={{ position: 'absolute', top: 155, right: 10, zIndex: 10, display: 'flex', flexDirection: 'column', gap: '5px', alignItems: 'flex-end' }}>
+        <div className="map-measure-container">
             <div style={{ display: 'flex', gap: '5px', background: '#fff', padding: '4px', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.2)', border: '1px solid #ddd' }}>
                 <button 
                     onClick={(e) => {

@@ -27,7 +27,8 @@ body {
     display: flex;
     flex-direction: column;
     background: #f4f6f8;
-    padding-top: 71px; /* Offset for fixed navbar */
+    padding-top: 71px;
+    /* Offset for fixed navbar */
     box-sizing: border-box;
 }
 
@@ -43,13 +44,14 @@ body {
 .map-sidebar {
     width: 320px;
     background: #ffffff;
-    box-shadow: 2px 0 16px rgba(0,0,0,0.1);
+    box-shadow: 2px 0 16px rgba(0, 0, 0, 0.1);
     z-index: 20;
     display: flex;
     flex-direction: column;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
-    overflow: visible; /* Let the tab stick out to the right */
+    overflow: visible;
+    /* Let the tab stick out to the right */
 }
 
 .sidebar-arrow-toggle {
@@ -63,7 +65,7 @@ body {
     border: 1px solid #eaeaea;
     border-left: none;
     border-radius: 0 8px 8px 0;
-    box-shadow: 4px 0 6px rgba(0,0,0,0.05);
+    box-shadow: 4px 0 6px rgba(0, 0, 0, 0.05);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -102,7 +104,8 @@ body {
 }
 
 .map-sidebar .sidebar-body {
-    padding: 0; /* Removing padding from body to let sections control it */
+    padding: 0;
+    /* Removing padding from body to let sections control it */
     overflow-y: auto;
     flex: 1;
 }
@@ -113,14 +116,16 @@ body {
     box-shadow: none !important;
     display: flex !important;
     flex-direction: column;
-    align-items: center; /* Center the smaller zoom buttons under the larger compass */
+    align-items: center;
+    /* Center the smaller zoom buttons under the larger compass */
 }
 
-.maplibregl-ctrl-group > button {
+.maplibregl-ctrl-group>button {
     background-color: #fff !important;
     border-radius: 6px !important;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
-    margin-bottom: 8px !important; /* Spacing between separated buttons */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
+    margin-bottom: 8px !important;
+    /* Spacing between separated buttons */
     display: block !important;
     border: 1px solid #ddd;
 }
@@ -132,13 +137,15 @@ body {
 
 /* Make map control compass look like an actual compass */
 .maplibregl-ctrl-group button.maplibregl-ctrl-compass {
-    order: -1; /* Move compass to the top of the group natively */
+    order: -1;
+    /* Move compass to the top of the group natively */
     width: 48px;
     height: 48px;
-    border-radius: 50% !important; /* Override the group button shape */
+    border-radius: 50% !important;
+    /* Override the group button shape */
     border: 2px solid #ccc !important;
     background-color: #fff !important;
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.1), 0 2px 5px rgba(0,0,0,0.2) !important;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1), 0 2px 5px rgba(0, 0, 0, 0.2) !important;
     position: relative;
 }
 
@@ -171,14 +178,17 @@ body {
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Keep the spinning needle centered and scale it to fit nicely */
 .maplibregl-ctrl-group button.maplibregl-ctrl-compass .maplibregl-ctrl-icon {
     transform-origin: center center;
     position: relative;
-    z-index: 1; /* Spin over the N/S markers */
+    z-index: 1;
+    /* Spin over the N/S markers */
     transform: scale(1.3);
 }
 
@@ -188,7 +198,8 @@ body {
     border-bottom: 1px solid #eee;
 }
 
-.sidebar-section strong, .sidebar-section > label:first-child {
+.sidebar-section strong,
+.sidebar-section>label:first-child {
     display: block;
     margin-bottom: 12px;
     font-size: 0.95rem;
@@ -329,21 +340,64 @@ body {
     height: 100%;
 }
 
+.map-measure-container {
+    position: absolute;
+    top: 155;
+    right: 10;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-Items: flex-end
+}
+
 /* Responsive: mobile layout */
 @media (max-width: 768px) {
-    .map-sidebar { 
-        position: absolute; 
-        top: 0; 
-        left: 0; 
-        height: 100%; 
-        width: 85%; 
-        max-width: 320px; 
+    .map-sidebar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 85%;
+        max-width: 320px;
     }
-    .map-sidebar.closed { transform: translateX(-100%); }
-    
-    .map-layout { flex-direction: column; }
-    .map-main { flex: 1 1 auto; }
-    
+
+    .map-sidebar.closed {
+        transform: translateX(-100%);
+    }
+
+    .map-layout {
+        flex-direction: column;
+    }
+
+    .map-main {
+        flex: 1 1 auto;
+    }
+
+    .maplibregl-ctrl-top-right {
+        top: 40px;
+    }
+
+    .map-info-legend {
+        top: 10px !important;
+        bottom: auto !important;
+        left: 10px !important;
+        right: 10px !important;
+        width: auto !important;
+        max-width: none !important;
+        justify-content: center;
+        text-align: center;
+        z-index: 15 !important;
+    }
+
+    .map-measure-container {
+        top: 185 !important;
+    }
+
+    .map-info-legend .spinner {
+        flex: 0 0 auto;
+    }
+
     .coord-show-box {
         display: none !important;
     }
@@ -361,23 +415,29 @@ body {
 /* Better Popup Styling */
 .leaflet-popup-content-wrapper {
     border-radius: 8px;
-    box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.4);
 }
+
 .leaflet-popup-content {
     margin: 15px;
     line-height: 1.5;
 }
+
 .popup-content {
-    max-height: 250px; /* slightly taller */
+    max-height: 250px;
+    /* slightly taller */
     overflow-y: auto;
-    scrollbar-width: thin; /* Firefox */
+    scrollbar-width: thin;
+    /* Firefox */
 }
+
 /* Scrollbar styling for Webkit */
 .popup-content::-webkit-scrollbar {
     width: 6px;
 }
+
 .popup-content::-webkit-scrollbar-thumb {
-    background-color: rgba(0,0,0,0.2);
+    background-color: rgba(0, 0, 0, 0.2);
     border-radius: 3px;
 }
 
@@ -386,12 +446,15 @@ body {
     background: transparent;
     border: none;
 }
+
 .custom-svg-icon {
     width: 0;
     height: 0;
     display: flex;
-    justify-content: center; /* Center horizontally */
-    align-items: center;    /* Center vertically */
+    justify-content: center;
+    /* Center horizontally */
+    align-items: center;
+    /* Center vertically */
     /* No overflow: hidden, let the image extend */
 }
 
@@ -400,10 +463,12 @@ body {
 .custom-svg-icon svg {
     /* Base size at max zoom (e.g. 20) is roughly real-world meter size converted to pixels? */
     /* Let's pick a base size visually appealing at high zoom. e.g. 40px */
-    width: calc(30px * var(--map-icon-scale, 1)); 
+    width: calc(30px * var(--map-icon-scale, 1));
     height: auto;
-    transform-origin: center center; /* Default rotation origin */
-    pointer-events: auto; /* Allow image to receive clicks since wrapper is 0x0 */
+    transform-origin: center center;
+    /* Default rotation origin */
+    pointer-events: auto;
+    /* Allow image to receive clicks since wrapper is 0x0 */
     cursor: pointer;
 }
 
@@ -413,10 +478,13 @@ body {
 
 /* Road mark specifics */
 .rd-mark-icon {
-    align-items: flex-start; /* Anchor to the top edge */
+    align-items: flex-start;
+    /* Anchor to the top edge */
 }
+
 .rd-mark-icon img {
-    transform-origin: top center; /* Rotate around the top middle anchor point */
+    transform-origin: top center;
+    /* Rotate around the top middle anchor point */
 }
 
 /* Disable map markers interactions while measuring so clicks hit the canvas */

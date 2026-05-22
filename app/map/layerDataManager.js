@@ -18,6 +18,7 @@ const pointRenderers = {
 
 const annoRenderers = {
     'csdi:DTAD_RD_MARK_ANNO': renderAnno,
+    'csdi:DTAD_TS_ABV_ANNO': renderAnno,
 };
 
 const getPointRenderer = (typeName) => pointRenderers[typeName] || renderPoints;
@@ -36,7 +37,7 @@ const matchesElevationFilter = (feature, elevationFilter) => {
 export const renderLayerData = (typeName, data, { map, markersRef, activeLayersRef, showRawPoints = false, elevationFilter = 'ALL' }) => {
     if (!data || !data.features || !map) return;
 
-    const isAnno = typeName === 'csdi:DTAD_RD_MARK_ANNO';
+    const isAnno = typeName.includes('ANNO');
     const nonPoints = [];
     const points = [];
     const annos = [];
@@ -71,7 +72,7 @@ export const renderLayerData = (typeName, data, { map, markersRef, activeLayersR
     }
 };
 
-export const loadLayerData = (typeName, { map, abortControllers, markersRef, activeLayersRef, showRawPoints = false, elevationFilter = 'ALL' }) => {
+export const loadLayerData = (typeName, { map, abortControllers, markersRef, activeLayersRef, showRawPoints = false, elevationFilter = 'ALL', buildDate = '' }) => {
     if (!map || map.getZoom() < 16) return Promise.resolve();
 
     if (abortControllers.current[typeName]) {
@@ -84,7 +85,7 @@ export const loadLayerData = (typeName, { map, abortControllers, markersRef, act
     const bbox = `${bounds.getSouth()},${bounds.getWest()},${bounds.getNorth()},${bounds.getEast()}`;
     // WFS only supports zoom level 18 - force all requests to zoom 18
     const z = 18;
-    const layerUrl = `/api/layers?typeName=${encodeURIComponent(typeName)}&bbox=${encodeURIComponent(bbox)}&format=pbf&z=${z}`;
+    const layerUrl = `/api/layers?typeName=${encodeURIComponent(typeName)}&bbox=${encodeURIComponent(bbox)}&format=pbf&z=${z}${buildDate ? `&buildDate=${encodeURIComponent(buildDate)}` : ''}`;
 
     return fetchWithRetry(layerUrl, { signal: controller.signal }, 2).then(data => {
         if (!data || !data.features || !map) return;

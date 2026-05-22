@@ -840,7 +840,7 @@ const roadMarkingStylesByLayer = {
                 offset: 0.2 // Offset 0.5m to the right
             }
         ],
-        "1049":[
+        "1049": [
             // Left line
             {
                 dashMeters: [1, 1], // Solid
@@ -856,7 +856,7 @@ const roadMarkingStylesByLayer = {
                 color: "#FFFF00",
             }
         ],
-        "1101":[
+        "1101": [
             {
                 dashMeters: [1, 5],
                 weight: 2,
@@ -864,7 +864,7 @@ const roadMarkingStylesByLayer = {
                 opacity: 0.8
             }
         ],
-        "1102":[
+        "1102": [
             {
                 dashMeters: [2, 7],
                 weight: 2,
@@ -872,61 +872,61 @@ const roadMarkingStylesByLayer = {
                 opacity: 0.8
             }
         ],
-        "1103":[
+        "1103": [
             {
                 dashMeters: [3, 5],
                 weight: 2,
                 color: "#000000",
                 opacity: 0.8
             }
-        ], 
-        "1104":[
+        ],
+        "1104": [
             {
                 dashMeters: [4, 2],
                 weight: 2,
                 color: "#000000",
                 opacity: 0.8
             }
-        ], 
-        "1105":[
+        ],
+        "1105": [
             {
                 dashMeters: [6, 3],
                 weight: 2,
                 color: "#000000",
                 opacity: 0.8
             }
-        ], 
-        "1106":[
+        ],
+        "1106": [
             {
                 dashMeters: [0.6, 0.3],
                 weight: 2,
                 color: "#000000",
                 opacity: 0.8
             }
-        ], 
-        "1107":[
+        ],
+        "1107": [
             {
                 dashMeters: [1, 1],
                 weight: 2
             }
-        ], 
-        "1161":[
+        ],
+        "1161": [
             {
                 dashMeters: [2, 1],
                 weight: 2,
                 color: "#000000",
                 opacity: 0.8
             }
-        ], 
-        "RM1007":[
+        ],
+        "RM1007": [
             {
                 dashMeters: [1, 1],
                 weight: 2,
                 color: "#000000",
                 opacity: 0.8
             }
-        ], 
-        "RM1012":[
+        ],
+        "RM1012": [
             // Left line
             {
                 dashMeters: null, // Solid
@@ -939,9 +939,9 @@ const roadMarkingStylesByLayer = {
                 weight: 2,
                 offset: 0.25 // Offset 0.5m to the right
             }
-        ], 
+        ],
 
-        "RM1013":[
+        "RM1013": [
             // Left line
             {
                 dashMeters: [0.6, 0.3], // Solid
@@ -954,50 +954,50 @@ const roadMarkingStylesByLayer = {
                 weight: 2,
                 offset: 0.2 // Offset 0.5m to the right
             }
-        ], 
+        ],
 
-        "RM1048":[
+        "RM1048": [
             {
                 dashMeters: [1, 1],
                 weight: 2,
                 color: "#000000",
                 opacity: 0.8
             }
-        ], 
+        ],
 
-        "RM1104":[
+        "RM1104": [
             {
                 dashMeters: [4, 2],
                 weight: 2,
                 color: "#000000",
                 opacity: 0.8
             }
-        ], 
+        ],
 
-        "RM1107":[
+        "RM1107": [
             {
                 dashMeters: [1, 1],
                 weight: 2
             }
-        ], 
+        ],
 
-        "RM1133":[
+        "RM1133": [
             {
                 dashMeters: [4, 2],
                 weight: 2,
                 color: "#000000",
                 opacity: 0.8
             }
-        ], 
+        ],
 
-        "RM1162":[
+        "RM1162": [
             {
                 dashMeters: null,
                 weight: 2,
                 color: "#000000",
                 opacity: 0.8
             }
-        ], 
+        ],
 
     },
     'csdi:DTAD_TG_PATH_LINE': {
@@ -1025,6 +1025,16 @@ const roadMarkingStylesByLayer = {
                 opacity: 0.8
             }
         ]
+    },
+    'csdi:DTAD_RST_ZONE_LINE': {
+        "DEFAULT": [
+            {
+                dashMeters: null,
+                weight: 2,
+                color: "#FFFF00",
+                opacity: 0.8
+            }
+        ],
     },
     'csdi:DTAD_RAILING_LINE': {
         // Default Fallback for RAILING - references same styles as RD_MARK_LINE_C
@@ -1128,8 +1138,8 @@ const roadMarkingStylesByLayer = {
                 }
             },
             {
-                dashMeters: [1.5, 1.5],
-                startDistance: 0.25,
+                dashMeters: [1.5, 1],
+                startDistance: 0,
                 weight: 2,
                 color: "#000000",
                 opacity: 0.8

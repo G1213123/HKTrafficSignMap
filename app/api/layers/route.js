@@ -4,6 +4,7 @@ import path from 'path';
 import Pbf from 'pbf';
 import { VectorTile } from '@mapbox/vector-tile';
 import { generateSignedUrlGoogle } from '../../lib/generateSignedUrlGoogle';
+import { readMvtManifest, getMvtBuildRootDir } from '../../lib/mvtManifest';
 
 const layerCache = globalThis.__layerApiCache || new Map();
 globalThis.__layerApiCache = layerCache;
@@ -136,17 +137,38 @@ function getTile(lon, lat, zoom) {
 
 
 
-async function getLayerTileFromCache(typeName, z, x, y) {
+async function getLayerTileFromCache(typeName, z, x, y, buildDate) {
   const filename = `${y}.pbf`;
   const dirName = typeName.replace(':', '_');
-  const cacheKey = `${typeName}_${z}_${x}_${y}`;
+  const cacheKey = `${buildDate || 'legacy'}_${typeName}_${z}_${x}_${y}`;
   const dataSource = getDataSource();
 
   // In development, try local first. In production, go straight to cloud.
   if (dataSource === 'local') {
     try {
-      const filePath = path.join(process.cwd(), 'public', 'data', 'mvt', dirName, String(z), String(x), filename);
-      const fileStat = await fs.stat(filePath);
+      const filePath = buildDate
+        ? path.join(getMvtBuildRootDir(buildDate), dirName, String(z), String(x), filename)
+        : path.join(process.cwd(), 'public', 'data', 'mvt', dirName, String(z), String(x), filename);
+
+      const fileStat = await fs.stat(filePath).catch(() => null);
+      if (!fileStat && buildDate) {
+        const legacyPath = path.join(process.cwd(), 'public', 'data', 'mvt', dirName, String(z), String(x), filename);
+        const legacyStat = await fs.stat(legacyPath).catch(() => null);
+        if (!legacyStat) return null;
+
+        const legacyCached = layerCache.get(cacheKey);
+        if (legacyCached && legacyCached.mtimeMs === legacyStat.mtimeMs) {
+          return legacyCached.featureCollection;
+        }
+
+        const legacyFileData = await fs.readFile(legacyPath);
+        const legacyFeatureCollection = decodePbfTileToFeatureCollection(legacyFileData, typeName, x, y, z);
+
+        layerCache.set(cacheKey, { mtimeMs: legacyStat.mtimeMs, featureCollection: legacyFeatureCollection });
+        return legacyFeatureCollection;
+      }
+
+      if (!fileStat) return null;
       const mtimeMs = fileStat.mtimeMs;
 
       const cached = layerCache.get(cacheKey);
@@ -168,7 +190,9 @@ async function getLayerTileFromCache(typeName, z, x, y) {
   // In production (cloud mode), fetch from Google Cloud Storage using a signed URL (no public fallback)
   try {
     const bucketName = process.env.GCS_BUCKET_NAME || 'road-sign-factory-asset';
-    const objectName = `public/data/mvt/${dirName}/${z}/${x}/${filename}`;
+    const objectName = buildDate
+      ? `public/data/mvt/${buildDate}/${dirName}/${z}/${x}/${filename}`
+      : `public/data/mvt/${dirName}/${z}/${x}/${filename}`;
 
     try {
       const signedUrl = await generateSignedUrlGoogle({ bucketName, objectName });
@@ -203,6 +227,7 @@ export async function GET(request) {
   const typeName = searchParams.get('typeName');
   const bboxText = searchParams.get('bbox');
   const format = (searchParams.get('format') || 'pbf').toLowerCase();
+  const requestedBuildDate = searchParams.get('buildDate');
 
   if (!typeName) {
     return NextResponse.json({ error: 'Missing typeName parameter' }, { status: 400 });
@@ -224,6 +249,7 @@ export async function GET(request) {
   // WFS only supports zoom level 18 - ignore any client-provided z parameter
   const z = FORCED_ZOOM;
   // Note: client may send ?z=X but it will be ignored; all requests use zoom 18
+  const buildDate = requestedBuildDate || await readMvtManifest().then(manifest => manifest?.latestBuildDate || manifest?.latestData?.buildDate || null);
 
   try {
     let resultFeatures = [];
@@ -234,7 +260,7 @@ export async function GET(request) {
     if (!queryBounds) {
         return NextResponse.json({ error: 'Bbox parameter required for tiled WFS API' }, { status: 400 });
     }
-    
+
     const maxYT = getTile(queryBounds.minX, queryBounds.minY, z).y;
     const minXT = getTile(queryBounds.minX, queryBounds.minY, z).x;
     const minYT = getTile(queryBounds.maxX, queryBounds.maxY, z).y;
@@ -248,7 +274,7 @@ export async function GET(request) {
     }
     
     const tilePromises = tilesToLoad.map(async tile => {
-      const featureCollection = await getLayerTileFromCache(typeName, z, tile.x, tile.y);
+      const featureCollection = await getLayerTileFromCache(typeName, z, tile.x, tile.y, buildDate);
         if (!featureCollection) return;
         
         if (!resultCrs && featureCollection.crs) {

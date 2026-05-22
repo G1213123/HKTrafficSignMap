@@ -21,12 +21,20 @@ export const fetchWithRetry = async (url, options, retries = 2) => {
     throw lastError;
 };
 
+const iconUrlCache = new Map();
+
 export const getIconUrl = (typeName, refname) => {
     if (!refname) return null;
-    const getProxyUrl = (assetPath) => `/api/proxy?asset=${encodeURIComponent(assetPath)}`;
+    const cacheKey = `${typeName || ''}::${String(refname)}`;
+    if (iconUrlCache.has(cacheKey)) return iconUrlCache.get(cacheKey);
 
-    if (typeName.includes('TRAFFIC_LIGHT')) return getProxyUrl(`/data/svgs/${refname}.svg`);
-    if (typeName.includes('DTAD_TS_')) return getProxyUrl(`/data/svgs/TS_${refname}.svg`);
-    if (typeName.includes('DTAD_RD_MARK_SYM')) return getProxyUrl(`/data/svgs/RM_${refname}.svg`);
-    return null;
+    const getProxyUrl = (assetPath) => `/api/proxy?asset=${encodeURIComponent(assetPath)}`;
+    let iconUrl = null;
+
+    if (typeName.includes('TRAFFIC_LIGHT')) iconUrl = getProxyUrl(`/data/svgs/${refname}.svg`);
+    else if (typeName.includes('DTAD_TS_')) iconUrl = getProxyUrl(`/data/svgs/TS_${refname}.svg`);
+    else if (typeName.includes('DTAD_RD_MARK_SYM')) iconUrl = getProxyUrl(`/data/svgs/RM_${refname}.svg`);
+
+    iconUrlCache.set(cacheKey, iconUrl);
+    return iconUrl;
 };

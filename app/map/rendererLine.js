@@ -8,7 +8,8 @@ const ICON_LINE_LAYERS = new Set([
     'csdi:DTAD_RD_MARK_LINE_C',
     'csdi:DTAD_LV22_LINE',
     'csdi:DTAD_TG_PATH_LINE',
-    'csdi:DTAD_RAILING_LINE'
+    'csdi:DTAD_RAILING_LINE',
+    'csdi:DTAD_RST_ZONE_LINE'
 ]);
 
 const normalizeBearing = bearing => ((bearing % 360) + 360) % 360;

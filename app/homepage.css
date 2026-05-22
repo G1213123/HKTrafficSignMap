@@ -1358,6 +1358,7 @@ body {
         display: none;
         position: absolute;
         top: 100%;
+        height: calc(100vh - 70px);
         left: 0;
         right: 0;
         background: var(--nav-mobile-bg);
@@ -1366,6 +1367,7 @@ body {
         flex-direction: column;
         padding: 1rem 0;
         box-shadow: var(--shadow-lg);
+        overflow-y: auto;
     }
 
     .nav-menu.active {

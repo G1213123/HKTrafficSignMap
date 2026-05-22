@@ -2,5 +2,11 @@
     "cSpell.words": [
         "AUTOTOLL",
         "MULTICYCLES"
-    ]
+    ],
+    "chat.tools.terminal.autoApprove": {
+        "/^node jobs/build_vector_tiles\\.js --single csdi_DTAD_TS_PLATE_LINE$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
 }

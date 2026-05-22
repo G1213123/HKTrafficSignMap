@@ -30,6 +30,7 @@ export default function Navbar() {
           <Link href="/changelog" className={`nav-link ${isActive('/changelog')}`} data-i18n="Changelog">{t('Changelog')}</Link>
           <Link href="/posters" className={`nav-link ${isActive('/posters')}`} data-i18n="Posters">{t('Posters')}</Link>
           <Link href="/sign-index" className={`nav-link ${isActive('/sign-index')}`} data-i18n="Index">{t('Index')}</Link>
+          <Link href="/map" className={`nav-link ${isActive('/map')}`} data-i18n="Map">{t('Map')}</Link>
           <a href="https://github.com/G1213123/TrafficSign" className="nav-link" target="_blank" rel="noreferrer" data-i18n="GitHub">{t('GitHub')}</a>
           <a href="/design" className="nav-button" data-i18n="Launch App">{t('Launch App')}</a>
           <div className="nav-lang" aria-label="Language">

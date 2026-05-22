@@ -41,6 +41,10 @@ export default function Map() {
     const [showRawPoints, setShowRawPoints] = useState(false);
     const [geolocInProgress, setGeolocInProgress] = useState(false);
     const showRawPointsRef = useRef(showRawPoints);
+    const [mvtBuildDate, setMvtBuildDate] = useState('');
+    const mvtBuildDateRef = useRef(mvtBuildDate);
+    const [mvtManifestReady, setMvtManifestReady] = useState(false);
+    const mvtManifestReadyRef = useRef(mvtManifestReady);
     const [elevationFilter, setElevationFilter] = useState('ALL');
     const elevationFilterRef = useRef(elevationFilter);
     const layerDataRef = useRef({});
@@ -93,8 +97,36 @@ export default function Map() {
     }, [showRawPoints]);
 
     useEffect(() => {
+        mvtBuildDateRef.current = mvtBuildDate;
+    }, [mvtBuildDate]);
+
+    useEffect(() => {
+        mvtManifestReadyRef.current = mvtManifestReady;
+    }, [mvtManifestReady]);
+
+    useEffect(() => {
         elevationFilterRef.current = elevationFilter;
     }, [elevationFilter]);
+
+    useEffect(() => {
+        let cancelled = false;
+
+        fetch('/api/mvt-manifest')
+            .then(res => (res.ok ? res.json() : null))
+            .then(manifest => {
+                if (cancelled || !manifest) return;
+                const latestBuildDate = manifest.latestBuildDate || manifest.latestData?.buildDate || '';
+                setMvtBuildDate(latestBuildDate);
+            })
+            .catch(err => console.warn('Failed to load MVT manifest:', err))
+            .finally(() => {
+                if (!cancelled) setMvtManifestReady(true);
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, []);
 
     useEffect(() => {
         try {
@@ -231,7 +263,7 @@ export default function Map() {
                         elevationFilter: elevationFilterRef.current
                     }));
 
-                    if (map.getZoom() >= dataLoadMinZoom) {
+                    if (map.getZoom() >= dataLoadMinZoom && mvtManifestReadyRef.current) {
                         Array.from(activeLayersRef.current).forEach(layer => {
                             setPendingFetches(prev => prev + 1);
                             loadLayerData(layer, {
@@ -240,7 +272,8 @@ export default function Map() {
                                 markersRef,
                                 activeLayersRef,
                                 showRawPoints: showRawPointsRef.current,
-                                elevationFilter: elevationFilterRef.current
+                                elevationFilter: elevationFilterRef.current,
+                                buildDate: mvtBuildDateRef.current,
                             })?.then((data) => {
                                 if (data) {
                                     layerDataRef.current[layer] = data;
@@ -314,6 +347,7 @@ export default function Map() {
             activeLayersRef,
             showRawPoints: showRawPointsRef.current,
             elevationFilter: elevationFilterRef.current,
+            buildDate: mvtBuildDateRef.current,
         })?.then((data) => {
             if (data) {
                 layerDataRef.current[typeName] = data;
@@ -450,7 +484,7 @@ export default function Map() {
 
     // Apply Visibility Overlays
     useEffect(() => {
-        if (!mapLoaded || !mapInstanceRef.current) return;
+        if (!mapLoaded || !mapInstanceRef.current || !mvtManifestReady) return;
         const map = mapInstanceRef.current;
         localStorage.setItem('mapState', JSON.stringify({
             center: map.getCenter(),
@@ -477,7 +511,7 @@ export default function Map() {
 
         applyVisibilityOverlays({ map, activeLayers, markersRef });
 
-    }, [activeLayers, mapLoaded, fetchLayerData, showRawPoints]);
+    }, [activeLayers, mapLoaded, fetchLayerData, showRawPoints, mvtBuildDate, mvtManifestReady]);
 
     useEffect(() => {
         rerenderCachedLayers();
@@ -544,10 +578,10 @@ export default function Map() {
                 <main className="map-main">
                     <div ref={mapContainerRef} className="map-container" />
                     {mapLoaded && <MeasureTool map={mapInstanceRef.current} />}
-                    <div className="info legend" style={{
+                    <div className="info legend map-info-legend" style={{
                         position: 'absolute', bottom: '20px', left: '10px',
                         background: 'white', padding: '5px 10px', border: '1px solid #ccc',
-                        zIndex: 10, color: mapMessage.includes('Zoom in') ? 'red' : 'green',
+                        zIndex: 10, color: (mapMessage.includes('Zoom in')||mapMessage.includes('Zoom out')) ? 'red' : 'green',
                         borderRadius: '4px', fontSize: '13px', pointerEvents: 'none',
                         boxShadow: '0 2px 5px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', gap: '6px'
                     }}>
