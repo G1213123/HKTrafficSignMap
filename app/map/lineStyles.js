@@ -28,6 +28,13 @@ const roadMarkingStylesByLayer = {
             }
         ],
 
+        "RM1143": [
+            {
+                dashMeters: [1, 1], // Example: 4m line, 2m gap
+                weight: 2
+            }
+        ],
+
         // RM1001: Double White Lines
         "RM1001": [
             // Left line

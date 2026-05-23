@@ -71,13 +71,13 @@ export const renderPoints = (map, typeName, points, markersRef, activeLayersRef,
             }
 
             // Allow per-feature override of height using SYMBOL_SIZE (interpreted as meters)
-            const rawSymbolSize = feature.properties && feature.properties.SYMBOL_SIZE * dimScale;
-            const parsedSymbolSize = rawSymbolSize != null ? Number(rawSymbolSize) : NaN;
-            if (!isNaN(parsedSymbolSize)) {
-                const finalHeightPx = parsedSymbolSize / metersPerPx / 2;
-                customStyle += ` height: calc(${finalHeightPx}px * var(--map-icon-scale, 1)); width: auto; max-width: none;`;
-            }
-
+            //const rawSymbolSize = feature.properties && feature.properties.SYMBOL_SIZE * dimScale;
+            //const parsedSymbolSize = rawSymbolSize != null ? Number(rawSymbolSize) : NaN;
+            //if (!isNaN(parsedSymbolSize)) {
+            //    const finalHeightPx = parsedSymbolSize / metersPerPx / 2;
+            //    customStyle += ` height: calc(${finalHeightPx}px * var(--map-icon-scale, 1)); width: auto; max-width: none;`;
+            //}
+//
             el.innerHTML = `<div class="custom-svg-icon${extraClass}"><img src="${iconUrl}" style="${customStyle}" /></div>`;
         } else {
             el.className = 'default-circle-marker';
