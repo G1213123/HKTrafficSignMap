@@ -232,6 +232,24 @@
         "length": 12150
     },
     {
+        "signNumber": "1047 (n)",
+        "letterHeight": 1600,
+        "characterHeight": 2700,
+        "length": 12150
+    },
+    {
+        "signNumber": "1047 (w)",
+        "letterHeight": 1600,
+        "characterHeight": 2700,
+        "length": 12150
+    },
+    {
+        "signNumber": "1047_26",
+        "letterHeight": 1600,
+        "characterHeight": 2700,
+        "length": 12150
+    },
+    {
         "signNumber": "1048",
         "letterHeight": 100,
         "Module": [
@@ -243,7 +261,8 @@
         "offset": {
             "x": 1500,
             "y": -13000
-        }
+        },
+        "symbolSizeScale": 0.8
     },
     {
         "signNumber": "1049",
@@ -832,6 +851,20 @@
         "maxCharacterHeight": 1700
     },
     {
+        "signNumber": "1160A",
+        "maxLetterHeight": 1000,
+        "maxCharacterHeight": 1700,
+        "angleCorrection": -90
+    },
+    {
+        "signNumber": "1160B",
+        "minLetterHeight": 700,
+        "maxLetterHeight": 1000,
+        "minCharacterHeight": 1200,
+        "maxCharacterHeight": 1700,
+        "angleCorrection": -90
+    },
+    {
         "signNumber": "1161",
         "minLineWidth": 50,
         "maxLineWidth": 100,
@@ -899,11 +932,72 @@
         "maxWidth": 1700
     },
     {
+        "signNumber": "1171A",
+        "minLength": 1200,
+        "maxLength": 2750,
+        "minWidth": 750,
+        "maxWidth": 1700,
+        "angleCorrection": -90,
+        "offset": {
+            "x": 0,
+            "y": -1000
+        }
+    },
+    {
+        "signNumber": "1171B",
+        "minLength": 1200,
+        "maxLength": 2750,
+        "minWidth": 750,
+        "maxWidth": 1700,
+        "angleCorrection": -90,
+        "offset": {
+            "x": 0,
+            "y": -1000
+        }
+    },
+    {
+        "signNumber": "1171C",
+        "minLength": 1200,
+        "maxLength": 2750,
+        "minWidth": 750,
+        "maxWidth": 1700,
+        "angleCorrection": -90,
+        "offset": {
+            "x": 0,
+            "y": -1000
+        }
+    },
+    {
         "signNumber": "1172",
         "minLength": 800,
         "maxLength": 500,
         "minWidth": 2000,
-        "maxWidth": 1250
+        "maxWidth": 1250,
+        "angleCorrection": -90
+    },
+    {
+        "signNumber": "1172A",
+        "minLength": 800,
+        "maxLength": 500,
+        "minWidth": 2000,
+        "maxWidth": 1250,
+        "angleCorrection": -90
+    },
+    {
+        "signNumber": "1172B",
+        "minLength": 800,
+        "maxLength": 500,
+        "minWidth": 2000,
+        "maxWidth": 1250,
+        "angleCorrection": -90
+    },
+    {
+        "signNumber": "1172C",
+        "minLength": 800,
+        "maxLength": 500,
+        "minWidth": 2000,
+        "maxWidth": 1250,
+        "angleCorrection": -90
     },
     {
         "signNumber": "1173",
@@ -919,7 +1013,16 @@
         "minCharacterHeight": 1200,
         "maxCharacterHeight": 1700,
         "minLength": 2000,
-        "angleCorrection": 90
+        "angleCorrection": -90
+    },
+    {
+        "signNumber": "1174 (n)",
+        "minLetterHeight": 700,
+        "maxLetterHeight": 1000,
+        "minCharacterHeight": 1200,
+        "maxCharacterHeight": 1700,
+        "minLength": 2000,
+        "angleCorrection": -90
     },
     {
         "signNumber": "1175",

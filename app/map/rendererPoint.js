@@ -16,7 +16,7 @@ export const renderPoints = (map, typeName, points, markersRef, activeLayersRef,
         const lat = coords[1];
         const metersPerPx = 40075016.686 * Math.cos(lat * Math.PI / 180) / Math.pow(2, 21 + 9);
 
-        const refname = feature.properties?.REFNAME;
+        const refname = feature.properties?.REFNAME?.replace('*', ')');
         const iconUrl = getIconUrl(typeName, refname);
 
         const el = createMarkerElement({ className: 'custom-svg-icon-wrapper' });

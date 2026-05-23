@@ -9,7 +9,8 @@ const ICON_LINE_LAYERS = new Set([
     'csdi:DTAD_LV22_LINE',
     'csdi:DTAD_TG_PATH_LINE',
     'csdi:DTAD_RAILING_LINE',
-    'csdi:DTAD_RST_ZONE_LINE'
+    'csdi:DTAD_RST_ZONE_LINE',
+    'csdi:DTAD_YL_BOX_LINE',
 ]);
 
 const normalizeBearing = bearing => ((bearing % 360) + 360) % 360;
@@ -59,6 +60,43 @@ const createIconMarker = (svg, sizePxAtZoom21) => {
         width: `calc(${sizePxAtZoom21}px * var(--map-icon-scale, 1))`,
         height: `calc(${sizePxAtZoom21}px * var(--map-icon-scale, 1))`,
         innerHTML: svg,
+    });
+};
+
+const renderSvgIconMarkers = (map, typeName, feature, lineDefn, markersRef) => {
+    const svgStyle = lineDefn.find(def => def && def.iconSvg && def.iconInterval);
+    if (!svgStyle || !svgStyle.iconInterval || !svgStyle.iconSvg) return;
+
+    const coordsList = feature.geometry.type === 'LineString' ? [feature.geometry.coordinates] : feature.geometry.coordinates;
+    const interval = Math.max(1, Number(svgStyle.iconInterval));
+    const sizePxAtZoom21 = Number(svgStyle.iconSize || 500);
+
+    coordsList.forEach(lineCoords => {
+        if (!lineCoords || lineCoords.length < 2) return;
+
+        const line = turf.lineString(lineCoords);
+        const totalLength = turf.length(line, { units: 'meters' });
+        let startDistance = 0;
+        if (svgStyle.startDistance !== undefined && svgStyle.startDistance !== null) {
+            startDistance = Number(svgStyle.startDistance);
+        }
+        startDistance = Math.max(0, Math.min(startDistance, totalLength));
+
+        for (let distance = startDistance; distance < totalLength; distance += interval) {
+            const point = turf.along(line, distance, { units: 'meters' });
+            const bearing = getLineBearingAtDistance(line, distance, totalLength);
+            const el = createIconMarker(svgStyle.iconSvg, sizePxAtZoom21);
+            const marker = new maplibregl.Marker({
+                element: el,
+                rotationAlignment: 'map',
+                pitchAlignment: 'map',
+                rotation: bearing,
+                anchor: 'center',
+            }).setLngLat(point.geometry.coordinates);
+
+            attachMarkerPopup(el, map, point.geometry.coordinates, buildPopupContent(typeName, feature.properties || {}));
+            markersRef.current[typeName].push(marker);
+        }
     });
 };
 
@@ -123,14 +161,24 @@ const renderIconLineMarkers = (map, typeName, features, markersRef) => {
     const iconLineFeatures = [];
     
     features.forEach(feature => {
-        const linetype = feature.properties && feature.properties.LINETYPE;
-        if (!linetype) return;
+        let linetype = feature.properties && feature.properties.LINETYPE;
+        if (!linetype) {
+            linetype = 'DEFAULT';
+        }
         
         const lineDefn = getLineDefinition(typeName, linetype);
         if (!lineDefn || lineDefn.length === 0) return;
 
-        const dim = lineDefn.find(def => def && def.iconGeometry && def.iconInterval);
-        if (!dim || !dim.iconInterval || !dim.iconGeometry) return;
+                const dim = lineDefn.find(def => def && def.iconGeometry && def.iconInterval)
+                    || lineDefn.find(def => def && def.iconSvg && def.iconInterval);
+                if (!dim || !dim.iconInterval) {
+                    return;
+                }
+
+                if (dim.iconSvg && !dim.iconGeometry) {
+                    renderSvgIconMarkers(map, typeName, feature, lineDefn, markersRef);
+                    return;
+                }
 
         const coordsList = feature.geometry.type === 'LineString' ? [feature.geometry.coordinates] : feature.geometry.coordinates;
 
@@ -266,8 +314,8 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
 
         if (isLineGeometry) {
             const linetype = f.properties && (f.properties.LINETYPE || f.properties.REFNAME);
-            const lineDefn = linetype ? getLineDefinition(typeName, linetype) : null;
-            const hasIcon = isIconLineLayer && lineDefn && lineDefn.some(def => def && def.iconGeometry && def.iconInterval);
+            const lineDefn = linetype ? getLineDefinition(typeName, linetype) : getLineDefinition(typeName, 'DEFAULT');
+            const hasIcon = isIconLineLayer && lineDefn && lineDefn.some(def => def && ((def.iconGeometry && def.iconInterval) || (def.iconSvg && def.iconInterval)));
             if (hasIcon) {
                 // Route this feature to icon renderer, while allowing non-icon
                 // style entries of the same linetype to continue below.
@@ -283,7 +331,7 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
                 styles.forEach((styleConfig, idx) => {
                     // Icon geometry is rendered by renderIconLineMarkers only.
                     // Do not emit a base line feature for this style entry.
-                    if (styleConfig.iconGeometry && styleConfig.iconInterval) return;
+                    if ((styleConfig.iconGeometry && styleConfig.iconInterval) || (styleConfig.iconSvg && styleConfig.iconInterval)) return;
 
                     const clonedFeature = JSON.parse(JSON.stringify(f));
                     clonedFeature.properties._styleIndex = idx; // Differentiate identical linestyles
@@ -364,7 +412,7 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
         uniqueLinetypes.forEach(linetype => {
             const styles = getLineDefinition(typeName, linetype);
             styles.forEach((styleConfig, idx) => {
-                if (styleConfig.iconGeometry && styleConfig.iconInterval) return;
+                if ((styleConfig.iconGeometry && styleConfig.iconInterval) || (styleConfig.iconSvg && styleConfig.iconInterval)) return;
 
                 const layerId = `line-style-${typeName.replace(':', '-')}-${linetype.replace(/[^A-Za-z0-9]/g, '_')}-${idx}`;
 
@@ -411,6 +459,45 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
         });
 
         if (hasMissingLinetype) {
+            if (typeName === 'csdi:DTAD_YL_BOX_LINE') {
+                const defaultStyles = getLineDefinition(typeName, 'DEFAULT');
+
+                defaultStyles.forEach((styleConfig, idx) => {
+                    const fallbackLayerId = `line-style-${typeName.replace(':', '-')}-fallback-default-${idx}`;
+
+                    if (!map.getLayer(fallbackLayerId)) {
+                        const paintProps = {
+                            'line-color': styleConfig.color || '#ffef00',
+                            'line-width': styleConfig.weight || 2,
+                            'line-opacity': styleConfig.opacity !== undefined ? styleConfig.opacity : 0.8,
+                        };
+
+                        if (styleConfig.offset && styleConfig.offset !== 0) {
+                            const metersPerPx20 = getMetersPerPixel(22.3193, 20);
+                            const basePx = styleConfig.offset / metersPerPx20;
+                            paintProps['line-offset'] = [
+                                'interpolate',
+                                ['exponential', 2],
+                                ['zoom'],
+                                12, basePx * Math.pow(2, 12 - 20),
+                                22, basePx * Math.pow(2, 22 - 20)
+                            ];
+                        }
+
+                        map.addLayer({
+                            id: fallbackLayerId,
+                            type: 'line',
+                            source: typeName,
+                            filter: ['!', ['has', 'LINETYPE']],
+                            paint: paintProps,
+                            layout: { 'line-join': 'round', 'line-cap': 'round' }
+                        });
+                    }
+                });
+
+                return;
+            }
+
             const fallbackLayerId = `line-style-${typeName.replace(':', '-')}-fallback-no-linetype`;
 
             if (!map.getLayer(fallbackLayerId)) {

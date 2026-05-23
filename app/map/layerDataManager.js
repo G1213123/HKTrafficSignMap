@@ -7,6 +7,7 @@ import { renderTsAbvPt } from './rendererTsAbvPt';
 import { renderDsPolePt } from './rendererDsPolePt';
 import { renderTrafficLightPt } from './rendererTrafficLightPt';
 import { renderAnno } from './rendererAnno';
+import { renderYlBoxPoly } from './rendererYlBoxPoly';
 
 // Renderer dispatch maps allow easy extension by typeName
 const pointRenderers = {
@@ -21,8 +22,13 @@ const annoRenderers = {
     'csdi:DTAD_TS_ABV_ANNO': renderAnno,
 };
 
+const polyRenderers = {
+    'csdi:DTAD_YL_BOX_POLY': renderYlBoxPoly,
+};
+
 const getPointRenderer = (typeName) => pointRenderers[typeName] || renderPoints;
 const getAnnoRenderer = (typeName) => annoRenderers[typeName] || null;
+const getPolyRenderer = (typeName) => polyRenderers[typeName] || null;
 
 const normalizeElevationValue = (value) => {
     if (value === null || value === undefined || String(value).trim() === '') return 'AT-GRADE';
@@ -36,6 +42,18 @@ const matchesElevationFilter = (feature, elevationFilter) => {
 
 export const renderLayerData = (typeName, data, { map, markersRef, activeLayersRef, showRawPoints = false, elevationFilter = 'ALL' }) => {
     if (!data || !data.features || !map) return;
+
+    const polyRenderer = getPolyRenderer(typeName);
+    if (polyRenderer) {
+        if (markersRef.current[typeName]) {
+            markersRef.current[typeName].forEach(m => m.remove());
+        }
+        markersRef.current[typeName] = [];
+
+        const filteredFeatures = data.features.filter(f => matchesElevationFilter(f, elevationFilter));
+        polyRenderer(map, typeName, filteredFeatures, markersRef, activeLayersRef, showRawPoints);
+        return;
+    }
 
     const isAnno = typeName.includes('ANNO');
     const nonPoints = [];

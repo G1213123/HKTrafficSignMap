@@ -4,7 +4,7 @@ import path from 'path';
 import Pbf from 'pbf';
 import { VectorTile } from '@mapbox/vector-tile';
 import { generateSignedUrlGoogle } from '../../lib/generateSignedUrlGoogle';
-import { readMvtManifest, getMvtBuildRootDir } from '../../lib/mvtManifest';
+import { readMvtManifest, getMvtBuildRootDir } from '../mvt-manifest/mvtManifest.js';
 
 const layerCache = globalThis.__layerApiCache || new Map();
 globalThis.__layerApiCache = layerCache;

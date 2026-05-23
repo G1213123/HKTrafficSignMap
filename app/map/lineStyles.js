@@ -275,13 +275,13 @@ const roadMarkingStylesByLayer = {
                 dashMeters: null, // Solid
                 weight: 2,
                 offset: -0.1, // Offset 0.5m to the left
-                color: "#FFFF00",
+                color: "#ffef00",
             },
             // Right line
             {
                 dashMeters: null, // Solid
                 weight: 2,
-                color: "#FFFF00",
+                color: "#ffef00",
                 offset: 0.1 // Offset 0.5m to the right
             }
         ],
@@ -291,7 +291,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#FFFF00",
+                color: "#ffef00",
                 opacity: 0.8
             }
         ],
@@ -320,7 +320,7 @@ const roadMarkingStylesByLayer = {
                 weight: 2,
                 offset: 0, // Offset 0.5m to the right
                 shift: 1,
-                color: "#FFFF00",
+                color: "#ffef00",
             }
         ],
 
@@ -471,7 +471,7 @@ const roadMarkingStylesByLayer = {
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 12000,
-                iconSize: 500,
+                iconSize: 10,
                 iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,14 106,100 14,100' fill='none' stroke='black' stroke-width='2'/></svg>"
             }
         ],
@@ -485,7 +485,7 @@ const roadMarkingStylesByLayer = {
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 18000,
-                iconSize: 500,
+                iconSize: 10,
                 iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,14 106,100 14,100' fill='none' stroke='black' stroke-width='20'/></svg>"
             }
         ],
@@ -499,7 +499,7 @@ const roadMarkingStylesByLayer = {
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 6000,
-                iconSize: 500,
+                iconSize: 10,
                 iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,14 106,100 14,100' fill='none' stroke='black' stroke-width='2'/></svg>"
             }
         ],
@@ -513,7 +513,7 @@ const roadMarkingStylesByLayer = {
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 9000,
-                iconSize: 500,
+                iconSize: 10,
                 iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,14 106,100 14,100' fill='none' stroke='black' stroke-width='2'/></svg>"
             }
         ],
@@ -527,7 +527,7 @@ const roadMarkingStylesByLayer = {
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 18000,
-                iconSize: 500,
+                iconSize: 10,
                 iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 106,14 14,14' fill='none' stroke='black' stroke-width='20'/></svg>"
             }
         ],
@@ -541,7 +541,7 @@ const roadMarkingStylesByLayer = {
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 6000,
-                iconSize: 500,
+                iconSize: 10,
                 iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 106,14 14,14' fill='none' stroke='black' stroke-width='2'/></svg>"
             }
         ],
@@ -555,7 +555,7 @@ const roadMarkingStylesByLayer = {
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 9000,
-                iconSize: 500,
+                iconSize: 10,
                 iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 106,14 14,14' fill='none' stroke='black' stroke-width='2'/></svg>"
             }
         ],
@@ -569,7 +569,7 @@ const roadMarkingStylesByLayer = {
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 4000,
-                iconSize: 500,
+                iconSize: 10,
                 iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,14 106,100 14,100' fill='none' stroke='black' stroke-width='2'/></svg>"
             }
         ],
@@ -583,7 +583,7 @@ const roadMarkingStylesByLayer = {
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 8000,
-                iconSize: 500,
+                iconSize: 10,
                 iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,14 106,100 14,100' fill='none' stroke='black' stroke-width='2'/></svg>"
             }
         ],
@@ -597,7 +597,7 @@ const roadMarkingStylesByLayer = {
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 15000,
-                iconSize: 500,
+                iconSize: 10,
                 iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,14 106,100 14,100' fill='none' stroke='black' stroke-width='2'/></svg>"
             }
         ],
@@ -611,7 +611,7 @@ const roadMarkingStylesByLayer = {
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 4000,
-                iconSize: 500,
+                iconSize: 10,
                 iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 106,14 14,14' fill='none' stroke='black' stroke-width='2'/></svg>"
             }
         ],
@@ -625,7 +625,7 @@ const roadMarkingStylesByLayer = {
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 8000,
-                iconSize: 500,
+                iconSize: 10,
                 iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 106,14 14,14' fill='none' stroke='black' stroke-width='2'/></svg>"
             }
         ],
@@ -639,7 +639,7 @@ const roadMarkingStylesByLayer = {
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 12000,
-                iconSize: 500,
+                iconSize: 10,
                 iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 106,14 14,14' fill='none' stroke='black' stroke-width='2'/></svg>"
             }
         ],
@@ -653,7 +653,7 @@ const roadMarkingStylesByLayer = {
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 15000,
-                iconSize: 500,
+                iconSize: 10,
                 iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 106,14 14,14' fill='none' stroke='black' stroke-width='2'/></svg>"
             }
         ],
@@ -667,7 +667,7 @@ const roadMarkingStylesByLayer = {
                 opacity: 0.8,
                 iconType: "diamond",
                 iconInterval: 4000,
-                iconSize: 500,
+                iconSize: 10,
                 iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 100,60 60,20 20,60' fill='none' stroke='black' stroke-width='20'/></svg>"
             }
         ],
@@ -681,7 +681,7 @@ const roadMarkingStylesByLayer = {
                 opacity: 0.8,
                 iconType: "diamond",
                 iconInterval: 6000,
-                iconSize: 500,
+                iconSize: 10,
                 iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 100,60 60,20 20,60' fill='none' stroke='black' stroke-width='20'/></svg>"
             }
         ],
@@ -695,7 +695,7 @@ const roadMarkingStylesByLayer = {
                 opacity: 0.8,
                 iconType: "diamond",
                 iconInterval: 8000,
-                iconSize: 500,
+                iconSize: 10,
                 iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><polygon points='60,100 100,60 60,20 20,60' fill='none' stroke='black' stroke-width='20'/></svg>"
             }
         ],
@@ -753,29 +753,46 @@ const roadMarkingStylesByLayer = {
         // ZIGZAGL
         "ZIGZAGL": [
             {
-                dashMeters: null,
-                weight: 2,
-                color: "#000000",
-                opacity: 0.8,
                 iconType: "zigzag",
-                iconInterval: 4300,
-                iconSize: 4300,
-                iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='-500 0 1000 4500'><path d='M 0 0 L -300 2000 M -300 2300 L 0 4300' fill='none' stroke='black' stroke-width='50' stroke-linecap='round'/></svg>"
-            }
+                iconInterval: 4.5,
+                // Geometry in meters. Renderer expects meters for iconGeometry.
+                iconGeometry: {
+                    shapes: [
+                        // Horizontal tick at top (0.5m wide)
+                        { type: 'line', x1: 0, y1: 0, x2: -0.3, y2: 1.9, strokeWidth: 200 },
+                        { type: 'line', x1: -0.3, y1: 2.2, x2: 0, y2: 4.2, strokeWidth: 200 },
+                    ],
+                    stroke: '#000000'
+                }
+            },
+            //{
         ],
 
         // ZIGZAGR
         "ZIGZAGR": [
             {
-                dashMeters: null,
-                weight: 2,
-                color: "#000000",
-                opacity: 0.8,
                 iconType: "zigzag",
-                iconInterval: 4300,
-                iconSize: 4300,
-                iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='-500 0 1000 4500'><path d='M 0 0 L 300 2000 M 300 2300 L 0 4300' fill='none' stroke='black' stroke-width='50' stroke-linecap='round'/></svg>"
-            }
+                iconInterval: 4.5,
+                // Geometry in meters. Renderer expects meters for iconGeometry.
+                iconGeometry: {
+                    shapes: [
+                        // Horizontal tick at top (0.5m wide)
+                        { type: 'line', x1: 0, y1: 0, x2: 0.3, y2: 1.9, strokeWidth: 200 },
+                        { type: 'line', x1: 0.3, y1: 2.2, x2: 0, y2: 4, strokeWidth: 200 },
+                    ],
+                    stroke: '#000000'
+                }
+            },
+            //{
+            //    dashMeters: null,
+            //    weight: 2,
+            //    color: "#000000",
+            //    opacity: 0.8,
+            //    iconType: "zigzag",
+            //    iconInterval: 100,
+            //    iconSize: 125,
+            //    iconSvg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='-500 0 1000 4500'><path d='M 0 0 L 300 2000 M 300 2300 L 0 4300' fill='none' stroke='black' stroke-width='50' stroke-linecap='round'/></svg>"
+            //}
         ],
 
         // Default Fallback
@@ -853,7 +870,7 @@ const roadMarkingStylesByLayer = {
                 weight: 2,
                 offset: 0, // Offset 0.5m to the right
                 shift: 1,
-                color: "#FFFF00",
+                color: "#ffef00",
             }
         ],
         "1101": [
@@ -1010,16 +1027,16 @@ const roadMarkingStylesByLayer = {
                 iconGeometry: {
                     shapes: [
                         // Horizontal tick at top (0.5m wide)
-                        { type: 'line', x1: -0.25, y1: -0.25, x2: 0.25, y2: -0.25, strokeWidth: 200 },
-                        { type: 'line', x1: 0.25, y1: -0.25, x2: 0.25, y2: 0.25, strokeWidth: 200 },
-                        { type: 'line', x1: 0.25, y1: 0.25, x2: -0.25, y2: 0.25, strokeWidth: 200 },
-                        { type: 'line', x1: -0.25, y1: -0.25, x2: -0.25, y2: -0.25, strokeWidth: 200 },
+                        { type: 'line', x1: -0.1, y1: -0.1, x2: 0.1, y2: -0.1, strokeWidth: 200 },
+                        { type: 'line', x1: 0.1, y1: -0.1, x2: 0.1, y2: 0.1, strokeWidth: 200 },
+                        { type: 'line', x1: 0.1, y1: 0.1, x2: -0.1, y2: 0.1, strokeWidth: 200 },
+                        { type: 'line', x1: -0.1, y1: 0.1, x2: -0.1, y2: -0.1, strokeWidth: 200 },
                     ],
                     stroke: '#000000'
                 }
             },
             {
-                dashMeters: null,
+                dashMeters: [1.5, 0.2],
                 weight: 2,
                 color: "#000000",
                 opacity: 0.8
@@ -1031,7 +1048,17 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#FFFF00",
+                color: "#ffef00",
+                opacity: 0.8
+            }
+        ],
+    },
+    'csdi:DTAD_YL_BOX_LINE': {
+        "DEFAULT": [
+            {
+                dashMeters: null,
+                weight: 2,
+                color: "#ffef00",
                 opacity: 0.8
             }
         ],

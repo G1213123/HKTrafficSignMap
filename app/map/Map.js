@@ -581,7 +581,7 @@ export default function Map() {
                     <div className="info legend map-info-legend" style={{
                         position: 'absolute', bottom: '20px', left: '10px',
                         background: 'white', padding: '5px 10px', border: '1px solid #ccc',
-                        zIndex: 10, color: (mapMessage.includes('Zoom in')||mapMessage.includes('Zoom out')) ? 'red' : 'green',
+                        zIndex: 10, color: (mapMessage.includes('Zoom in')||mapMessage.includes('縮放')) ? 'red' : 'green',
                         borderRadius: '4px', fontSize: '13px', pointerEvents: 'none',
                         boxShadow: '0 2px 5px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', gap: '6px'
                     }}>
@@ -688,6 +688,12 @@ export default function Map() {
                                     <strong>{t('No Warranty of Accuracy:')}</strong> {t('Map disclaimer paragraph 2')}<br/><br/>
                                     <strong>{t('Limitation of Liability:')}</strong> {t('Map disclaimer paragraph 3')}
                                 </p>
+                                <div style={{ marginTop: '14px' }}>
+                                    <h4 style={{ margin: '0 0 10px 0', color: '#333' }}>{t('Contact Us')}</h4>
+                                    <p style={{ fontSize: '13px', color: '#444', margin: 0 }}>
+                                        <a href="mailto:enquiry@roadsignfactory.hk" aria-label="Email" style={{ color: '#0d6efd', textDecoration: 'none' }}>enquiry@roadsignfactory.hk</a>
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     )}

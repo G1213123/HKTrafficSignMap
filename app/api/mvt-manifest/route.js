@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { readMvtManifest } from '../../lib/mvtManifest';
+import { readMvtManifest } from './mvtManifest.js';
 
 export async function GET() {
     const manifest = await readMvtManifest();
