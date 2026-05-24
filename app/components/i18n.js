@@ -405,6 +405,7 @@ const dictionaries = {
     'Symbols': '符號',
     'Destination Names': '目的地名稱',
     'Web-Based': '網頁版',
+    'Explore More': '探索更多', 
     'Professional Design Features': '專業設計功能',
     'Comprehensive tools for creating standards-compliant traffic signs': '全面工具，打造合乎規範的交通標誌',
     'Destination Text': '目的地文字',

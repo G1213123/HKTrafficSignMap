@@ -1,5 +1,6 @@
-'use client';
+"use client";
 import { useEffect, useState } from 'react';
+import Head from 'next/head';
 import Link from 'next/link';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -201,6 +202,40 @@ export default function Home() {
 
     return (
         <>
+            <Head>
+                <meta name="description" content="Road Sign Factory — design custom road signs, browse the Sign Index catalog, and explore the Traffic Aids Map with vector tiles for Hong Kong." />
+                <meta name="keywords" content="road sign, traffic sign, sign index, traffic aids map, vector tiles, MVT, Hong Kong, sign catalog, map" />
+                <meta property="og:locale" content="en_US" />
+                <meta property="og:title" content="Road Sign Factory — Design, Catalog, Map" />
+                <meta property="og:description" content="Design directional signs, browse the Sign Index catalog, and explore the Traffic Aids Map (vector tiles & MVT) for Hong Kong." />
+                <meta property="og:url" content="https://roadsignfactory.hk/" />
+                <meta property="og:type" content="website" />
+
+                <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+                    "@context": "https://schema.org",
+                    "@graph": [
+                        {
+                            "@type": "WebPage",
+                            "name": "Road Sign Factory - Home",
+                            "url": "https://roadsignfactory.hk/",
+                            "description": "Home page for Road Sign Factory — design tool, sign index, and traffic aids map.",
+                        },
+                        {
+                            "@type": "Dataset",
+                            "name": "Traffic Aids Map",
+                            "description": "Interactive map of traffic aids (poles, traffic lights, signs) for Hong Kong. Provides vector tiles and MVT manifests for client consumption.",
+                            "url": "https://roadsignfactory.hk/map",
+                            "keywords": ["traffic aids map","vector tiles","MVT","Hong Kong traffic aids","traffic lights","poles"]
+                        },
+                        {
+                            "@type": "Collection",
+                            "name": "Sign Index Catalog",
+                            "description": "Catalog of traffic sign examples and metadata used for quick browsing and search.",
+                            "url": "https://roadsignfactory.hk/sign-index"
+                        }
+                    ]
+                }) }} />
+            </Head>
             {showMigrationNotice && (
                 <div id="migrationNotice" className="migration-notice" onClick={(e) => {
                     if (e.target === e.currentTarget) {
@@ -298,6 +333,38 @@ export default function Home() {
                                 />
                             ))}
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Explore Other Tools (Sign Index + Map) */}
+            <section id="explore" className="explore-features">
+                <div className="container">
+                    <h2 className="section-title">{t('Explore More')}</h2>
+                    <p className="section-subtitle">{t('Browse the Additional Sign Index catalog or Traffic Aids Map to assist in your design process.')}</p>
+
+                    <div className="explore-hero">
+                        <a href="/sign-index" className="explore-panel" aria-label="Browse Sign Index">
+                            <div className="explore-image">
+                                <img src="/images/preview-sign-index.svg" alt="Sign Index preview" onError={(e) => e.target.style.display = 'none'} />
+                            </div>
+                            <h3>{t('Sign Index Catalog')}</h3>
+                            <p>{t('A browsable catalog of sign examples with metadata and images for quick selection.')}</p>
+                            <div className="explore-actions">
+                                <span className="btn">{t('Browse Sign Index')}</span>
+                            </div>
+                        </a>
+
+                        <a href="/map" className="explore-panel" aria-label="Open Traffic Aids Map">
+                            <div className="explore-image">
+                                <img src="/images/preview-map.svg" alt="Traffic Aids Map preview" onError={(e) => e.target.style.display = 'none'} />
+                            </div>
+                            <h3>{t('Traffic Aids Map')}</h3>
+                            <p>{t('Explore an interactive map of traffic aids and download vector tiles or MVT manifests for integration.')}</p>
+                            <div className="explore-actions">
+                                <span className="btn">{t('Open Map')}</span>
+                            </div>
+                        </a>
                     </div>
                 </div>
             </section>
