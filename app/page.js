@@ -344,25 +344,23 @@ export default function Home() {
                     <p className="section-subtitle">{t('Browse the Additional Sign Index catalog or Traffic Aids Map to assist in your design process.')}</p>
 
                     <div className="explore-hero">
-                        <a href="/sign-index" className="explore-panel" aria-label="Browse Sign Index">
-                            <div className="explore-image">
-                                <img src="/images/preview-sign-index.svg" alt="Sign Index preview" onError={(e) => e.target.style.display = 'none'} />
-                            </div>
-                            <h3>{t('Sign Index Catalog')}</h3>
-                            <p>{t('A browsable catalog of sign examples with metadata and images for quick selection.')}</p>
-                            <div className="explore-actions">
-                                <span className="btn">{t('Browse Sign Index')}</span>
+                        <a href="/sign-index" className="explore-panel explore-panel-sign-index" aria-label="Browse Sign Index">
+                            <div className="explore-copy">
+                                <h3>{t('Sign Index Catalog')}</h3>
+                                <p>{t('A browsable catalog of prescribed signs with metadata and images for quick selection.')}</p>
+                                <div className="explore-actions">
+                                    <span className="btn">{t('Browse Sign Index')}</span>
+                                </div>
                             </div>
                         </a>
 
-                        <a href="/map" className="explore-panel" aria-label="Open Traffic Aids Map">
-                            <div className="explore-image">
-                                <img src="/images/preview-map.svg" alt="Traffic Aids Map preview" onError={(e) => e.target.style.display = 'none'} />
-                            </div>
-                            <h3>{t('Traffic Aids Map')}</h3>
-                            <p>{t('Explore an interactive map of traffic aids and download vector tiles or MVT manifests for integration.')}</p>
-                            <div className="explore-actions">
-                                <span className="btn">{t('Open Map')}</span>
+                        <a href="/map" className="explore-panel explore-panel-map" aria-label="Open Traffic Aids Map">
+                            <div className="explore-copy">
+                                <h3>{t('Traffic Aids Map')}</h3>
+                                <p>{t('Explore an interactive map of traffic aids for existing road conditions.')}</p>
+                                <div className="explore-actions">
+                                    <span className="btn">{t('Open Map')}</span>
+                                </div>
                             </div>
                         </a>
                     </div>
