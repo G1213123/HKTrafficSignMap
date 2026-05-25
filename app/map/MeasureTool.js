@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import * as turf from '@turf/turf';
 import { Ruler, Trash2, StopCircle } from 'lucide-react';
 
-const MeasureTool = ({ map }) => {
+const MeasureTool = ({ map, showLegend = false, onToggleLegend }) => {
     const [isMeasuring, setIsMeasuring] = useState(false);
     const [points, setPoints] = useState([]);
     const [measurement, setMeasurement] = useState(null);
@@ -189,15 +189,16 @@ const MeasureTool = ({ map }) => {
 
     return (
         <div className="map-measure-container">
-            <div style={{ display: 'flex', gap: '5px', background: '#fff', padding: '4px', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.2)', border: '1px solid #ddd' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '5px', background: '#fff', padding: '4px', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.2)', border: '1px solid #ddd' }}>
                 <button 
                     onClick={(e) => {
                         e.stopPropagation();
                         setIsMeasuring(!isMeasuring);
                     }}
                     title="Measure Tool"
+                    aria-label="Measure Tool"
                     style={{
-                        padding: '8px', background: isMeasuring ? '#2563eb' : 'transparent', 
+                        width: '32px', height: '32px', padding: 0, background: isMeasuring ? '#2563eb' : 'white', 
                         color: isMeasuring ? 'white' : 'black', border: '1px solid #ccc', 
                         borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                         boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
@@ -206,12 +207,31 @@ const MeasureTool = ({ map }) => {
                     <Ruler size={20} />
                 </button>
 
+                <button
+                    type="button"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onToggleLegend && onToggleLegend();
+                    }}
+                    title="Legend"
+                    aria-label="Legend"
+                    style={{
+                        width: '32px', height: '32px', padding: 0, background: showLegend ? '#2563eb' : 'white',
+                        color: showLegend ? 'white' : 'black', border: '1px solid #ccc',
+                        borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                    }}
+                >
+                    <span style={{ fontSize: '18px', lineHeight: 1 }}>≡</span>
+                </button>
+
                 {(points.length > 0 || isMeasuring) && (
                     <button 
                         onClick={clearMeasurement}
                         title="Clear Measurement"
+                        aria-label="Clear Measurement"
                         style={{
-                            padding: '8px', background: 'white', color: 'black', 
+                            width: '32px', height: '32px', padding: 0, background: 'white', color: 'black', 
                             border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             boxShadow: '0 2px 4px rgba(0,0,0,0.2)'

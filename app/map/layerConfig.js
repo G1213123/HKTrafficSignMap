@@ -41,3 +41,57 @@ export const layersConfig = {
         "csdi:DTAD_RUN_IN_OUT_LINE", "csdi:DTAD_DROP_KERB_LINE"
     ]
 };
+
+const legendTrafficSignSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.5 -2.5 1 5" style="width: 100%; height: 100%; display: block; overflow: visible;">
+    <circle cx="0" cy="0" r="0.2" fill="none" stroke="#222" stroke-width="0.05" />
+    <line x1="0" y1="-0.2" x2="0" y2="-1" stroke="#222" stroke-width="0.05" />
+    <polygon points="-0.125,-1 0.125,-1 0,-1.5" fill="#222" />
+</svg>`;
+
+const legendDirectionalSignSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><path d='M13 18h30l8 14-8 14H13z' fill='white' stroke='black' stroke-width='3' stroke-linejoin='round'/><path d='M31 22l10 10-10 10' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/><path d='M25 32h16' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'/><path d='M31 46v8' stroke='black' stroke-width='4' stroke-linecap='round'/></svg>`;
+const legendTrafficLightSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect x='22' y='8' width='20' height='38' rx='8' fill='white' stroke='black' stroke-width='3'/><circle cx='32' cy='17' r='4.5' fill='#d13438'/><circle cx='32' cy='27' r='4.5' fill='#f5b700'/><circle cx='32' cy='37' r='4.5' fill='#2f8f46'/><path d='M32 46v10' stroke='black' stroke-width='4' stroke-linecap='round'/></svg>`;
+
+export const layerLegendDict = {
+    "csdi:DTAD_TS_POLE_PT": {
+        label: "Traffic Signs",
+        kind: "icon",
+        showInLegend: true,
+        previewSvg: legendTrafficSignSvg,
+    },
+    "csdi:DTAD_DS_POLE_PT": {
+        label: "Directional Signs",
+        kind: "icon",
+        showInLegend: true,
+        previewSvg: legendDirectionalSignSvg,
+    },
+    "csdi:DTAD_TRAFFIC_LIGHT_PT": {
+        label: "Traffic Lights",
+        kind: "icon",
+        showInLegend: true,
+        previewSvg: legendTrafficLightSvg,
+    },
+    "csdi:DTAD_RD_MARK_LINE_C": {
+        label: "Road Marking Line",
+        kind: "line",
+        showInLegend: true,
+        color: "#111111",
+        width: 3,
+        dashArray: "10 6",
+    },
+    "csdi:DTAD_RAILING_LINE": {
+        label: "Railings",
+        kind: "line",
+        showInLegend: true,
+        color: "#666666",
+        width: 4,
+        dashArray: "4 4",
+    },
+    "csdi:DTAD_TG_PATH_LINE": {
+        label: "Pedestrian Path",
+        kind: "line",
+        showInLegend: true,
+        color: "#d97706",
+        width: 4,
+        dashArray: "12 6",
+    },
+};

@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { getMetersPerPixel } from './mapUtils';
-import { layersConfig } from './layerConfig';
+import { layersConfig, layerLegendDict } from './layerConfig';
 import proj4 from 'proj4';
 import Navbar from '../components/Navbar';
 import MapSidebar from './MapSidebar';
@@ -38,6 +38,7 @@ export default function Map() {
     const [pendingFetches, setPendingFetches] = useState(0);
     const [mapLoaded, setMapLoaded] = useState(false);
     const [showInfoOverlay, setShowInfoOverlay] = useState(false);
+    const [showLegend, setShowLegend] = useState(false);
     const [showRawPoints, setShowRawPoints] = useState(false);
     const [geolocInProgress, setGeolocInProgress] = useState(false);
     const showRawPointsRef = useRef(showRawPoints);
@@ -54,6 +55,40 @@ export default function Map() {
     const [cursorCoordsHK, setCursorCoordsHK] = useState(null);
     const isLocalDataSource = typeof process !== 'undefined' && process.env && process.env.NEXT_PUBLIC_DATA_SOURCE === 'local';
     const dataLoadMinZoom = isLocalDataSource ? 16 : 18;
+    const legendEntries = Object.entries(layerLegendDict).filter(([layerName, entry]) => {
+        return entry?.showInLegend && activeLayers.has(layerName);
+    });
+
+    const renderLegendSwatch = (entry) => {
+        if (entry.kind === 'icon' && entry.previewSvg) {
+            return (
+                <span className="map-legend-icon">
+                    <span
+                        className="map-legend-icon-svg"
+                        aria-hidden="true"
+                        dangerouslySetInnerHTML={{ __html: entry.previewSvg }}
+                    />
+                </span>
+            );
+        }
+
+        return (
+            <span className="map-legend-line" aria-hidden="true">
+                <svg viewBox="0 0 80 24" preserveAspectRatio="none" role="presentation">
+                    <line
+                        x1="4"
+                        y1="12"
+                        x2="76"
+                        y2="12"
+                        stroke={entry.color || '#111111'}
+                        strokeWidth={entry.width || 3}
+                        strokeLinecap="round"
+                        strokeDasharray={entry.dashArray || undefined}
+                    />
+                </svg>
+            </span>
+        );
+    };
 
     const syncBasemapLabels = useCallback((map) => {
         if (!map) return;
@@ -577,7 +612,13 @@ export default function Map() {
 
                 <main className="map-main">
                     <div ref={mapContainerRef} className="map-container" />
-                    {mapLoaded && <MeasureTool map={mapInstanceRef.current} />}
+                    {mapLoaded && (
+                        <MeasureTool
+                            map={mapInstanceRef.current}
+                            showLegend={showLegend}
+                            onToggleLegend={() => setShowLegend(prev => !prev)}
+                        />
+                    )}
                     <div className="info legend map-info-legend" style={{
                         position: 'absolute', bottom: '20px', left: '10px',
                         background: 'white', padding: '5px 10px', border: '1px solid #ccc',
@@ -629,7 +670,31 @@ export default function Map() {
                         )}
                     </div>
 
-                    <div 
+                    {showLegend && (
+                        <div className="map-legend-panel">
+                            <div className="map-legend-header">
+                                <h3>{t('Layer Legend')}</h3>
+                                <button type="button" onClick={() => setShowLegend(false)} aria-label={t('Close legend')}>
+                                    &times;
+                                </button>
+                            </div>
+                            <div className="map-legend-list">
+                                {legendEntries.length > 0 ? legendEntries.map(([layerName, entry]) => (
+                                    <div className="map-legend-item" key={layerName}>
+                                        {renderLegendSwatch(entry)}
+                                        <div className="map-legend-text">
+                                            <strong>{t(entry.label || layerName)}</strong>
+                                            <span>{layerName.replace('csdi:', '').replace('DTAD_', '').replace(/_/g, ' ')}</span>
+                                        </div>
+                                    </div>
+                                )) : (
+                                    <div className="map-legend-empty">{t('No legend items are configured for the active layers.')}</div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    <div
                         className="map-info-btn"
                         onClick={(e) => { e.stopPropagation(); setShowInfoOverlay(true); }}
                         style={{

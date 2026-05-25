@@ -26,6 +26,39 @@ export default function ChangelogContent() {
               {/* Changelog Entries */}
               <div className="changelog-entries">
                 
+                {/* Version 1.4.2 Release */}
+                <article className="changelog-entry minor">
+                    <div className="changelog-header minor">
+                        <h3 className="version-tag version-minor">Version 1.4.2</h3>
+                        <time className="release-date">May 2026</time>
+                    </div>
+                    <div className="changelog-body">
+                    <h4>Traffic Aids Map and Index Plan</h4>
+                    <p>Added the Traffic Aids interactive map and the Traffic Sign and Road Marking index plan.</p>
+
+                        <div className="changelog-categories">
+                            <div className="category-section">
+                                <h5><i className="fas fa-sign"></i> Traffic Sign and Road Marking Index Plan</h5>
+                                <ul>
+                          <li><strong>Traffic Sign:</strong> 1180 traffic signs.</li>
+                          <li><strong>Road Marking:</strong> 151 road markings.</li>
+                          <li><strong>CT174/51:</strong> Data extracted from open data drawings CT/174/51.</li>
+                                 </ul>
+                            </div>
+
+                            <div className="category-section">
+                                <h5><i className="fas fa-map"></i> Traffic Aids Interactive Map</h5>
+                                <ul>
+                          <li><strong>Traffic Aids Layers:</strong> 50+ layers of traffic inventory data.</li>
+                          <li><strong>True Scale Rendering:</strong> Road marking line styles and symbols are rendered with true scale icons.</li>
+                          <li><strong>Layer Legend:</strong> Added a quick legend panel for active map layers and symbol styles.</li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                </article>
+
                 {/* Version 1.4.0 Release */}
                 <article className="changelog-entry major">
                     <div className="changelog-header major">

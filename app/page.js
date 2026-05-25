@@ -276,7 +276,7 @@ export default function Home() {
                                 </a>
                                 <div className="version-display">
                                     <span className="version-number">
-                                        v1.4.1
+                                        v1.4.2
                                     </span>
                                     <span className="version-label">{t('Current Build')}</span>
                                 </div>
@@ -341,13 +341,13 @@ export default function Home() {
             <section id="explore" className="explore-features">
                 <div className="container">
                     <h2 className="section-title">{t('Explore More')}</h2>
-                    <p className="section-subtitle">{t('Browse the Additional Sign Index catalog or Traffic Aids Map to assist in your design process.')}</p>
+                    <p className="section-subtitle">{t('Browse the Additional Sign Index catalog or Traffic Aids Map to assist your design process.')}</p>
 
                     <div className="explore-hero">
                         <a href="/sign-index" className="explore-panel explore-panel-sign-index" aria-label="Browse Sign Index">
                             <div className="explore-copy">
                                 <h3>{t('Sign Index Catalog')}</h3>
-                                <p>{t('A browsable catalog of prescribed signs with metadata and images for quick selection.')}</p>
+                                <p>{t('A browsable catalog of standard signs with metadata and images.')}</p>
                                 <div className="explore-actions">
                                     <span className="btn">{t('Browse Sign Index')}</span>
                                 </div>
