@@ -40,7 +40,7 @@ export const renderTsPolePt = (map, typeName, points, markersRef, activeLayersRe
                 <!-- Main shapes -->
                 <circle cx="0" cy="0" r="0.2" fill="none" stroke="#222" stroke-width="0.05" />
                 <line x1="0" y1="-0.2" x2="0" y2="-1" stroke="#222" stroke-width="0.05" />
-                <polygon points="-0.125,-1 0.125,-1 0,-1.5" fill="#222" />
+                <polygon points="-0.2,-1 0.2,-1 0,-2" fill="#222" />
             </svg>
         `;
 

@@ -455,13 +455,13 @@ body {
 
 .map-legend-line {
     width: 42px;
-    height: 18px;
+    height: 42px;
     flex: 0 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
     border: 1px solid #d1d5db;
-    border-radius: 999px;
+    border-radius: 10px;
     background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
 }
 

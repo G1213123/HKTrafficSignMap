@@ -10,16 +10,16 @@ if (Array.isArray(rmDimensions)) {
 
 export const layersConfig = {
     "Traffic Signs": [
-        "csdi:DTAD_TS_POLE_PT", "csdi:DTAD_TS_PLATE_LINE", "csdi:DTAD_TS_MISC_LINE", 
-        "csdi:DTAD_TS_ABV_LINE", "csdi:DTAD_TS_POLE_LINE", "csdi:DTAD_TS_FILLED", 
+        "csdi:DTAD_TS_POLE_PT", "csdi:DTAD_TS_PLATE_LINE", "csdi:DTAD_TS_MISC_LINE",
+        "csdi:DTAD_TS_ABV_LINE", "csdi:DTAD_TS_POLE_LINE", "csdi:DTAD_TS_FILLED",
         "csdi:DTAD_TS_ABV_PT", "csdi:DTAD_TS_ABV_ANNO"
     ],
     "Directional Signs": [
-        "csdi:DTAD_DS_POLE_PT", "csdi:DTAD_DS_POLE_LINE", "csdi:DTAD_DS_PLATE_LINE", 
+        "csdi:DTAD_DS_POLE_PT", "csdi:DTAD_DS_POLE_LINE", "csdi:DTAD_DS_PLATE_LINE",
         "csdi:DTAD_DS_MISC_LINE", "csdi:DTAD_DS_POLE_LINE_C", "csdi:DTAD_DS_FILLED"
     ],
     "Pedestrian Signs": [
-        "csdi:DTAD_PS_POLE_PT", "csdi:DTAD_PS_POLE_LINE", "csdi:DTAD_PS_PLATE_LINE", 
+        "csdi:DTAD_PS_POLE_PT", "csdi:DTAD_PS_POLE_LINE", "csdi:DTAD_PS_PLATE_LINE",
         "csdi:DTAD_PS_MISC_LINE", "csdi:DTAD_PS_FILLED", "csdi:DTAD_PS_ANNO"
     ],
     "Traffic Lights": [
@@ -34,7 +34,7 @@ export const layersConfig = {
         "csdi:DTAD_LV23_LINE", "csdi:DTAD_LV22_LINE", "csdi:DTAD_LV21_LINE",
         "csdi:DTAD_LV22_FILLED"
     ],
-    "Railings": [ "csdi:DTAD_RAILING_LINE" ],
+    "Railings": ["csdi:DTAD_RAILING_LINE"],
     "Miscellaneous": [
         "csdi:DTAD_GIPOLE_PT", "csdi:DTAD_MISC_PT", "csdi:DTAD_CYC_PT",
         "csdi:UNKNOWN_LINE", "csdi:DTAD_TG_PATH_LINE", "csdi:DTAD_PED_REFUGE_LINE",
@@ -42,14 +42,34 @@ export const layersConfig = {
     ]
 };
 
-const legendTrafficSignSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.5 -2.5 1 5" style="width: 100%; height: 100%; display: block; overflow: visible;">
+const legendTrafficSignSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.25 -2 0.5 2.5" style="width: 100%; height: 100%; display: block; overflow: visible;">
     <circle cx="0" cy="0" r="0.2" fill="none" stroke="#222" stroke-width="0.05" />
     <line x1="0" y1="-0.2" x2="0" y2="-1" stroke="#222" stroke-width="0.05" />
-    <polygon points="-0.125,-1 0.125,-1 0,-1.5" fill="#222" />
+    <polygon points="-0.2,-1 0.2,-1 0,-2" fill="#222" />
 </svg>`;
 
-const legendDirectionalSignSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><path d='M13 18h30l8 14-8 14H13z' fill='white' stroke='black' stroke-width='3' stroke-linejoin='round'/><path d='M31 22l10 10-10 10' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/><path d='M25 32h16' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'/><path d='M31 46v8' stroke='black' stroke-width='4' stroke-linecap='round'/></svg>`;
-const legendTrafficLightSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect x='22' y='8' width='20' height='38' rx='8' fill='white' stroke='black' stroke-width='3'/><circle cx='32' cy='17' r='4.5' fill='#d13438'/><circle cx='32' cy='27' r='4.5' fill='#f5b700'/><circle cx='32' cy='37' r='4.5' fill='#2f8f46'/><path d='M32 46v10' stroke='black' stroke-width='4' stroke-linecap='round'/></svg>`;
+const legendDirectionalSignSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.5 -1 1 2" style="width: 100%; height: 100%; display: block; overflow: visible;">
+    <circle cx="-0.35" cy="0.2" r="0.2" fill="none" stroke="#222" stroke-width="0.05" />
+    <circle cx="0.35" cy="0.2" r="0.2" fill="none" stroke="#222" stroke-width="0.05" />
+    <line x1="-1" y1="-0.2" x2="1" y2="-0.2" stroke="#222" stroke-width="0.05" />
+</svg>`;
+
+const legendTrafficLightSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.25 -2 0.5 2.5" style="width: 100%; height: 100%; display: block; overflow: visible;">
+            '<circle cx="0" cy="0" r="0.2" fill="fuchsia"  stroke="fuchsia" stroke-width="0.05" />'
+    <line x1="0" y1="-0.2" x2="0" y2="-1" stroke="#222" stroke-width="0.05" />
+    <polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="#222" />
+</svg>`;
+
+const legendRailingSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.25 -1.5 0.5 3" style="width: 100%; height: 100%; display: block; overflow: visible;">
+    <line x1="-1" y1="0" x2="1" y2="0" stroke="#222" stroke-width="0.1" />
+    <line x1="-1.25" y1="-0.5" x2="-1.25" y2="0.5" stroke="#222" stroke-width="0.1" />
+    <line x1="1.25" y1="-0.5" x2="1.25" y2="0.5" stroke="#222" stroke-width="0.1" />
+</svg>`;
+
+const legendTactilePedPathSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.25 -1.5 0.5 3" style="width: 100%; height: 100%; display: block; overflow: visible;">
+    <line x1="-1.5" y1="0" x2="1.5" y2="0" stroke="#222" stroke-width="0.1" />
+        <polygon points="-0.225,-0.225 0.225,-0.225 0.225,0.225 -0.225,0.225" fill="none" stroke="#222" stroke-width="0.1" />
+</svg>`;
 
 export const layerLegendDict = {
     "csdi:DTAD_TS_POLE_PT": {
@@ -80,18 +100,14 @@ export const layerLegendDict = {
     },
     "csdi:DTAD_RAILING_LINE": {
         label: "Railings",
-        kind: "line",
+        kind: "icon",
         showInLegend: true,
-        color: "#666666",
-        width: 4,
-        dashArray: "4 4",
+        previewSvg: legendRailingSvg,
     },
     "csdi:DTAD_TG_PATH_LINE": {
-        label: "Pedestrian Path",
-        kind: "line",
+        label: "Tactile Pedestrian Path",
+        kind: "icon",
         showInLegend: true,
-        color: "#d97706",
-        width: 4,
-        dashArray: "12 6",
+        previewSvg: legendTactilePedPathSvg,
     },
 };
