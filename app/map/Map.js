@@ -15,6 +15,7 @@ import './map.css';
 
 const BASEMAP_LABEL_SOURCE_ID = 'geodata-basemap-labels';
 const BASEMAP_LABEL_LAYER_ID = 'geodata-basemap-labels-layer';
+const EPSG_2326_DEF = '+proj=tmerc +lat_0=22.3121333333333 +lon_0=114.178555555556 +k=1 +x_0=836694.05 +y_0=819069.8 +ellps=intl +towgs84=-162.619,-276.959,-161.764,-0.067753,2.243648,1.158828,-1.094246 +units=m +no_defs +type=crs';
 
 const escapeHtml = (value = '') => String(value)
     .replace(/&/g, '&amp;')
@@ -88,6 +89,15 @@ export default function Map() {
                 </svg>
             </span>
         );
+    };
+
+    const ensureEpsg2326Definition = () => {
+        proj4.defs('EPSG:2326', EPSG_2326_DEF);
+    };
+
+    const convertEpsg2326ToWgs84 = (x, y) => {
+        ensureEpsg2326Definition();
+        return proj4('EPSG:2326', 'WGS84', [x, y]);
     };
 
     const syncBasemapLabels = useCallback((map) => {
@@ -248,7 +258,7 @@ export default function Map() {
 
                 map.on('mousemove', (e) => {
                     try {
-                        proj4.defs("EPSG:2326", "+proj=tmerc +lat_0=22.3121333333333 +lon_0=114.178555555556 +k=1 +x_0=836694.05 +y_0=819069.8 +ellps=intl +towgs84=-162.619,-276.959,-161.764,-0.067753,2.243648,1.158828,-1.094246 +units=m +no_defs +type=crs");
+                        ensureEpsg2326Definition();
                         const [x, y] = proj4('WGS84', 'EPSG:2326', [e.lngLat.lng, e.lngLat.lat]);
                         setCursorCoordsHK({ x: x.toFixed(2), y: y.toFixed(2) });
                     } catch (err) { }
@@ -484,6 +494,31 @@ export default function Map() {
         }
     };
 
+    const handleSearchLocationSelect = (location) => {
+        if (!mapInstanceRef.current || !location) return;
+
+        const x = Number(location.x);
+        const y = Number(location.y);
+
+        if (Number.isNaN(x) || Number.isNaN(y)) {
+            setPanError(t('Invalid location coordinates'));
+            return;
+        }
+
+        try {
+            const [longitude, latitude] = convertEpsg2326ToWgs84(x, y);
+            setPanError('');
+            setCrsInput('EPSG:4326');
+            setCoordInput(`${longitude.toFixed(6)},${latitude.toFixed(6)}`);
+
+            const map = mapInstanceRef.current;
+            const targetZoom = Math.max(map.getZoom(), 16);
+            map.easeTo({ center: [longitude, latitude], zoom: targetZoom });
+        } catch (error) {
+            setPanError(error.message || t('Failed to center map'));
+        }
+    };
+
     const panToMyLocation = () => {
         if (!mapInstanceRef.current) {
             setMapMessage(t('Map not ready'));
@@ -607,6 +642,7 @@ export default function Map() {
                     setCoordInput={setCoordInput}
                     onPanTo={handlePanTo}
                     onRecenter={recenterHK}
+                    onSearchLocationSelect={handleSearchLocationSelect}
                     panError={panError}
                 />
 
