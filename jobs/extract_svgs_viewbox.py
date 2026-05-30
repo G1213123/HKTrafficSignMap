@@ -32,8 +32,6 @@ SCALE_FACTOR = 10.0 # Scaling 10x as requested ("1- times")
 # If this list is empty, ALL .svg files will be processed.
 SPECIFIC_FILES = [
      # Example: "(TS 601 - 700)_page1.svg",
-     "(RM 1001 - 1080)_page1.svg",
-     "(RM 1101 - 1180)_page1.svg",
 ]
 # --------------------------------------------------------------------------
 

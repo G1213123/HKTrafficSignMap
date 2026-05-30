@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import * as turf from '@turf/turf';
 import { Ruler, Trash2, StopCircle } from 'lucide-react';
 
-const MeasureTool = ({ map, showLegend = false, onToggleLegend }) => {
+const MeasureTool = ({ map }) => {
     const [isMeasuring, setIsMeasuring] = useState(false);
     const [points, setPoints] = useState([]);
     const [measurement, setMeasurement] = useState(null);
@@ -205,24 +205,6 @@ const MeasureTool = ({ map, showLegend = false, onToggleLegend }) => {
                     }}
                 >
                     <Ruler size={20} />
-                </button>
-
-                <button
-                    type="button"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onToggleLegend && onToggleLegend();
-                    }}
-                    title="Legend"
-                    aria-label="Legend"
-                    style={{
-                        width: '32px', height: '32px', padding: 0, background: showLegend ? '#2563eb' : 'white',
-                        color: showLegend ? 'white' : 'black', border: '1px solid #ccc',
-                        borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                    }}
-                >
-                    <span style={{ fontSize: '18px', lineHeight: 1 }}>≡</span>
                 </button>
 
                 {(points.length > 0 || isMeasuring) && (

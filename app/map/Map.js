@@ -40,6 +40,7 @@ export default function Map() {
     const [mapLoaded, setMapLoaded] = useState(false);
     const [showInfoOverlay, setShowInfoOverlay] = useState(false);
     const [showLegend, setShowLegend] = useState(false);
+    const [openLegendSubmenu, setOpenLegendSubmenu] = useState(null);
     const [showRawPoints, setShowRawPoints] = useState(false);
     const [geolocInProgress, setGeolocInProgress] = useState(false);
     const showRawPointsRef = useRef(showRawPoints);
@@ -60,12 +61,14 @@ export default function Map() {
         return entry?.showInLegend && activeLayers.has(layerName);
     });
 
-    const renderLegendSwatch = (entry) => {
+    const renderLegendSwatch = (entry, options = {}) => {
+        const compact = options.compact === true;
+
         if (entry.kind === 'icon' && entry.previewSvg) {
             return (
-                <span className="map-legend-icon">
+                <span className={compact ? 'map-legend-icon map-legend-icon--compact' : 'map-legend-icon'}>
                     <span
-                        className="map-legend-icon-svg"
+                        className={compact ? 'map-legend-icon-svg map-legend-icon-svg--compact' : 'map-legend-icon-svg'}
                         aria-hidden="true"
                         dangerouslySetInnerHTML={{ __html: entry.previewSvg }}
                     />
@@ -74,7 +77,7 @@ export default function Map() {
         }
 
         return (
-            <span className="map-legend-line" aria-hidden="true">
+            <span className={compact ? 'map-legend-line map-legend-line--compact' : 'map-legend-line'} aria-hidden="true">
                 <svg viewBox="0 0 80 24" preserveAspectRatio="none" role="presentation">
                     <line
                         x1="4"
@@ -88,6 +91,24 @@ export default function Map() {
                     />
                 </svg>
             </span>
+        );
+    };
+
+    const renderLegendSubmenuItems = (entry) => {
+        if (!Array.isArray(entry.subLegend) || entry.subLegend.length === 0) return null;
+
+        return (
+            <div className="map-legend-submenu-list">
+                {entry.subLegend.map((subEntry) => (
+                    <div className="map-legend-submenu-item" key={subEntry.key || subEntry.label}>
+                        {renderLegendSwatch(subEntry, { compact: true })}
+                        <div className="map-legend-text">
+                            <strong>{t(subEntry.label || subEntry.key)}</strong>
+                            <span>{subEntry.key || subEntry.label}</span>
+                        </div>
+                    </div>
+                ))}
+            </div>
         );
     };
 
@@ -648,11 +669,22 @@ export default function Map() {
 
                 <main className="map-main">
                     <div ref={mapContainerRef} className="map-container" />
+                    <div
+                        className="map-legend-toggle-group"
+                        onClick={(e) => { e.stopPropagation(); setShowLegend(prev => !prev); }}
+                    >
+                        <button
+                            type="button"
+                            className={showLegend ? 'map-legend-toggle-button map-legend-toggle-button--active' : 'map-legend-toggle-button'}
+                            title={t('Legend')}
+                            aria-label={t('Legend')}
+                        >
+                            <span style={{ fontSize: '18px', lineHeight: 1 }}>≡</span>
+                        </button>
+                    </div>
                     {mapLoaded && (
                         <MeasureTool
                             map={mapInstanceRef.current}
-                            showLegend={showLegend}
-                            onToggleLegend={() => setShowLegend(prev => !prev)}
                         />
                     )}
                     <div className="info legend map-info-legend" style={{
@@ -707,26 +739,58 @@ export default function Map() {
                     </div>
 
                     {showLegend && (
-                        <div className="map-legend-panel">
-                            <div className="map-legend-header">
-                                <h3>{t('Layer Legend')}</h3>
-                                <button type="button" onClick={() => setShowLegend(false)} aria-label={t('Close legend')}>
-                                    &times;
-                                </button>
+                        <div className="map-legend-stack">
+                            <div className="map-legend-panel">
+                                <div className="map-legend-header">
+                                    <h3>{t('Layer Legend')}</h3>
+                                    <button type="button" onClick={() => setShowLegend(false)} aria-label={t('Close legend')}>
+                                        &times;
+                                    </button>
+                                </div>
+                                <div className="map-legend-list">
+                                    {legendEntries.length > 0 ? legendEntries.map(([layerName, entry]) => {
+                                        const hasSubLegend = Array.isArray(entry.subLegend) && entry.subLegend.length > 0;
+                                        const isSubLegendOpen = openLegendSubmenu === layerName;
+
+                                        return (
+                                            <div className={hasSubLegend ? 'map-legend-item map-legend-item--with-submenu' : 'map-legend-item'} key={layerName}>
+                                                <div className="map-legend-item-main">
+                                                    {renderLegendSwatch(entry)}
+                                                    <div className="map-legend-text">
+                                                        <strong>{t(entry.label || layerName)}</strong>
+                                                        <span>{layerName.replace('csdi:', '').replace('DTAD_', '').replace(/_/g, ' ')}</span>
+                                                    </div>
+                                                </div>
+                                                {hasSubLegend ? (
+                                                    <div className="map-legend-submenu-shell">
+                                                        <button
+                                                            type="button"
+                                                            className="map-legend-submenu-button"
+                                                            onClick={() => setOpenLegendSubmenu(prev => (prev === layerName ? null : layerName))}
+                                                            aria-expanded={isSubLegendOpen}
+                                                            aria-controls={`legend-submenu-${layerName}`}
+                                                        >
+                                                            <span>{t(isSubLegendOpen ? 'Show less' : 'Show more')}</span>
+                                                            <span className={isSubLegendOpen ? 'map-legend-submenu-arrow map-legend-submenu-arrow--open' : 'map-legend-submenu-arrow'} aria-hidden="true">▾</span>
+                                                        </button>
+                                                    </div>
+                                                ) : null}
+                                            </div>
+                                        );
+                                    }) : (
+                                        <div className="map-legend-empty">{t('No legend items are configured for the active layers.')}</div>
+                                    )}
+                                </div>
                             </div>
-                            <div className="map-legend-list">
-                                {legendEntries.length > 0 ? legendEntries.map(([layerName, entry]) => (
-                                    <div className="map-legend-item" key={layerName}>
-                                        {renderLegendSwatch(entry)}
-                                        <div className="map-legend-text">
-                                            <strong>{t(entry.label || layerName)}</strong>
-                                            <span>{layerName.replace('csdi:', '').replace('DTAD_', '').replace(/_/g, ' ')}</span>
-                                        </div>
+
+                            {openLegendSubmenu && layerLegendDict[openLegendSubmenu]?.subLegend?.length ? (
+                                <div className="map-legend-side-panel" id={`legend-submenu-${openLegendSubmenu}`}>
+                                    <div className="map-legend-side-panel-header">
+                                        <h3>{t(layerLegendDict[openLegendSubmenu].subLegendLabel || 'Variants')}</h3>
                                     </div>
-                                )) : (
-                                    <div className="map-legend-empty">{t('No legend items are configured for the active layers.')}</div>
-                                )}
-                            </div>
+                                    {renderLegendSubmenuItems(layerLegendDict[openLegendSubmenu])}
+                                </div>
+                            ) : null}
                         </div>
                     )}
 

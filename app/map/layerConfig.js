@@ -1,4 +1,5 @@
 import rmDimensions from '../../public/data/rm_dimension.json';
+import { trafficLightShapes } from './svgShapes';
 
 // Build lookup dictionary for road marking physical dimensions
 export const rmDimensionDict = {};
@@ -54,11 +55,25 @@ const legendDirectionalSignSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBo
     <line x1="-1" y1="-0.2" x2="1" y2="-0.2" stroke="#222" stroke-width="0.05" />
 </svg>`;
 
-const legendTrafficLightSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.25 -2 0.5 2.5" style="width: 100%; height: 100%; display: block; overflow: visible;">
-            '<circle cx="0" cy="0" r="0.2" fill="fuchsia"  stroke="fuchsia" stroke-width="0.05" />'
-    <line x1="0" y1="-0.2" x2="0" y2="-1" stroke="#222" stroke-width="0.05" />
-    <polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="#222" />
-</svg>`;
+const buildTrafficLightLegendSvg = (refname) => {
+    const shapes = trafficLightShapes[refname];
+    if (!Array.isArray(shapes) || shapes.length === 0) return '';
+
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1.5 -2.5 3 3" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: 100%; display: block; overflow: visible;">
+        <g>${shapes.join('')}</g>
+    </svg>`;
+};
+
+const trafficLightLegendVariants = Object.keys(trafficLightShapes)
+    .sort((left, right) => left.localeCompare(right))
+    .map(refname => ({
+        key: refname,
+        label: refname,
+        kind: 'icon',
+        previewSvg: buildTrafficLightLegendSvg(refname),
+    }));
+
+const legendTrafficLightSvg = buildTrafficLightLegendSvg('P01');
 
 const legendRailingSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.25 -1.5 0.5 3" style="width: 100%; height: 100%; display: block; overflow: visible;">
     <line x1="-1" y1="0" x2="1" y2="0" stroke="#222" stroke-width="0.1" />
@@ -89,6 +104,8 @@ export const layerLegendDict = {
         kind: "icon",
         showInLegend: true,
         previewSvg: legendTrafficLightSvg,
+        subLegendLabel: "Traffic light variants",
+        subLegend: trafficLightLegendVariants,
     },
     "csdi:DTAD_RD_MARK_LINE_C": {
         label: "Road Marking Line",

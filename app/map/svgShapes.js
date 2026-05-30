@@ -333,10 +333,10 @@ export const trafficLightShapes = {
     ],
     PTR02: [
         // long line
-        '<line x1="0" y1="-0.125" x2="0.4" y2="-0.125" stroke="black" stroke-width="0.05" />',
+        '<line x1="-0.75" y1="0" x2="-0.2" y2="0" stroke="black" stroke-width="0.05" />',
         // text T
-        '<circle cx="0.6" cy="-0.125" r="0.2" fill="none"  stroke="#222" stroke-width="0.02" />',
-        '<text x="0.125" y="0.75" text-anchor="middle" font-size="0.4" transform="rotate(-90)" fill="#222">T</text>',
+        '<circle cx="0" cy="0" r="0.2" fill="none"  stroke="#222" stroke-width="0.02" />',
+        '<text x="0" y="0.15" text-anchor="middle" font-size="0.4" transform="rotate(-90)" fill="#222">T</text>',
     ],
     S01: [
         // slahses
@@ -634,9 +634,9 @@ export const trafficLightShapes = {
     ],
     M52: [
         // triangle
-        '<polygon points="-0.15,0.5 0.15,0.5 0,1.1" fill="#222" />',
+        '<polygon points="-0.15,-0.5 0.15,-0.5 0,-1.1" fill="#222" />',
         // short line
-        '<line x1="0" y1="0" x2="0" y2="0.5" stroke="black" stroke-width="0.05" />',
+        '<line x1="0" y1="0" x2="0" y2="-0.5" stroke="black" stroke-width="0.05" />',
     ],
     M53L: [
         // triangle
@@ -677,6 +677,16 @@ export const trafficLightShapes = {
         '<polygon points="-0.225,-0.8 0.225,-0.8 0,-1.6" fill="#222" />',
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="0.6" stroke="black" stroke-width="0.05" />',
+    ],
+    TSPO: [
+        // rectangle
+        '<polygon points="-0.125,0 0.125,0 0.125,-0.8 -0.125,-0.8" fill="none" stroke="black" stroke-width="0.05" />',
+    ],
+    TSPOB: [
+        // circle
+        '<circle cx="0.2" cy="0" r="0.2" fill="fuchsia"  stroke="fuchsia" stroke-width="0.05" />',
+        // rectangle
+        '<polygon points="-0.25,-0.4 0,-0.4 0,0.4 -0.25,0.4" fill="none" stroke="black" stroke-width="0.05" />',
     ],
 
     LRTS: [
@@ -862,6 +872,29 @@ export const trafficLightIcon = {
         // green glow
         '<circle cx="30" cy="74" r="12" fill="none" stroke="#22c55e" stroke-opacity="0.45" stroke-width="2" />'
     ],
+    P11: [
+        // pole
+        '<rect x="28" y="8" width="4" height="90" rx="1.5" fill="#4b5563" />',
+        // signal box
+        '<rect x="-6" y="8" width="32" height="84" rx="7" fill="#111827" stroke="#374151" stroke-width="2" />',
+        // top red (dim)
+        '<circle cx="10" cy="26" r="8" fill="#6b1b1b" stroke="#7f1d1d" stroke-width="1.5" />',
+        // middle amber (dim)
+        '<circle cx="10" cy="50" r="8" fill="#7c5b12" stroke="#854d0e" stroke-width="1.5" />',
+        // bright green left arrow inside lens
+        '<polygon points="18.25,74.5 18.25,70 10,65.5 1.75,70 1.75,74.5 10,70" fill="#22c55e" />',
+        '<rect x="8" y="73.5" width="4" height="10" rx="1.2" fill="#22c55e" />',
+        // green glow
+        '<circle cx="10" cy="74" r="12" fill="none" stroke="#22c55e" stroke-opacity="0.45" stroke-width="2" />',
+        // signal box
+        '<rect x="34" y="8" width="32" height="84" rx="7" fill="none" stroke="#374151" stroke-dasharray="5,5" stroke-width="2" />',
+        // top red (dim)
+        '<circle cx="50" cy="26" r="8" fill="none" stroke="#374151" stroke-dasharray="5,5" stroke-width="2" />',
+        // middle amber (dim)
+        '<circle cx="50" cy="50" r="8" fill="none" stroke="#374151" stroke-dasharray="5,5" stroke-width="2" />',
+        // green glow
+        '<circle cx="50" cy="74" r="12" fill="none" stroke="#374151" stroke-dasharray="5,5" stroke-width="2" />'
+    ],
     P12L: [
         // pole
         '<rect x="28" y="8" width="4" height="90" rx="1.5" fill="#4b5563" />',
@@ -916,6 +949,43 @@ export const trafficLightIcon = {
         // green glow
         '<circle cx="10" cy="74" r="12" fill="none" stroke="#22c55e" stroke-opacity="0.45" stroke-width="2" />'
     ],
+    P14: [
+        // pole
+        '<rect x="28" y="8" width="4" height="90" rx="1.5" fill="#4b5563" />',
+        // signal box
+        '<rect x="34" y="8" width="32" height="84" rx="7" fill="#111827" stroke="#374151" stroke-width="2" />',
+        // top red (dim)
+        '<circle cx="50" cy="26" r="8" fill="#6b1b1b" stroke="#7f1d1d" stroke-width="1.5" />',
+        // middle amber (dim)
+        '<circle cx="50" cy="50" r="8" fill="#7c5b12" stroke="#854d0e" stroke-width="1.5" />',
+        // bright green left arrow inside lens
+        '<polygon points="58.25,74.5 58.25,70 50,65.5 41.75,70 41.75,74.5 50,70" fill="#22c55e" />',
+        '<rect x="48" y="73.5" width="4" height="10" rx="1.2" fill="#22c55e" />',
+        // green glow
+        '<circle cx="50" cy="74" r="12" fill="none" stroke="#22c55e" stroke-opacity="0.45" stroke-width="2" />',
+        // signal box
+        '<rect x="-6" y="8" width="32" height="84" rx="7" fill="#111827" stroke="#374151" stroke-width="2" />',
+        // top red (dim)
+        '<circle cx="10" cy="26" r="8" fill="#6b1b1b" stroke="#7f1d1d" stroke-width="1.5" />',
+        // middle amber (dim)
+        '<circle cx="10" cy="50" r="8" fill="#7c5b12" stroke="#854d0e" stroke-width="1.5" />',
+        // bottom black lens envelope
+        '<circle cx="10" cy="74" r="8" fill="#0b0f14" stroke="#1f2937" stroke-width="1.5" />',
+        // bright green right arrow inside lens
+        '<polygon points="10.5,65.75 6,65.75 1.5,74 6,82.25 10.5,82.25 6,74" fill="#22c55e" />',
+        '<rect x="9.5" y="72" width="10" height="4" rx="1.2" fill="#22c55e" />',
+        // green glow
+        '<circle cx="10" cy="74" r="12" fill="none" stroke="#22c55e" stroke-opacity="0.45" stroke-width="2" />',
+        // signal box
+        '<rect x="70" y="56" width="32" height="36" rx="7" fill="#111827" stroke="#374151" stroke-width="2" />',
+        // bottom black lens envelope
+        '<circle cx="86" cy="74" r="8" fill="#0b0f14" stroke="#1f2937" stroke-width="1.5" />',
+        // bright green right arrow inside lens
+        '<polygon points="84.5,82.25 89,82.25 93.5,74 89,65.75 84.5,65.75 89,74" fill="#22c55e" />',
+        '<rect x="76.5" y="72" width="10" height="4" rx="1.2" fill="#22c55e" />',
+        // green glow
+        '<circle cx="86" cy="74" r="12" fill="none" stroke="#22c55e" stroke-opacity="0.45" stroke-width="2" />'
+    ],
     P15: [
         // pole
         '<rect x="28" y="8" width="4" height="90" rx="1.5" fill="#4b5563" />',
@@ -943,6 +1013,86 @@ export const trafficLightIcon = {
         '<rect x="9.5" y="72" width="10" height="4" rx="1.2" fill="#22c55e" />',
         // green glow
         '<circle cx="10" cy="74" r="12" fill="none" stroke="#22c55e" stroke-opacity="0.45" stroke-width="2" />'
+    ],
+    M52: [
+
+        // signal box
+        '<rect x="-40" y="56" width="32" height="36" rx="7" fill="#111827" stroke="#374151" stroke-width="2" />',
+        // bottom black lens envelope
+        '<circle cx="-24" cy="74" r="8" fill="#0b0f14" stroke="#1f2937" stroke-width="1.5" />',
+        // bright green right arrow inside lens
+        '<polygon points="-23.5,65.75 -28,65.75 -32.5,74 -28,82.25 -23.5,82.25 -28,74" fill="#22c55e" />',
+        '<rect x="-24.5" y="72" width="10" height="4" rx="1.2" fill="#22c55e" />',
+        // green glow
+        '<circle cx="-24" cy="74" r="12" fill="none" stroke="#22c55e" stroke-opacity="0.45" stroke-width="2" />',
+
+        // slash
+        '<line x1="-4" y1="56" x2="8" y2="92" stroke="#374151" stroke-width="3" />',
+
+        // signal box
+        '<rect x="14" y="56" width="32" height="36" rx="7" fill="#111827" stroke="#374151" stroke-width="2" />',
+        // bright green left arrow inside lens
+        '<polygon points="38.25,74.5 38.25,70 30,65.5 21.75,70 21.75,74.5 30,70" fill="#22c55e" />',
+        '<rect x="28" y="73.5" width="4" height="10" rx="1.2" fill="#22c55e" />',
+        // green glow
+        '<circle cx="30" cy="74" r="12" fill="none" stroke="#22c55e" stroke-opacity="0.45" stroke-width="2" />',
+
+        // slash
+        '<line x1="50" y1="56" x2="62" y2="92" stroke="#374151" stroke-width="3" />',
+
+        // signal box
+        '<rect x="68" y="56" width="32" height="36" rx="7" fill="#111827" stroke="#374151" stroke-width="2" />',
+        // bottom black lens envelope
+        '<circle cx="82" cy="74" r="8" fill="#0b0f14" stroke="#1f2937" stroke-width="1.5" />',
+        // bright green right arrow inside lens
+        '<polygon points="82.5,82.25 87,82.25 91.5,74 87,65.75 82.5,65.75 87,74" fill="#22c55e" />',
+        '<rect x="74.5" y="72" width="10" height="4" rx="1.2" fill="#22c55e" />',
+        // green glow
+        '<circle cx="84" cy="74" r="12" fill="none" stroke="#22c55e" stroke-opacity="0.45" stroke-width="2" />'
+    ],
+    M53L: [
+        // signal box
+        '<rect x="14" y="56" width="32" height="36" rx="7" fill="#111827" stroke="#374151" stroke-width="2" />',
+        // bright green left arrow inside lens
+        '<polygon points="38.25,74.5 38.25,70 30,65.5 21.75,70 21.75,74.5 30,70" fill="#22c55e" />',
+        '<rect x="28" y="73.5" width="4" height="10" rx="1.2" fill="#22c55e" />',
+        // green glow
+        '<circle cx="30" cy="74" r="12" fill="none" stroke="#22c55e" stroke-opacity="0.45" stroke-width="2" />',
+    ],
+    M54R: [
+        // signal box
+        '<rect x="14" y="56" width="32" height="36" rx="7" fill="#111827" stroke="#374151" stroke-width="2" />',
+        // bright green left arrow inside lens
+        '<polygon points="38.25,74.5 38.25,70 30,65.5 21.75,70 21.75,74.5 30,70" fill="#22c55e" />',
+        '<rect x="28" y="73.5" width="4" height="10" rx="1.2" fill="#22c55e" />',
+        // green glow
+        '<circle cx="30" cy="74" r="12" fill="none" stroke="#22c55e" stroke-opacity="0.45" stroke-width="2" />',
+    ],
+    P21: [
+        // pole
+        '<rect x="28" y="66" width="4" height="42" rx="1.5" fill="#4b5563" />',
+        // signal box
+        '<rect x="14" y="8" width="32" height="60" rx="7" fill="#111827" stroke="#374151" stroke-width="2" />',
+        // top red (dim)
+        '<circle cx="30" cy="26" r="8" fill="#6b1b1b" stroke="#7f1d1d" stroke-width="1.5" />',
+        // bottom green pedestrian light
+        '<circle cx="30" cy="50" r="8" fill="#22c55e" stroke="#16a34a" stroke-width="1.5" />',
+        '<circle cx="30" cy="50" r="12" fill="none" stroke="#22c55e" stroke-opacity="0.45" stroke-width="2" />',
+        '<circle cx="30" cy="47" r="1.9" fill="#ffffff" />',
+        '<path d="M 30 49.5 L 30 55 M 30 52 L 26.8 50.5 M 30 52 L 33.2 50.5 M 30 55 L 27.3 59 M 30 55 L 32.7 59" fill="none" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />'
+    ],
+    P23: [
+        // pole
+        '<rect x="28" y="66" width="4" height="42" rx="1.5" fill="#4b5563" />',
+        // signal box
+        '<rect x="14" y="8" width="32" height="60" rx="7" fill="#111827" stroke="#374151" stroke-width="2" />',
+        // top red (dim)
+        '<circle cx="30" cy="26" r="8" fill="#6b1b1b" stroke="#7f1d1d" stroke-width="1.5" />',
+        // bottom green pedestrian light
+        '<circle cx="30" cy="50" r="8" fill="#22c55e" stroke="#16a34a" stroke-width="1.5" />',
+        '<circle cx="30" cy="50" r="12" fill="none" stroke="#22c55e" stroke-opacity="0.45" stroke-width="2" />',
+        '<circle cx="30" cy="47" r="1.9" fill="#ffffff" />',
+        '<path d="M 30 49.5 L 30 55 M 30 52 L 26.8 50.5 M 30 52 L 33.2 50.5 M 30 55 L 27.3 59 M 30 55 L 32.7 59" fill="none" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />'
     ],
 };
 

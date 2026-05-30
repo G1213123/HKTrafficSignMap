@@ -1413,7 +1413,25 @@ const roadMarkingStylesByLayer = {
                     stroke: '#000000'
                 }
             },
-        ]
+        ],
+        "RCB 4": [
+            {
+                iconType: "circle",
+                iconInterval: 3,
+                iconGeometry: {
+                    shapes: [
+                        { type: 'circle', x: 0, y: 0, radius: 0.1, strokeWidth: 0.02 }
+                    ],
+                    stroke: '#000000'
+                }
+            },
+            {
+                dashMeters: null,
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ],
     }
 };
 
