@@ -766,8 +766,8 @@ const roadMarkingStylesByLayer = {
                 iconGeometry: {
                     shapes: [
                         // Horizontal tick at top (0.5m wide)
-                        { type: 'line', x1: 0, y1: 0, x2: -0.3, y2: 1.9, strokeWidth: 200 },
-                        { type: 'line', x1: -0.3, y1: 2.2, x2: 0, y2: 4.2, strokeWidth: 200 },
+                        { type: 'line', x1: 0, y1: 0, x2: -0.6, y2: 2, strokeWidth: 200 },
+                        { type: 'line', x1: -0.6, y1: 2.15, x2: 0, y2: 4.15, strokeWidth: 200 },
                     ],
                     stroke: '#000000'
                 }
@@ -784,8 +784,8 @@ const roadMarkingStylesByLayer = {
                 iconGeometry: {
                     shapes: [
                         // Horizontal tick at top (0.5m wide)
-                        { type: 'line', x1: 0, y1: 0, x2: 0.3, y2: 1.9, strokeWidth: 200 },
-                        { type: 'line', x1: 0.3, y1: 2.2, x2: 0, y2: 4, strokeWidth: 200 },
+                        { type: 'line', x1: 0, y1: 0, x2: 0.6, y2: 2, strokeWidth: 200 },
+                        { type: 'line', x1: 0.6, y1: 2.15, x2: 0, y2: 4.15, strokeWidth: 200 },
                     ],
                     stroke: '#000000'
                 }
