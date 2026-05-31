@@ -1417,16 +1417,16 @@ export const trafficLightIcon = {
         // pole
         '<rect x="28" y="8" width="4" height="90" rx="1.5" fill="#4b5563" />',
         // signal box
-        '<rect x="-6" y="8" width="32" height="84" rx="7" fill="#111827" stroke="#374151" stroke-width="2" />',
+        '<rect x="34" y="8" width="32" height="84" rx="7" fill="#111827" stroke="#374151" stroke-width="2" />',
         // top red (dim)
-        '<circle cx="10" cy="26" r="8" fill="#6b1b1b" stroke="#7f1d1d" stroke-width="1.5" />',
+        '<circle cx="50" cy="26" r="8" fill="#6b1b1b" stroke="#7f1d1d" stroke-width="1.5" />',
         // middle amber (dim)
-        '<circle cx="10" cy="50" r="8" fill="#7c5b12" stroke="#854d0e" stroke-width="1.5" />',
+        '<circle cx="50" cy="50" r="8" fill="#7c5b12" stroke="#854d0e" stroke-width="1.5" />',
         // bright green left arrow inside lens
-        '<polygon points="18.25,74.5 18.25,70 10,65.5 1.75,70 1.75,74.5 10,70" fill="#22c55e" />',
-        '<rect x="8" y="73.5" width="4" height="10" rx="1.2" fill="#22c55e" />',
+        '<polygon points="49.5,82.25 54,82.25 58.5,74 54,65.75 49.5,65.75 54,74" fill="#22c55e" />',
+        '<rect x="41.5" y="72" width="10" height="4" rx="1.2" fill="#22c55e" />',
         // green glow
-        '<circle cx="10" cy="74" r="12" fill="none" stroke="#22c55e" stroke-opacity="0.45" stroke-width="2" />',
+        '<circle cx="50" cy="74" r="12" fill="none" stroke="#22c55e" stroke-opacity="0.45" stroke-width="2" />',
         // signal box
         '<rect x="-6" y="8" width="32" height="84" rx="7" fill="#111827" stroke="#374151" stroke-width="2" />',
         // top red (dim)
