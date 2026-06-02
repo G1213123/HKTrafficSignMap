@@ -40,7 +40,7 @@ const matchesElevationFilter = (feature, elevationFilter) => {
     return normalizeElevationValue(feature?.properties?.ELEVATION) === elevationFilter;
 };
 
-export const renderLayerData = (typeName, data, { map, markersRef, activeLayersRef, showRawPoints = false, elevationFilter = 'ALL' }) => {
+export const renderLayerData = (typeName, data, { map, markersRef, activeLayersRef, showRawPoints = false, elevationFilter = 'ALL', layerDataRef = null }) => {
     if (!data || !data.features || !map) return;
 
     const polyRenderer = getPolyRenderer(typeName);
@@ -51,7 +51,7 @@ export const renderLayerData = (typeName, data, { map, markersRef, activeLayersR
         markersRef.current[typeName] = [];
 
         const filteredFeatures = data.features.filter(f => matchesElevationFilter(f, elevationFilter));
-        polyRenderer(map, typeName, filteredFeatures, markersRef, activeLayersRef, showRawPoints);
+        polyRenderer(map, typeName, filteredFeatures, markersRef, activeLayersRef, showRawPoints, { layerDataRef });
         return;
     }
 
@@ -81,12 +81,12 @@ export const renderLayerData = (typeName, data, { map, markersRef, activeLayersR
 
     const pointRenderer = getPointRenderer(typeName);
     if (pointRenderer) {
-        pointRenderer(map, typeName, points, markersRef, activeLayersRef, showRawPoints);
+        pointRenderer(map, typeName, points, markersRef, activeLayersRef, showRawPoints, { layerDataRef });
     }
 
     const annoRenderer = getAnnoRenderer(typeName);
     if (annoRenderer && annos.length > 0) {
-        annoRenderer(map, typeName, annos, markersRef, activeLayersRef, showRawPoints);
+        annoRenderer(map, typeName, annos, markersRef, activeLayersRef, showRawPoints, { layerDataRef });
     }
 };
 

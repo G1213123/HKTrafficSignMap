@@ -1,7 +1,7 @@
 import maplibregl from 'maplibre-gl';
 import { getIconUrl } from './mapUtils';
 import { rmDimensionDict } from './layerConfig';
-import { attachMarkerPopup, buildPopupContent, createMarkerElement } from './markerDom';
+import { attachMarkerPopup, buildPopupContent, buildPopupContentWithPreview, createMarkerElement } from './markerDom';
 
 export const renderPoints = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false) => {
     if (!markersRef.current[typeName]) {
@@ -103,7 +103,11 @@ export const renderPoints = (map, typeName, points, markersRef, activeLayersRef,
             rawMarker = new maplibregl.Marker({ element: rawEl, rotationAlignment: 'map', pitchAlignment: 'map' }).setLngLat([...feature.geometry.coordinates]);
         }
 
-        attachMarkerPopup(el, map, coords, buildPopupContent(typeName, feature.properties || {}));
+        const previewHtml = typeName.includes('DTAD_RD_MARK_SYM') && iconUrl
+            ? `<div style="display:flex; justify-content:center; margin: 0 0 10px 0;"><img src="${iconUrl}" alt="${refname || ''}" style="width:75%; max-width:75%; height:auto; display:block;" /></div>`
+            : '';
+
+        attachMarkerPopup(el, map, coords, buildPopupContentWithPreview(typeName, feature.properties || {}, previewHtml));
 
         if (activeLayersRef.current.has(typeName)) {
             marker.addTo(map);

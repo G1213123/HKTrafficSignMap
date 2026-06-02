@@ -1,10 +1,61 @@
 import maplibregl from 'maplibre-gl';
-import { attachMarkerPopup, buildPopupContent, createMarkerElement } from './markerDom';
+import { attachMarkerPopup, buildPopupContent, buildPopupContentWithPreview, createMarkerElement } from './markerDom';
+import { buildTsAbvPreviewHtml, getTsPreviewUrl } from './rendererTsAbvPt';
 
-export const renderTsPolePt = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false) => {
+const escapeHtml = (value = '') => String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+const normalizeText = (value) => String(value || '').trim().toUpperCase();
+
+const buildAbvPreviewHtmlForPole = (poleFeature, abvFeatures = []) => {
+    const ggName = normalizeText(poleFeature?.properties?.GG_NAME);
+    if (!ggName) return '';
+
+    const related = abvFeatures.filter(feature => normalizeText(feature?.properties?.GG_NAME) === ggName);
+    if (related.length === 0) return '';
+
+    const previewItems = [];
+    const seenKeys = new Set();
+
+    related.forEach(feature => {
+        const signId = feature?.properties?.SIGNID ? String(feature.properties.SIGNID) : '';
+        const previewIcon = getTsPreviewUrl(signId);
+        if (!previewIcon) return;
+
+        const key = `${signId}::${previewIcon}`;
+        if (seenKeys.has(key)) return;
+        seenKeys.add(key);
+
+        previewItems.push(`
+            <div style="display:flex; justify-content:center; align-items:center; width: 100%; min-height: 132px; padding: 6px 0;">
+                <div style="display:flex; flex-direction: column; align-items:center; gap: 6px; width: 100%;">
+                    <img src="${previewIcon}" alt="${escapeHtml(signId)}" style="max-width: 100%; max-height: 124px; height: auto; display:block;" />
+                    <div style="font-size: 12px; color: #4b5563; line-height: 1.2; text-align: center;">${escapeHtml(signId || '-')}</div>
+                </div>
+            </div>
+        `);
+    });
+
+    if (previewItems.length === 0) return '';
+
+    return `
+        <div style="display:flex; flex-direction: column; align-items: center; justify-content:center; gap: 8px; margin: 0 0 10px 0; width: 100%;">
+            ${previewItems.join('')}
+        </div>
+    `;
+};
+
+export const renderTsPolePt = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false, options = {}) => {
     if (!markersRef.current[typeName]) {
         markersRef.current[typeName] = [];
     }
+
+    const abvData = options.layerDataRef?.current?.['csdi:DTAD_TS_ABV_PT'];
+    const abvFeatures = Array.isArray(abvData?.features) ? abvData.features : [];
 
     points.forEach(feature => {
         const coords = feature.geometry.coordinates;
@@ -61,7 +112,12 @@ export const renderTsPolePt = (map, typeName, points, markersRef, activeLayersRe
             rawMarker = new maplibregl.Marker({ element: rawEl, rotationAlignment: 'map', pitchAlignment: 'map' }).setLngLat(coords);
         }
 
-        attachMarkerPopup(el, map, coords, buildPopupContent(typeName, feature.properties || {}));
+        const previewHtml = buildAbvPreviewHtmlForPole(feature, abvFeatures);
+        const popupContent = previewHtml
+            ? buildPopupContentWithPreview(typeName, feature.properties || {}, previewHtml)
+            : buildPopupContent(typeName, feature.properties || {});
+
+        attachMarkerPopup(el, map, coords, popupContent);
 
         if (activeLayersRef.current.has(typeName)) {
             marker.addTo(map);

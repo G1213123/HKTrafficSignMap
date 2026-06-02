@@ -851,6 +851,14 @@ const roadMarkingStylesByLayer = {
                 opacity: 0.8
             }
         ],
+        "SHORT-DASHED": [
+            {
+                dashMeters: [0.25, 0.25],
+                weight: 2,
+                color: "#000000",
+                opacity: 0.8
+            }
+        ],
         "1013": [
             {
                 dashMeters: [0.6, 0.3], // Solid

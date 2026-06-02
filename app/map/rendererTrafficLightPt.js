@@ -1,14 +1,7 @@
 import maplibregl from 'maplibre-gl';
 import { getMetersPerPixel } from './mapUtils';
-import { buildSvgForRefname, buildTrafficLightTooltipSvgForRefname } from './svgShapes';
+import { buildSvgForRefname, buildTrafficLightPreviewHtmlForRefname } from './svgShapes';
 import { attachMarkerPopup, buildPopupContentWithPreview, createMarkerElement } from './markerDom';
-
-const escapeHtml = (value = '') => String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
 
 // Renders traffic light point features using either inline-built SVGs or fallback proxy images
 export const renderTrafficLightPt = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false) => {
@@ -74,15 +67,7 @@ export const renderTrafficLightPt = (map, typeName, points, markersRef, activeLa
             rawMarker = new maplibregl.Marker({ element: rawEl, rotationAlignment: 'map', pitchAlignment: 'map' }).setLngLat(coords);
         }
 
-        const previewSvg = buildTrafficLightTooltipSvgForRefname(refname);
-        const previewHtml = previewSvg
-            ? `
-                <div style="display:flex; justify-content:center; margin: 0 0 10px 0;">
-                    <div style="width: 180px; max-width: 90%; height: 120px;">${previewSvg}</div>
-                </div>
-                <div style="display:flex; justify-content:center; margin: 0 0 8px 0; font-size: 12px; color: #4b5563;">REFNAME: ${escapeHtml(refname || '-')}</div>
-            `
-            : '';
+        const previewHtml = buildTrafficLightPreviewHtmlForRefname(refname);
 
         attachMarkerPopup(el, map, coords, buildPopupContentWithPreview(typeName, feature.properties || {}, previewHtml));
 

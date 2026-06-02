@@ -11,6 +11,7 @@ import MapSidebar from './MapSidebar';
 import MeasureTool from './MeasureTool';
 import { useI18n } from '../components/I18nProvider';
 import { loadLayerData, renderLayerData, applyVisibilityOverlays } from './layerDataManager';
+import { buildTrafficLightPreviewHtmlForRefname } from './svgShapes';
 import './map.css';
 
 const BASEMAP_LABEL_SOURCE_ID = 'geodata-basemap-labels';
@@ -350,6 +351,7 @@ export default function Map() {
                                             activeLayersRef,
                                             showRawPoints: showRawPointsRef.current,
                                             elevationFilter: elevationFilterRef.current,
+                                            layerDataRef,
                                         });
                                         applyVisibilityOverlays({ map: mapInstanceRef.current, activeLayers: activeLayersRef.current, markersRef });
                                     }
@@ -368,7 +370,14 @@ export default function Map() {
                     if (clickableGeoJSONs.length > 0) {
                         const feature = clickableGeoJSONs[0];
                         let label = feature.source.replace('csdi:DTAD_', '').replace(/_/g, ' ');
+                        const refname = feature.properties?.REFNAME;
+                        const previewHtml = feature.source.includes('TRAFFIC_LIGHT') && refname
+                            ? buildTrafficLightPreviewHtmlForRefname(refname)
+                            : '';
                         let popupContent = `<b>${label}</b><br><div class="popup-content">`;
+                        if (previewHtml) {
+                            popupContent = `${previewHtml}${popupContent}`;
+                        }
                         for (const key in feature.properties) {
                             if (feature.properties[key] !== null) {
                                 popupContent += `<b>${key}:</b> ${feature.properties[key]}<br>`;
@@ -424,11 +433,31 @@ export default function Map() {
                         activeLayersRef,
                         showRawPoints: showRawPointsRef.current,
                         elevationFilter: elevationFilterRef.current,
+                        layerDataRef,
                     });
                     applyVisibilityOverlays({ map: mapInstanceRef.current, activeLayers: activeLayersRef.current, markersRef });
                 }
             }
         })?.finally(() => setPendingFetches(prev => Math.max(0, prev - 1)));
+    }, []);
+
+    const prefetchLayerData = useCallback((typeName) => {
+        if (!mapInstanceRef.current) return;
+        if (layerDataRef.current[typeName]) return;
+
+        loadLayerData(typeName, {
+            map: mapInstanceRef.current,
+            abortControllers,
+            markersRef,
+            activeLayersRef,
+            showRawPoints: showRawPointsRef.current,
+            elevationFilter: elevationFilterRef.current,
+            buildDate: mvtBuildDateRef.current,
+        })?.then((data) => {
+            if (data) {
+                layerDataRef.current[typeName] = data;
+            }
+        });
     }, []);
 
     const rerenderCachedLayers = useCallback(() => {
@@ -446,6 +475,7 @@ export default function Map() {
                 activeLayersRef,
                 showRawPoints: showRawPointsRef.current,
                 elevationFilter: elevationFilterRef.current,
+                layerDataRef,
             });
         });
 
@@ -597,12 +627,16 @@ export default function Map() {
                         fetchLayerData(typeName);
                     }
                 }
+
+                if (typeName === 'csdi:DTAD_TS_POLE_PT') {
+                    prefetchLayerData('csdi:DTAD_TS_ABV_PT');
+                }
             }
         });
 
         applyVisibilityOverlays({ map, activeLayers, markersRef });
 
-    }, [activeLayers, mapLoaded, fetchLayerData, showRawPoints, mvtBuildDate, mvtManifestReady]);
+    }, [activeLayers, mapLoaded, fetchLayerData, prefetchLayerData, showRawPoints, mvtBuildDate, mvtManifestReady]);
 
     useEffect(() => {
         rerenderCachedLayers();

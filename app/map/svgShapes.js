@@ -1622,4 +1622,24 @@ export const buildTrafficLightTooltipSvgForRefname = (refname, options = {}) => 
     `;
 };
 
-export default { trafficLightShapes, trafficLightIcon, buildSvgForRefname, buildTrafficLightTooltipSvgForRefname };
+const escapeHtml = (value = '') => String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+// Build the full popup preview fragment used by traffic-light layers.
+export const buildTrafficLightPreviewHtmlForRefname = (refname, options = {}) => {
+    const previewSvg = buildTrafficLightTooltipSvgForRefname(refname, options);
+    if (!previewSvg) return '';
+
+    return `
+        <div style="display:flex; justify-content:center; margin: 0 0 10px 0;">
+            <div style="width: 180px; max-width: 90%; height: 120px;">${previewSvg}</div>
+        </div>
+        <div style="display:flex; justify-content:center; margin: 0 0 8px 0; font-size: 12px; color: #4b5563;">REFNAME: ${escapeHtml(refname || '-')}</div>
+    `;
+};
+
+export default { trafficLightShapes, trafficLightIcon, buildSvgForRefname, buildTrafficLightTooltipSvgForRefname, buildTrafficLightPreviewHtmlForRefname };

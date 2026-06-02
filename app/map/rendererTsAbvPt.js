@@ -8,16 +8,23 @@ const escapeHtml = (value = '') => String(value)
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 
-const normalizeTsSignId = (signId) => {
+export const normalizeTsSignId = (signId) => {
     const raw = String(signId || '').trim();
     if (!raw) return '';
     return raw.replace(/^TS[_-]?/i, '');
 };
 
-const getTsPreviewUrl = (signId) => {
+export const getTsPreviewUrl = (signId) => {
     const normalized = normalizeTsSignId(signId);
     if (!normalized) return null;
     return `/api/proxy?asset=${encodeURIComponent(`/data/svgs/TS_${normalized}.svg`)}`;
+};
+
+export const buildTsAbvPreviewHtml = (signId) => {
+    const previewIcon = getTsPreviewUrl(signId);
+    return previewIcon
+        ? `<div style="display:flex; justify-content:center; margin: 0 0 10px 0;"><img src="${previewIcon}" alt="${escapeHtml(signId || '')}" style="width:75%; max-width:75%; height:auto; display:block;" /></div>`
+        : '';
 };
 
 export const renderTsAbvPt = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false) => {
@@ -59,10 +66,7 @@ export const renderTsAbvPt = (map, typeName, points, markersRef, activeLayersRef
         }
 
         if (!isSeparator) {
-            const previewIcon = getTsPreviewUrl(signId);
-            const previewHtml = previewIcon
-                ? `<div style="display:flex; justify-content:center; margin: 0 0 10px 0;"><img src="${previewIcon}" alt="${escapeHtml(signId)}" style="width:75%; max-width:75%; height:auto; display:block;" /></div>`
-                : '';
+            const previewHtml = buildTsAbvPreviewHtml(signId);
             attachMarkerPopup(el, map, coords, buildPopupContentWithPreview(typeName, feature.properties || {}, previewHtml));
         }
 
