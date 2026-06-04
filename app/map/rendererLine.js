@@ -156,7 +156,7 @@ const createIconLineFeatures = (iconGeometry, centerCoord, bearing, properties) 
     return features;
 };
 
-const renderIconLineMarkers = (map, typeName, features, markersRef) => {
+const renderIconLineMarkers = (map, typeName, features, markersRef, themeColor) => {
     // Collect all icon line features from all input features
     const iconLineFeatures = [];
     
@@ -166,7 +166,7 @@ const renderIconLineMarkers = (map, typeName, features, markersRef) => {
             linetype = 'DEFAULT';
         }
         
-        const lineDefn = getLineDefinition(typeName, linetype);
+        const lineDefn = getLineDefinition(typeName, linetype ,themeColor);
         if (!lineDefn || lineDefn.length === 0) return;
 
                 const dim = lineDefn.find(def => def && def.iconGeometry && def.iconInterval)
@@ -264,7 +264,7 @@ const renderIconLineMarkers = (map, typeName, features, markersRef) => {
                     ['*', ['get', '_circleRadius'], 100],
                     5
                 ],
-                'circle-color': '#000000',
+                'circle-color': themeColor,
                 'circle-opacity': 0.8,
                 'circle-stroke-width': [
                     'case',
@@ -272,7 +272,7 @@ const renderIconLineMarkers = (map, typeName, features, markersRef) => {
                     ['/', ['get', '_strokeWidth'], 100],
                     0.5
                 ],
-                'circle-stroke-color': '#000000'
+                'circle-stroke-color': themeColor
             }
         });
         // Line layer for LineString features
@@ -282,7 +282,7 @@ const renderIconLineMarkers = (map, typeName, features, markersRef) => {
             source: sourceId,
             filter: ['!=', ['geometry-type'], 'Point'],
             paint: {
-                'line-color': '#000000',
+                'line-color': themeColor,
                 'line-width': [
                     'case',
                     ['has', '_strokeWidth'],
@@ -299,11 +299,12 @@ const renderIconLineMarkers = (map, typeName, features, markersRef) => {
     }
 };
 
-export const renderLines = (map, typeName, features, markersRef = { current: {} }) => {
+export const renderLines = (map, typeName, features, markersRef = { current: {} }, options = {}) => {
     const isAnno = typeName === 'csdi:DTAD_RD_MARK_ANNO';
     const isIconLineLayer = ICON_LINE_LAYERS.has(typeName);
     const nonPoints = [];
     const iconLineFeatures = [];
+    const themeColor = options.isDarkMode === true ? '#ffffff' : '#000000';
 
     if (!markersRef.current) markersRef.current = {};
     if (!markersRef.current[typeName]) markersRef.current[typeName] = [];
@@ -314,7 +315,7 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
 
         if (isLineGeometry) {
             const linetype = f.properties && (f.properties.LINETYPE || f.properties.REFNAME);
-            const lineDefn = linetype ? getLineDefinition(typeName, linetype) : getLineDefinition(typeName, 'DEFAULT');
+            const lineDefn = linetype ? getLineDefinition(typeName, linetype, themeColor) : getLineDefinition(typeName, 'DEFAULT', themeColor);
             const hasIcon = isIconLineLayer && lineDefn && lineDefn.some(def => def && ((def.iconGeometry && def.iconInterval) || (def.iconSvg && def.iconInterval)));
             if (hasIcon) {
                 // Route this feature to icon renderer, while allowing non-icon
@@ -325,7 +326,7 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
 
         if (linetype && isLineGeometry) {
 
-            const styles = getLineDefinition(typeName, linetype);
+            const styles = getLineDefinition(typeName, linetype, themeColor);
 
             if (styles && styles.length > 0) {
                 styles.forEach((styleConfig, idx) => {
@@ -386,7 +387,7 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
         }
     });
 
-    renderIconLineMarkers(map, typeName, iconLineFeatures, markersRef);
+    renderIconLineMarkers(map, typeName, iconLineFeatures, markersRef, themeColor);
 
     // 1. Install GeoJSON Source for Paths and Polygons
     const sourceData = { type: 'FeatureCollection', features: nonPoints };
@@ -410,7 +411,7 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
         });
 
         uniqueLinetypes.forEach(linetype => {
-            const styles = getLineDefinition(typeName, linetype);
+            const styles = getLineDefinition(typeName, linetype, themeColor);
             styles.forEach((styleConfig, idx) => {
                 if ((styleConfig.iconGeometry && styleConfig.iconInterval) || (styleConfig.iconSvg && styleConfig.iconInterval)) return;
 
@@ -427,7 +428,7 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
                         });
                     } else {
                         const paintProps = {
-                            'line-color': styleConfig.color || '#000000',
+                            'line-color': styleConfig.color || themeColor,
                             'line-width': styleConfig.weight || 2,
                             'line-opacity': styleConfig.opacity !== undefined ? styleConfig.opacity : 0.8
                         };
@@ -460,7 +461,7 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
 
         if (hasMissingLinetype) {
             if (typeName === 'csdi:DTAD_YL_BOX_LINE') {
-                const defaultStyles = getLineDefinition(typeName, 'DEFAULT');
+                const defaultStyles = getLineDefinition(typeName, 'DEFAULT', themeColor);
 
                 defaultStyles.forEach((styleConfig, idx) => {
                     const fallbackLayerId = `line-style-${typeName.replace(':', '-')}-fallback-default-${idx}`;
@@ -507,7 +508,7 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
                     source: typeName,
                     filter: ['!', ['has', 'LINETYPE']],
                     paint: {
-                        'line-color': '#000000',
+                        'line-color': themeColor,
                         'line-width': 2,
                         'line-opacity': 0.85
                     },

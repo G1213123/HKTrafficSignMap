@@ -15,7 +15,7 @@ const buildAbvPreviewHtmlForPole = (poleFeature, abvFeatures = []) => {
     const ggName = normalizeText(poleFeature?.properties?.GG_NAME);
     if (!ggName) return '';
 
-    const related = abvFeatures.filter(feature => normalizeText(feature?.properties?.GG_NAME) === ggName);
+    const related = abvFeatures.filter(feature => normalizeText(feature?.properties?.GG_NAME) === ggName && feature?.properties?.SIGNID !== 'TSSEPA');
     if (related.length === 0) return '';
 
     const previewItems = [];

@@ -3,7 +3,11 @@ import { getIconUrl } from './mapUtils';
 import { rmDimensionDict } from './layerConfig';
 import { attachMarkerPopup, buildPopupContent, buildPopupContentWithPreview, createMarkerElement } from './markerDom';
 
-export const renderPoints = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false) => {
+const getThemeColor = (isDarkMode) => (isDarkMode ? '#ffffff' : '#000000');
+
+export const renderPoints = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false, options = {}) => {
+    const themeColor = getThemeColor(options.isDarkMode === true);
+
     if (!markersRef.current[typeName]) {
         markersRef.current[typeName] = [];
     }
@@ -67,6 +71,9 @@ export const renderPoints = (map, typeName, points, markersRef, activeLayersRef,
                     if (dim.symbolSizeScale) {
                         dimScale = dim.symbolSizeScale;
                     }
+                    if (themeColor === '#ffffff') {
+                        customStyle += 'filter: invert(100%) hue-rotate(180deg)';
+                    }
                 }
             }
 
@@ -83,8 +90,8 @@ export const renderPoints = (map, typeName, points, markersRef, activeLayersRef,
             el.className = 'default-circle-marker';
             el.style.width = '6px';
             el.style.height = '6px';
-            el.style.backgroundColor = '#000000';
-            el.style.border = '1px solid #ffffff';
+            el.style.backgroundColor = themeColor;
+            el.style.border = `1px solid ${themeColor}`;
             el.style.borderRadius = '50%';
         }
 

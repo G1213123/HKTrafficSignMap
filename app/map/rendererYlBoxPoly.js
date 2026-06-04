@@ -6,9 +6,9 @@ const EARTH_METERS_PER_DEGREE = 111320;
 const HATCH_SPACING_METERS = 2;
 const HATCH_STROKE_WIDTH_METERS = 0.25;
 const POLY_FILL_COLOR = 'rgba(242, 213, 74, 0)';
-const POLY_OUTLINE_COLOR = '#000000';
-const POLY_HATCH_COLOR = '#000000';
 const CANVAS_PADDING_METERS = 1.5;
+
+const getThemeColor = (isDarkMode) => (isDarkMode ? '#ffffff' : '#000000');
 
 const toRadians = degrees => degrees * Math.PI / 180;
 
@@ -306,12 +306,14 @@ const removePreviousMapLayers = (map, typeName) => {
     }
 };
 
-export const renderYlBoxPoly = (map, typeName, features, markersRef, activeLayersRef) => {
+export const renderYlBoxPoly = (map, typeName, features, markersRef, activeLayersRef, showRawPoints = false, options = {}) => {
     // Use a single GeoJSON source named by `typeName` and three layers:
     // - polygon fill/outline
     // - diagonal hatch lines
     // - perpendicular hatch lines
     removePreviousMapLayers(map, typeName);
+
+    const themeColor = getThemeColor(options.isDarkMode === true);
 
     const geojson = { type: 'FeatureCollection', features: [] };
     let sampleLat = 0;
@@ -413,7 +415,7 @@ export const renderYlBoxPoly = (map, typeName, features, markersRef, activeLayer
             source: typeName,
             filter: ['==', ['geometry-type'], 'Polygon'],
             paint: {
-                'line-color': '#ffef00',
+                'line-color': themeColor,
                 'line-width': lineWidthPx,
             },
         });
@@ -428,7 +430,7 @@ export const renderYlBoxPoly = (map, typeName, features, markersRef, activeLayer
             filter: ['==', ['get', '_hatch'], 'diag'],
             layout: { 'line-join': 'round', 'line-cap': 'round' },
             paint: {
-                'line-color': '#ffef00',
+                'line-color': themeColor,
                 'line-width': lineWidthPx,
                 'line-opacity': 0.95,
             },
@@ -444,7 +446,7 @@ export const renderYlBoxPoly = (map, typeName, features, markersRef, activeLayer
             filter: ['==', ['get', '_hatch'], 'perp'],
             layout: { 'line-join': 'round', 'line-cap': 'round' },
             paint: {
-                'line-color': '#ffef00',
+                'line-color': themeColor,
                 'line-width': lineWidthPx,
                 'line-opacity': 0.95,
             },

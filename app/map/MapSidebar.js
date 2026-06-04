@@ -3,6 +3,7 @@ import { useI18n } from '../components/I18nProvider';
 import { layersConfig } from './layerConfig';
 
 const MapSidebar = ({
+    headerTitle,
     activeLayers,
     onToggleLayer,
     onToggleGroup,
@@ -191,7 +192,7 @@ const MapSidebar = ({
                 {open ? '◀' : '▶'}
             </button>
             <div className="sidebar-header">
-                <h3>{t('Map Controls')}</h3>
+                <h3>{headerTitle || t('Map Controls')}</h3>
             </div>
 
             <div className="sidebar-body">

@@ -1,22 +1,57 @@
-'use client';
+import MapPageClient from './MapPageClient';
 
-import Head from 'next/head';
-import dynamic from 'next/dynamic';
-import { useI18n } from '../components/I18nProvider';
-
-function MapLoading() {
-  const { t } = useI18n();
-  return (
-    <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      {t('Loading Map...')}
-    </div>
-  );
-}
-
-const Map = dynamic(() => import('./Map'), {
-  ssr: false,
-  loading: () => <MapLoading />,
-});
+export const metadata = {
+  title: 'Traffic Aids Map',
+  description:
+    'Interactive Traffic Aids Map for Hong Kong. Explore poles, traffic lights, signs, and vector tiles with a searchable map interface.',
+  keywords: [
+    'traffic aids map',
+    'vector tiles',
+    'MVT',
+    'Hong Kong',
+    'traffic lights',
+    'poles',
+    'signs',
+    'road sign map',
+  ],
+  alternates: {
+    canonical: '/map',
+  },
+  openGraph: {
+    title: 'Traffic Aids Map | Road Sign Factory',
+    description:
+      'Explore an interactive map of traffic aids in Hong Kong, including poles, traffic lights, signs, and vector tile data.',
+    url: '/map',
+    siteName: 'Road Sign Factory',
+    type: 'website',
+    images: [
+      {
+        url: '/images/preview-map.png',
+        width: 1280,
+        height: 720,
+        alt: 'Traffic Aids Map preview showing Hong Kong road signs and map annotations.',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Traffic Aids Map | Road Sign Factory',
+    description:
+      'Explore an interactive map of traffic aids in Hong Kong, including poles, traffic lights, signs, and vector tile data.',
+    images: ['/images/preview-map.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
+};
 
 export default function MapPage() {
   const jsonLd = {
@@ -26,6 +61,7 @@ export default function MapPage() {
     description:
       'Interactive Traffic Aids Map for Hong Kong. Includes vector tiles (MVT) and a manifest endpoint for integration with mapping clients.',
     url: 'https://roadsignfactory.hk/map',
+    image: 'https://roadsignfactory.hk/images/preview-map.png',
     distribution: [
       {
         '@type': 'DataDownload',
@@ -43,24 +79,25 @@ export default function MapPage() {
 
   return (
     <>
-      <Head>
-        <title>Traffic Aids Map — Road Sign Factory</title>
-        <meta name="description" content="Interactive Traffic Aids Map for Hong Kong — explore poles, traffic lights, and signs. Vector tiles (MVT) and manifest available for integration." />
-        <meta name="keywords" content="traffic aids map, vector tiles, MVT, Hong Kong, traffic lights, poles, signs" />
-        <meta property="og:title" content="Traffic Aids Map — Road Sign Factory" />
-        <meta property="og:description" content="Explore an interactive map of traffic aids (poles, signs, traffic lights) for Hong Kong." />
-        <meta property="og:url" content="https://roadsignfactory.hk/map" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Traffic Aids Map — Road Sign Factory" />
-        <meta name="twitter:description" content="Explore an interactive map of traffic aids (poles, signs, traffic lights) for Hong Kong." />
-
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      </Head>
-
-      <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
-        <Map />
-      </div>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <main style={{ width: '100%', minHeight: '100vh', position: 'relative' }}>
+        <h1
+          style={{
+            position: 'absolute',
+            width: '1px',
+            height: '1px',
+            padding: 0,
+            margin: '-1px',
+            overflow: 'hidden',
+            clip: 'rect(0, 0, 0, 0)',
+            whiteSpace: 'nowrap',
+            border: 0,
+          }}
+        >
+          Traffic Aids Map
+        </h1>
+        <MapPageClient />
+      </main>
     </>
   );
 }

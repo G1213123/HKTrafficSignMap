@@ -56,7 +56,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -66,7 +66,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -76,7 +76,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -86,7 +86,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -96,7 +96,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -106,7 +106,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -116,7 +116,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -126,7 +126,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -136,7 +136,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -146,7 +146,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -156,7 +156,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -166,7 +166,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -176,7 +176,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -218,7 +218,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [1, 1],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -228,7 +228,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -270,7 +270,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -308,7 +308,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [1, 1],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -336,7 +336,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [1, 5],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -346,7 +346,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [2, 7],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -356,7 +356,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [3, 5],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -366,7 +366,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [6, 3],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -376,7 +376,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [0.6, 0.3],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -386,7 +386,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -396,7 +396,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [4, 2],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -406,7 +406,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [2, 1],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -416,7 +416,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -426,14 +426,14 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [0.3, 0.15],
                 weight: 2,
-                color: "#000000",
+                
                 offset: 0.125,
                 opacity: 0.8
             },
             {
                 dashMeters: [0.3, 0.15],
                 weight: 2,
-                color: "#000000",
+                
                 offset: -0.125,
                 opacity: 0.8
             },
@@ -444,7 +444,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -454,7 +454,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -464,7 +464,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -474,7 +474,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 12000,
@@ -488,7 +488,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 18000,
@@ -502,7 +502,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 6000,
@@ -516,7 +516,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 9000,
@@ -530,7 +530,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 18000,
@@ -544,7 +544,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 6000,
@@ -558,7 +558,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 9000,
@@ -572,7 +572,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 4000,
@@ -586,7 +586,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 8000,
@@ -600,7 +600,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 15000,
@@ -614,7 +614,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 4000,
@@ -628,7 +628,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 8000,
@@ -642,7 +642,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 12000,
@@ -656,7 +656,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8,
                 iconType: "triangle",
                 iconInterval: 15000,
@@ -670,7 +670,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8,
                 iconType: "diamond",
                 iconInterval: 4000,
@@ -684,7 +684,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8,
                 iconType: "diamond",
                 iconInterval: 6000,
@@ -698,7 +698,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8,
                 iconType: "diamond",
                 iconInterval: 8000,
@@ -712,7 +712,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -722,7 +722,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -732,7 +732,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -742,7 +742,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -752,7 +752,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -793,7 +793,7 @@ const roadMarkingStylesByLayer = {
             //{
             //    dashMeters: null,
             //    weight: 2,
-            //    color: "#000000",
+            //    
             //    opacity: 0.8,
             //    iconType: "zigzag",
             //    iconInterval: 100,
@@ -807,7 +807,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null, // solid line
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ]
@@ -819,7 +819,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [1, 1],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -828,7 +828,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ]
@@ -839,7 +839,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -847,7 +847,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [1, 1],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -855,7 +855,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [0.25, 0.25],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -892,7 +892,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [1, 5],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -900,7 +900,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [2, 7],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -908,7 +908,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [3, 5],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -916,7 +916,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [4, 2],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -924,7 +924,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [6, 3],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -932,7 +932,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [0.6, 0.3],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -946,7 +946,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [2, 1],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -954,7 +954,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [1, 1],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -992,7 +992,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [1, 1],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -1001,7 +1001,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [4, 2],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -1017,7 +1017,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [4, 2],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -1026,7 +1026,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -1053,12 +1053,28 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [1.5, 0.2],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ]
     },
     'csdi:DTAD_RST_ZONE_LINE': {
+        "RM1040": [
+            // Left line
+            {
+                dashMeters: null, // Solid
+                weight: 2,
+                offset: -0.1, // Offset 0.5m to the left
+                color: "#ffef00",
+            },
+            // Right line
+            {
+                dashMeters: null, // Solid
+                weight: 2,
+                color: "#ffef00",
+                offset: 0.1 // Offset 0.5m to the right
+            }
+        ],
         "DEFAULT": [
             {
                 dashMeters: null,
@@ -1084,7 +1100,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -1105,7 +1121,7 @@ const roadMarkingStylesByLayer = {
                 dashMeters: [2, 2],
                 startDistance: 0,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -1127,7 +1143,7 @@ const roadMarkingStylesByLayer = {
                 dashMeters: [1.6, 1.4],
                 startDistance: 0.2,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -1161,7 +1177,7 @@ const roadMarkingStylesByLayer = {
                 dashMeters: [0.9, 1.9],
                 startDistance: 0.2,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -1183,7 +1199,7 @@ const roadMarkingStylesByLayer = {
                 dashMeters: [1.5, 1],
                 startDistance: 0,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -1205,7 +1221,7 @@ const roadMarkingStylesByLayer = {
                 dashMeters: [1.5, 2],
                 startDistance: 0.25,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -1226,7 +1242,7 @@ const roadMarkingStylesByLayer = {
                 dashMeters: [0.7, 1],
                 startDistance: 0.5,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -1256,7 +1272,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -1274,7 +1290,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -1292,7 +1308,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -1310,7 +1326,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: [1.5, 1.5],
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -1330,7 +1346,7 @@ const roadMarkingStylesByLayer = {
                 dashMeters: [3, 2],
                 startDistance: 1,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -1351,7 +1367,7 @@ const roadMarkingStylesByLayer = {
                 dashMeters: [1.5, 0.5],
                 startDistance: 0.25,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -1372,7 +1388,7 @@ const roadMarkingStylesByLayer = {
                 dashMeters: [0.75, 0.5],
                 startDistance: 0.25,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -1391,7 +1407,7 @@ const roadMarkingStylesByLayer = {
                 dashMeters: [3, 0.5],
                 startDistance: 0.5,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -1400,13 +1416,13 @@ const roadMarkingStylesByLayer = {
                 dashMeters: null, // Solid
                 weight: 2,
                 offset: -0.1, // Offset 0.5m to the left
-                color: "#000000",
+                
             },
             // Right line
             {
                 dashMeters: null, // Solid
                 weight: 2,
-                color: "#000000",
+                
                 offset: 0.1 // Offset 0.5m to the right
             },
             {
@@ -1436,7 +1452,7 @@ const roadMarkingStylesByLayer = {
             {
                 dashMeters: null,
                 weight: 2,
-                color: "#000000",
+                
                 opacity: 0.8
             }
         ],
@@ -1513,7 +1529,7 @@ export function getOffsetLatLngs(latlngs, offsetMeters, map) {
  * @param {string} lineType - The line type code (e.g., 'ULSTUD12', 'ZIGZAGL')
  * @returns {Array} Array of style configs with icon definitions
  */
-export function getLineDefinition(layerName, lineType) {
+export function getLineDefinition(layerName, lineType, themeColor) {
     // Get layer-specific styles, fallback to RD_MARK_LINE_C if layer not found
     const layerStyles = roadMarkingStylesByLayer[layerName] || roadMarkingStylesByLayer['csdi:DTAD_RD_MARK_LINE_C'];
 
@@ -1529,7 +1545,7 @@ export function getLineDefinition(layerName, lineType) {
     return config.map(styleDef => {
         // Enforce Black Color if not explicitly overridden
         let def = {
-            color: "#000000",
+            color: themeColor,
             opacity: 0.8,
             weight: 2,
             ...styleDef
@@ -1550,4 +1566,5 @@ export function getLineDefinition(layerName, lineType) {
  */
 export function getLineStyles(layerName, lineType) {
     return getLineDefinition(layerName, lineType);
+    
 }

@@ -18,6 +18,140 @@ const BASEMAP_LABEL_SOURCE_ID = 'geodata-basemap-labels';
 const BASEMAP_LABEL_LAYER_ID = 'geodata-basemap-labels-layer';
 const EPSG_2326_DEF = '+proj=tmerc +lat_0=22.3121333333333 +lon_0=114.178555555556 +k=1 +x_0=836694.05 +y_0=819069.8 +ellps=intl +towgs84=-162.619,-276.959,-161.764,-0.067753,2.243648,1.158828,-1.094246 +units=m +no_defs +type=crs';
 
+const BASEMAP_THEME = {
+    light: {
+        background: '#F7F5EF',
+        surfaceFill: '#EFE9DE',
+        waterFill: '#D7E6F1',
+        greenFill: '#E1E8D7',
+        roadFill: '#FDFBF7',
+        structureFill: '#DEE1E7',
+        reliefFill: '#E8E0D1',
+        outline: '#C9C1B6',
+        waterLine: '#84B4D4',
+        roadLine: '#A19B92',
+        contourLine: '#A08E73',
+        text: '#2E2A24',
+        halo: '#F7F5EF',
+        symbol: '#4F4A43'
+    },
+    dark: {
+        background: '#151A20',
+        surfaceFill: '#20262C',
+        waterFill: '#1D313F',
+        greenFill: '#233128',
+        roadFill: '#2B3036',
+        structureFill: '#2A2F36',
+        reliefFill: '#322C25',
+        outline: '#4A525A',
+        waterLine: '#5C87A8',
+        roadLine: '#8A9199',
+        contourLine: '#7D6E55',
+        text: '#E8E2D8',
+        halo: '#151A20',
+        symbol: '#D4D9DF'
+    }
+};
+
+const isBasemapDarkMode = (basemapMode) => {
+    const prefersDarkMode = typeof window !== 'undefined'
+        && window.matchMedia
+        && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return basemapMode === 'dark' || (basemapMode !== 'light' && prefersDarkMode);
+};
+
+const normalizeBasemapStyle = (styleData, basemapMode) => {
+    const style = JSON.parse(JSON.stringify(styleData));
+    const isDarkMode = isBasemapDarkMode(basemapMode);
+    const theme = isDarkMode ? BASEMAP_THEME.dark : BASEMAP_THEME.light;
+    const layers = Array.isArray(style.layers) ? style.layers : [];
+
+    const matchesAny = (value, patterns) => patterns.some((pattern) => pattern.test(value));
+
+    const mapLayerPaint = (layer) => {
+        const layerKey = `${layer.id || ''} ${layer['source-layer'] || ''}`.toLowerCase();
+        const paint = layer.paint ? { ...layer.paint } : {};
+        const isWater = matchesAny(layerKey, [
+            /hydro/, /water/, /stream/, /river/, /drain/, /nullah/, /seawall/, /canal/, /marine/, /sea/, /ocean/
+        ]);
+        const isGreen = matchesAny(layerKey, [
+            /landcover/, /forest/, /grass/, /park/, /garden/, /tree/, /cultiv/, /wood/, /green/
+        ]);
+        const isRoad = matchesAny(layerKey, [
+            /road/, /expressway/, /flyover/, /highway/, /motorway/, /bridge/, /tunnel/, /path/, /walkway/, /ped/, /bike/, /rail/, /tram/, /mtr/, /station/, /transport/
+        ]);
+        const isStructure = matchesAny(layerKey, [
+            /building/, /structure/, /terminal/, /airport/, /port/, /pier/, /dock/, /facility/
+        ]);
+        const isRelief = matchesAny(layerKey, [
+            /contour/, /relief/, /slope/, /terrain/, /elevation/, /hill/
+        ]);
+        const isLabel = layer.type === 'symbol' || paint['text-color'] || paint['text-halo-color'];
+
+        if ('fill-pattern' in paint) {
+            delete paint['fill-pattern'];
+        }
+
+        if (layer.type === 'background') {
+            paint['background-color'] = theme.background;
+        }
+
+        if (layer.type === 'fill' || 'fill-color' in paint || 'fill-outline-color' in paint) {
+            paint['fill-color'] = isWater
+                ? theme.waterFill
+                : isGreen
+                    ? theme.greenFill
+                    : isRoad
+                        ? theme.roadFill
+                        : isStructure
+                            ? theme.structureFill
+                            : isRelief
+                                ? theme.reliefFill
+                                : theme.surfaceFill;
+
+            if ('fill-outline-color' in paint) {
+                paint['fill-outline-color'] = isWater ? theme.waterLine : theme.outline;
+            }
+        }
+
+        if (layer.type === 'line' || 'line-color' in paint) {
+            paint['line-color'] = isWater
+                ? theme.waterLine
+                : isRoad
+                    ? theme.roadLine
+                    : isRelief
+                        ? theme.contourLine
+                        : theme.outline;
+        }
+
+        if ('icon-color' in paint) {
+            paint['icon-color'] = theme.symbol;
+        }
+
+        if (isLabel) {
+            paint['text-color'] = theme.text;
+            paint['text-halo-color'] = theme.halo;
+        }
+
+        layer.paint = paint;
+    };
+
+    layers.forEach(mapLayerPaint);
+
+    if (!layers.some((layer) => layer.type === 'background')) {
+        style.layers = [
+            {
+                id: 'plain-basemap-background',
+                type: 'background',
+                paint: { 'background-color': theme.background }
+            },
+            ...layers
+        ];
+    }
+
+    return style;
+};
+
 const escapeHtml = (value = '') => String(value)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -42,6 +176,8 @@ export default function Map() {
     const [showInfoOverlay, setShowInfoOverlay] = useState(false);
     const [showLegend, setShowLegend] = useState(false);
     const [openLegendSubmenu, setOpenLegendSubmenu] = useState(null);
+    const [basemapStyleMode, setBasemapStyleMode] = useState(null);
+    const [showBasemapSelector, setShowBasemapSelector] = useState(false);
     const [showRawPoints, setShowRawPoints] = useState(false);
     const [geolocInProgress, setGeolocInProgress] = useState(false);
     const showRawPointsRef = useRef(showRawPoints);
@@ -58,6 +194,7 @@ export default function Map() {
     const [cursorCoordsHK, setCursorCoordsHK] = useState(null);
     const isLocalDataSource = typeof process !== 'undefined' && process.env && process.env.NEXT_PUBLIC_DATA_SOURCE === 'local';
     const dataLoadMinZoom = isLocalDataSource ? 16 : 18;
+    const isDarkMode = isBasemapDarkMode(basemapStyleMode);
     const legendEntries = Object.entries(layerLegendDict).filter(([layerName, entry]) => {
         return entry?.showInLegend && activeLayers.has(layerName);
     });
@@ -202,8 +339,14 @@ export default function Map() {
                 const state = JSON.parse(savedState);
                 if (typeof state.showRawPoints === 'boolean') setShowRawPoints(state.showRawPoints);
                 if (typeof state.elevationFilter === 'string') setElevationFilter(state.elevationFilter);
+                if (typeof state.basemapStyleMode === 'string') setBasemapStyleMode(state.basemapStyleMode);
+                else setBasemapStyleMode('default');
+            } else {
+                setBasemapStyleMode('default');
             }
-        } catch (e) { }
+        } catch (e) {
+            setBasemapStyleMode('default');
+        }
     }, []);
 
     // Initial Active layer config loading
@@ -225,6 +368,7 @@ export default function Map() {
 
     // Initialize Map
     useEffect(() => {
+        if (basemapStyleMode === null) return;
         if (mapInstanceRef.current || isInitializingRef.current) return;
         isInitializingRef.current = true;
 
@@ -259,11 +403,15 @@ export default function Map() {
                 styleData.sprite = 'https://mapapi.geodata.gov.hk/gs/api/v1.0.0/vt/basemap/WGS84/resources/sprites/sprite';
                 styleData.glyphs = 'https://mapapi.geodata.gov.hk/gs/api/v1.0.0/vt/basemap/WGS84/resources/fonts/{fontstack}/{range}.pbf';
 
+                const themedStyle = basemapStyleMode === 'default'
+                    ? styleData
+                    : normalizeBasemapStyle(styleData, basemapStyleMode);
+
                 if (!mapContainerRef.current) return;
 
                 const map = new maplibregl.Map({
                     container: mapContainerRef.current,
-                    style: styleData,
+                    style: themedStyle,
                     center: initialCenter,
                     zoom: initialZoom,
                     maxZoom: 22,
@@ -352,6 +500,7 @@ export default function Map() {
                                             showRawPoints: showRawPointsRef.current,
                                             elevationFilter: elevationFilterRef.current,
                                             layerDataRef,
+                                            isDarkMode: isDarkMode,
                                         });
                                         applyVisibilityOverlays({ map: mapInstanceRef.current, activeLayers: activeLayersRef.current, markersRef });
                                     }
@@ -405,8 +554,10 @@ export default function Map() {
                 mapInstanceRef.current.remove();
                 mapInstanceRef.current = null;
             }
+            isInitializingRef.current = false;
+            setMapLoaded(false);
         };
-    }, []);
+    }, [basemapStyleMode]);
 
     useEffect(() => {
         if (!mapLoaded || !mapInstanceRef.current) return;
@@ -434,6 +585,7 @@ export default function Map() {
                         showRawPoints: showRawPointsRef.current,
                         elevationFilter: elevationFilterRef.current,
                         layerDataRef,
+                        isDarkMode: isDarkMode,
                     });
                     applyVisibilityOverlays({ map: mapInstanceRef.current, activeLayers: activeLayersRef.current, markersRef });
                 }
@@ -476,6 +628,7 @@ export default function Map() {
                 showRawPoints: showRawPointsRef.current,
                 elevationFilter: elevationFilterRef.current,
                 layerDataRef,
+                isDarkMode: isDarkMode,
             });
         });
 
@@ -612,7 +765,8 @@ export default function Map() {
             zoom: map.getZoom(),
             activeLayers: Array.from(activeLayers),
             showRawPoints,
-            elevationFilter
+            elevationFilter,
+            basemapStyleMode
         }));
 
         Object.values(layersConfig).flat().forEach(typeName => {
@@ -636,7 +790,7 @@ export default function Map() {
 
         applyVisibilityOverlays({ map, activeLayers, markersRef });
 
-    }, [activeLayers, mapLoaded, fetchLayerData, prefetchLayerData, showRawPoints, mvtBuildDate, mvtManifestReady]);
+    }, [activeLayers, mapLoaded, fetchLayerData, prefetchLayerData, showRawPoints, mvtBuildDate, mvtManifestReady, basemapStyleMode]);
 
     useEffect(() => {
         rerenderCachedLayers();
@@ -683,6 +837,7 @@ export default function Map() {
             <Navbar />
             <div className="map-layout">
                 <MapSidebar
+                    headerTitle={t('Traffic Aids Map')}
                     activeLayers={activeLayers}
                     onToggleLayer={toggleLayer}
                     onToggleGroup={toggleGroup}
@@ -715,6 +870,40 @@ export default function Map() {
                         >
                             <span style={{ fontSize: '18px', lineHeight: 1 }}>≡</span>
                         </button>
+                    </div>
+                    <div className="map-basemap-toggle-group">
+                        <button
+                            type="button"
+                            className={showBasemapSelector ? 'map-basemap-toggle-button map-basemap-toggle-button--active' : 'map-basemap-toggle-button'}
+                            title={t('Basemap style')}
+                            aria-label={t('Basemap style')}
+                            onClick={(e) => { e.stopPropagation(); setShowBasemapSelector(prev => !prev); }}
+                        >
+                            <span style={{ fontSize: '14px', lineHeight: 1 }}>◫</span>
+                        </button>
+                        {showBasemapSelector && (
+                            <div className="map-basemap-selector-panel" role="menu" aria-label={t('Basemap style options')}>
+                                {[
+                                    ['default', t('Default')],
+                                    ['light', t('Light')],
+                                    ['dark', t('Dark')]
+                                ].map(([mode, label]) => (
+                                    <button
+                                        key={mode}
+                                        type="button"
+                                        className={basemapStyleMode === mode ? 'map-basemap-selector-item map-basemap-selector-item--active' : 'map-basemap-selector-item'}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setBasemapStyleMode(mode);
+                                            setShowBasemapSelector(false);
+                                        }}
+                                    >
+                                        <span>{label}</span>
+                                        {basemapStyleMode === mode ? <span aria-hidden="true">✓</span> : null}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
                     {mapLoaded && (
                         <MeasureTool

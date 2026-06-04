@@ -40,7 +40,7 @@ const matchesElevationFilter = (feature, elevationFilter) => {
     return normalizeElevationValue(feature?.properties?.ELEVATION) === elevationFilter;
 };
 
-export const renderLayerData = (typeName, data, { map, markersRef, activeLayersRef, showRawPoints = false, elevationFilter = 'ALL', layerDataRef = null }) => {
+export const renderLayerData = (typeName, data, { map, markersRef, activeLayersRef, showRawPoints = false, elevationFilter = 'ALL', layerDataRef = null, isDarkMode = false }) => {
     if (!data || !data.features || !map) return;
 
     const polyRenderer = getPolyRenderer(typeName);
@@ -51,7 +51,7 @@ export const renderLayerData = (typeName, data, { map, markersRef, activeLayersR
         markersRef.current[typeName] = [];
 
         const filteredFeatures = data.features.filter(f => matchesElevationFilter(f, elevationFilter));
-        polyRenderer(map, typeName, filteredFeatures, markersRef, activeLayersRef, showRawPoints, { layerDataRef });
+        polyRenderer(map, typeName, filteredFeatures, markersRef, activeLayersRef, showRawPoints, { layerDataRef, isDarkMode });
         return;
     }
 
@@ -77,16 +77,16 @@ export const renderLayerData = (typeName, data, { map, markersRef, activeLayersR
         }
     });
 
-    renderLines(map, typeName, nonPoints, markersRef);
+    renderLines(map, typeName, nonPoints, markersRef, { isDarkMode, layerDataRef });
 
     const pointRenderer = getPointRenderer(typeName);
     if (pointRenderer) {
-        pointRenderer(map, typeName, points, markersRef, activeLayersRef, showRawPoints, { layerDataRef });
+        pointRenderer(map, typeName, points, markersRef, activeLayersRef, showRawPoints, { layerDataRef, isDarkMode });
     }
 
     const annoRenderer = getAnnoRenderer(typeName);
     if (annoRenderer && annos.length > 0) {
-        annoRenderer(map, typeName, annos, markersRef, activeLayersRef, showRawPoints, { layerDataRef });
+        annoRenderer(map, typeName, annos, markersRef, activeLayersRef, showRawPoints, { layerDataRef, isDarkMode });
     }
 };
 

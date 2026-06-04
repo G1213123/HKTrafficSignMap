@@ -46,7 +46,9 @@ const buildRawOutlineFeatures = (feature) => {
         }));
 };
 
-export const renderAnno = (map, typeName, annos, markersRef, activeLayersRef, showRawPoints = false) => {
+export const renderAnno = (map, typeName, annos, markersRef, activeLayersRef, showRawPoints = false, options = {}) => {
+    const textColor = options.isDarkMode === true ? '#ffffff' : 'black';
+
     if (!markersRef.current[typeName]) {
         markersRef.current[typeName] = [];
     }
@@ -111,7 +113,7 @@ export const renderAnno = (map, typeName, annos, markersRef, activeLayersRef, sh
         const spanLines = lines.map(line => `<div style="white-space: pre; text-align: center;">${escapeSvgText(line)}</div>`).join('');
 
         el.innerHTML = `
-            <div class="${wrapperClass}" style="--angle:${-angle}deg; --w:${wPx}px; --h:${hPx}px; font-size: calc(${fontPx}px * var(--map-icon-scale, 1)); color: black; font-family: ${isCjk ? "'Noto Sans SC', 'Microsoft YaHei', 'PingFang SC', sans-serif" : "sans-serif"}; font-weight: 600; line-height: ${isCjk?1.2:1}; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+            <div class="${wrapperClass}" style="--angle:${-angle}deg; --w:${wPx}px; --h:${hPx}px; font-size: calc(${fontPx}px * var(--map-icon-scale, 1)); color: ${textColor}; font-family: ${isCjk ? "'Noto Sans SC', 'Microsoft YaHei', 'PingFang SC', sans-serif" : "sans-serif"}; font-weight: 600; line-height: ${isCjk?1.2:1}; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                 <div style="transform: scale(${0.75 * characterWidth}, ${isCjk ? 2 : 2}); transform-origin: center center; display: flex; flex-direction: column; align-items: center;">
                     ${spanLines}
                 </div>
