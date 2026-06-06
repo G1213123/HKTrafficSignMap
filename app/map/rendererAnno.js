@@ -1,5 +1,6 @@
 import maplibregl from 'maplibre-gl';
 import * as turf from '@turf/turf';
+import { getThemeColor } from './mapUtils';
 
 const escapeSvgText = (value = '') => value
     .replace(/&/g, '&amp;')
@@ -47,7 +48,7 @@ const buildRawOutlineFeatures = (feature) => {
 };
 
 export const renderAnno = (map, typeName, annos, markersRef, activeLayersRef, showRawPoints = false, options = {}) => {
-    const textColor = options.isDarkMode === true ? '#ffffff' : 'black';
+    const textColor = getThemeColor(options.isDarkMode === true);
 
     if (!markersRef.current[typeName]) {
         markersRef.current[typeName] = [];

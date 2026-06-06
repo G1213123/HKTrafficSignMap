@@ -1,6 +1,7 @@
 import maplibregl from 'maplibre-gl';
 import { attachMarkerPopup, buildPopupContent, buildPopupContentWithPreview, createMarkerElement } from './markerDom';
 import { buildTsAbvPreviewHtml, getTsPreviewUrl } from './rendererTsAbvPt';
+import { getThemeColor } from './mapUtils';
 
 const escapeHtml = (value = '') => String(value)
     .replace(/&/g, '&amp;')
@@ -54,6 +55,7 @@ export const renderTsPolePt = (map, typeName, points, markersRef, activeLayersRe
         markersRef.current[typeName] = [];
     }
 
+    const themeColor = getThemeColor(options.isDarkMode === true);
     const abvData = options.layerDataRef?.current?.['csdi:DTAD_TS_ABV_PT'];
     const abvFeatures = Array.isArray(abvData?.features) ? abvData.features : [];
 
@@ -89,9 +91,9 @@ export const renderTsPolePt = (map, typeName, points, markersRef, activeLayersRe
         const svgContent = `
             <svg viewBox="-0.5 -2.5 1 5" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%; display: block; overflow: visible;">
                 <!-- Main shapes -->
-                <circle cx="0" cy="0" r="0.2" fill="none" stroke="#222" stroke-width="0.05" />
-                <line x1="0" y1="-0.2" x2="0" y2="-1" stroke="#222" stroke-width="0.05" />
-                <polygon points="-0.2,-1 0.2,-1 0,-2" fill="#222" />
+                <circle cx="0" cy="0" r="0.2" fill="none" stroke="${themeColor}" stroke-width="0.05" />
+                <line x1="0" y1="-0.2" x2="0" y2="-1" stroke="${themeColor}" stroke-width="0.05" />
+                <polygon points="-0.2,-1 0.2,-1 0,-2" fill="${themeColor}" />
             </svg>
         `;
 

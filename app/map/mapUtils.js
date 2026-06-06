@@ -4,6 +4,8 @@ export function getMetersPerPixel(lat, zoom) {
     return earthCircumference * Math.cos(lat * Math.PI / 180) / Math.pow(2, zoom + 9);
 }
 
+export function  getThemeColor(isDarkMode) {return isDarkMode ? '#ffffff' : '#000000';}
+
 // Network Request Abort utility
 export const fetchWithRetry = async (url, options, retries = 2) => {
     let lastError;

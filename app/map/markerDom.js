@@ -26,10 +26,12 @@ export const attachMarkerPopup = (el, map, coords, popupContent, isMeasuringActi
         if (isMeasuringActive()) return;
 
         e.stopPropagation();
-        new maplibregl.Popup({ offset: 15 })
+        const popup = new maplibregl.Popup({ offset: 15 })
             .setLngLat(coords)
             .setHTML(popupContent)
             .addTo(map);
+
+        popup.style.color = themeColor
     });
 };
 

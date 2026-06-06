@@ -57,7 +57,7 @@ const isBasemapDarkMode = (basemapMode) => {
     const prefersDarkMode = typeof window !== 'undefined'
         && window.matchMedia
         && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    return basemapMode === 'dark' || (basemapMode !== 'light' && prefersDarkMode);
+    return basemapMode === 'dark' ;
 };
 
 const normalizeBasemapStyle = (styleData, basemapMode) => {

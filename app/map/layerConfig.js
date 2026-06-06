@@ -46,7 +46,7 @@ export const layersConfig = {
 const legendTrafficSignSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.25 -2 0.5 2.5" style="width: 100%; height: 100%; display: block; overflow: visible;">
     <circle cx="0" cy="0" r="0.2" fill="none" stroke="#222" stroke-width="0.05" />
     <line x1="0" y1="-0.2" x2="0" y2="-1" stroke="#222" stroke-width="0.05" />
-    <polygon points="-0.2,-1 0.2,-1 0,-2" fill="#222" />
+    <polygon points="-0.2,-1 0.2,-1 0,-2" fill="black" />
 </svg>`;
 
 const legendDirectionalSignSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.5 -1 1 2" style="width: 100%; height: 100%; display: block; overflow: visible;">

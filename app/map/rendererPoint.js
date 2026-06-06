@@ -1,9 +1,8 @@
 import maplibregl from 'maplibre-gl';
-import { getIconUrl } from './mapUtils';
+import { getIconUrl, getThemeColor } from './mapUtils';
 import { rmDimensionDict } from './layerConfig';
 import { attachMarkerPopup, buildPopupContent, buildPopupContentWithPreview, createMarkerElement } from './markerDom';
 
-const getThemeColor = (isDarkMode) => (isDarkMode ? '#ffffff' : '#000000');
 
 export const renderPoints = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false, options = {}) => {
     const themeColor = getThemeColor(options.isDarkMode === true);

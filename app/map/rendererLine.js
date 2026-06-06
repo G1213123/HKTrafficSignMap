@@ -1,7 +1,7 @@
 import * as turf from '@turf/turf';
 import maplibregl from 'maplibre-gl';
 import { getLineDefinition } from './lineStyles';
-import { getMetersPerPixel } from './mapUtils';
+import { getMetersPerPixel, getThemeColor } from './mapUtils';
 import { attachMarkerPopup, buildPopupContent, createMarkerElement } from './markerDom';
 
 const ICON_LINE_LAYERS = new Set([
@@ -304,7 +304,7 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
     const isIconLineLayer = ICON_LINE_LAYERS.has(typeName);
     const nonPoints = [];
     const iconLineFeatures = [];
-    const themeColor = options.isDarkMode === true ? '#ffffff' : '#000000';
+    const themeColor = getThemeColor(options.isDarkMode === true);
 
     if (!markersRef.current) markersRef.current = {};
     if (!markersRef.current[typeName]) markersRef.current[typeName] = [];
