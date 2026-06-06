@@ -1,5 +1,6 @@
 import maplibregl from 'maplibre-gl';
 import { attachMarkerPopup, buildPopupContentWithPreview, createMarkerElement } from './markerDom';
+import { getThemeColor } from './mapUtils';
 
 const escapeHtml = (value = '') => String(value)
     .replace(/&/g, '&amp;')
@@ -27,7 +28,9 @@ export const buildTsAbvPreviewHtml = (signId) => {
         : '';
 };
 
-export const renderTsAbvPt = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false) => {
+export const renderTsAbvPt = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false, options = {}) => {
+    const themeColor = getThemeColor(options.isDarkMode === true);
+    
     if (!markersRef.current[typeName]) {
         markersRef.current[typeName] = [];
     }
@@ -46,7 +49,7 @@ export const renderTsAbvPt = (map, typeName, points, markersRef, activeLayersRef
         const text = isSeparator ? '/' : (signId ? escapeHtml(signId) : 'TS');
         el.innerHTML = `
             <div class="custom-svg-icon ts-abv-text" style="position: absolute; left: 0%; top: 0%; transform: translate(-50%, -50%) rotate(${angle}deg); transform-origin: center center; pointer-events: auto; width: max-content; height: max-content; overflow: visible; display: flex; align-items: center; justify-content: center;">
-                <span style="display: inline-block; font-family: 'PT Sans Narrow', 'PT Sans', Arial, sans-serif; font-size: calc(30px * var(--map-icon-scale, 1)); font-weight: 100; color: #111; text-align: center; white-space: nowrap; line-height: 1;">${text}</span>
+                <span style="display: inline-block; font-family: 'PT Sans Narrow', 'PT Sans', Arial, sans-serif; font-size: calc(30px * var(--map-icon-scale, 1)); font-weight: 100; color: ${themeColor}; text-align: center; white-space: nowrap; line-height: 1;">${text}</span>
             </div>
         `;
 

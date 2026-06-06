@@ -1,13 +1,15 @@
 import maplibregl from 'maplibre-gl';
-import { getMetersPerPixel } from './mapUtils';
+import { getMetersPerPixel, getThemeColor } from './mapUtils';
 import { buildSvgForRefname, buildTrafficLightPreviewHtmlForRefname } from './svgShapes';
 import { attachMarkerPopup, buildPopupContentWithPreview, createMarkerElement } from './markerDom';
 
 // Renders traffic light point features using either inline-built SVGs or fallback proxy images
-export const renderTrafficLightPt = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false) => {
+export const renderTrafficLightPt = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false, options = {}) => {
     if (!markersRef.current[typeName]) {
         markersRef.current[typeName] = [];
     }
+
+    const themeColor = getThemeColor(options.isDarkMode === true);
 
     points.forEach(feature => {
         const coords = feature.geometry.coordinates;
@@ -34,7 +36,7 @@ export const renderTrafficLightPt = (map, typeName, points, markersRef, activeLa
         const el = createMarkerElement({ className: 'custom-svg-icon-wrapper' });
 
         // Build inline SVG like renderTsPolePt: size by SYMBOL_SIZE (meters) -> px
-        const inlineSvg = buildSvgForRefname(refname);
+        const inlineSvg = buildSvgForRefname(refname, themeColor);
         if (inlineSvg) {
             el.className = 'custom-svg-icon-wrapper traffic-light-wrapper';
 

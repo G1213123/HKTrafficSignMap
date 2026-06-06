@@ -776,9 +776,7 @@ body {
     color: #000000 !important;
 }
 
-.map-container * {
-    color: #000000;
-}
+
 
 /* Better Popup Styling */
 .leaflet-popup-content-wrapper {

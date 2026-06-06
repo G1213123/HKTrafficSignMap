@@ -8,8 +8,6 @@ const HATCH_STROKE_WIDTH_METERS = 0.25;
 const POLY_FILL_COLOR = 'rgba(242, 213, 74, 0)';
 const CANVAS_PADDING_METERS = 1.5;
 
-const getThemeColor = (isDarkMode) => (isDarkMode ? '#ffffff' : '#000000');
-
 const toRadians = degrees => degrees * Math.PI / 180;
 
 const projectPoint = (coord, originCoord) => {
@@ -313,8 +311,6 @@ export const renderYlBoxPoly = (map, typeName, features, markersRef, activeLayer
     // - perpendicular hatch lines
     removePreviousMapLayers(map, typeName);
 
-    const themeColor = getThemeColor(options.isDarkMode === true);
-
     const geojson = { type: 'FeatureCollection', features: [] };
     let sampleLat = 0;
 
@@ -415,7 +411,7 @@ export const renderYlBoxPoly = (map, typeName, features, markersRef, activeLayer
             source: typeName,
             filter: ['==', ['geometry-type'], 'Polygon'],
             paint: {
-                'line-color': themeColor,
+                'line-color': '#ffef00',
                 'line-width': lineWidthPx,
             },
         });
@@ -430,7 +426,7 @@ export const renderYlBoxPoly = (map, typeName, features, markersRef, activeLayer
             filter: ['==', ['get', '_hatch'], 'diag'],
             layout: { 'line-join': 'round', 'line-cap': 'round' },
             paint: {
-                'line-color': themeColor,
+                'line-color': '#ffef00',
                 'line-width': lineWidthPx,
                 'line-opacity': 0.95,
             },
@@ -446,7 +442,7 @@ export const renderYlBoxPoly = (map, typeName, features, markersRef, activeLayer
             filter: ['==', ['get', '_hatch'], 'perp'],
             layout: { 'line-join': 'round', 'line-cap': 'round' },
             paint: {
-                'line-color': themeColor,
+                'line-color': '#ffef00',
                 'line-width': lineWidthPx,
                 'line-opacity': 0.95,
             },

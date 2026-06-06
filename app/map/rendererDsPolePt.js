@@ -1,7 +1,10 @@
 import maplibregl from 'maplibre-gl';
 import { attachMarkerPopup, buildPopupContent, createMarkerElement } from './markerDom';
+import { getThemeColor } from './mapUtils';
 
-export const renderDsPolePt = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false) => {
+export const renderDsPolePt = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false, options = {}) => {
+    const themeColor = getThemeColor(options.isDarkMode === true);
+
     if (!markersRef.current[typeName]) {
         markersRef.current[typeName] = [];
     }
@@ -44,9 +47,9 @@ export const renderDsPolePt = (map, typeName, points, markersRef, activeLayersRe
         const svgContent = `
             <svg viewBox="-0.5 -2.5 1 5" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%; display: block; overflow: visible;">
                 <!-- Main shapes -->
-                <circle cx="-0.15" cy="-0.375" r="0.225" fill="none" stroke="#222" stroke-width="0.05" />
-                <circle cx="-0.15" cy="0.375" r="0.225" fill="none" stroke="#222" stroke-width="0.05" />
-                <line x1="-0.5" y1="-1" x2="-0.5" y2="1" stroke="#222" stroke-width="0.05" />
+                <circle cx="-0.15" cy="-0.375" r="0.225" fill="none" stroke="${themeColor}" stroke-width="0.05" />
+                <circle cx="-0.15" cy="0.375" r="0.225" fill="none" stroke="${themeColor}" stroke-width="0.05" />
+                <line x1="-0.5" y1="-1" x2="-0.5" y2="1" stroke="${themeColor}" stroke-width="0.05" />
             </svg>
         `;
 

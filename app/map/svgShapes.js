@@ -4,7 +4,7 @@ export const trafficLightShapes = {
     // Example: S01 shapes (extracted from public/data/svgs/S01.svg)
     P01: [
         // triangle
-        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="#222" />',
+        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="black" />',
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // circle
@@ -12,63 +12,63 @@ export const trafficLightShapes = {
     ],
     P02: [
         // triangle
-        '<polygon points="-0.225,-0.8 0.225,-0.8 0,-1.6" fill="#222" />',
+        '<polygon points="-0.225,-0.8 0.225,-0.8 0,-1.6" fill="black" />',
         // long line
         '<line x1="0" y1="0" x2="0" y2="-0.8" stroke="black" stroke-width="0.05" />',
     ],
     P03L: [
         // triangle
-        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="#222" />',
+        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="black" />',
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // circle
         '<circle cx="0" cy="0" r="0.2" fill="fuchsia"  stroke="fuchsia" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.4,-1.925 -0.4,-1.675 -0.9,-1.8" fill="#222" />',
+        '<polygon points="-0.4,-1.925 -0.4,-1.675 -0.9,-1.8" fill="black" />',
         // short line
         '<line x1="0" y1="-1.8" x2="-0.4" y2="-1.8" stroke="black" stroke-width="0.05" />',
     ],
     P04R: [
         // triangle
-        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="#222" />',
+        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="black" />',
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // circle
         '<circle cx="0" cy="0" r="0.2" fill="fuchsia"  stroke="fuchsia" stroke-width="0.05" />',
         // triangle
-        '<polygon points="0.4,-1.925 0.4,-1.675 0.9,-1.8" fill="#222" />',
+        '<polygon points="0.4,-1.925 0.4,-1.675 0.9,-1.8" fill="black" />',
         // short line
         '<line x1="0" y1="-1.8" x2="0.4" y2="-1.8" stroke="black" stroke-width="0.05" />',
     ],
     P05L: [
         // triangle
-        '<polygon points="-0.225,-0.8 0.225,-0.8 0,-1.6" fill="#222" />',
+        '<polygon points="-0.225,-0.8 0.225,-0.8 0,-1.6" fill="black" />',
         // long line
         '<line x1="0" y1="0" x2="0" y2="-0.8" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.4,-1.725 -0.4,-1.475 -0.9,-1.6" fill="#222" />',
+        '<polygon points="-0.4,-1.725 -0.4,-1.475 -0.9,-1.6" fill="black" />',
         // short line
         '<line x1="0" y1="-1.6" x2="-0.4" y2="-1.6" stroke="black" stroke-width="0.05" />',
     ],
     P06R: [
         // triangle
-        '<polygon points="-0.225,-0.8 0.225,-0.8 0,-1.6" fill="#222" />',
+        '<polygon points="-0.225,-0.8 0.225,-0.8 0,-1.6" fill="black" />',
         // long line
         '<line x1="0" y1="0" x2="0" y2="-0.8" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="0.4,-1.725 0.4,-1.475 0.9,-1.6" fill="#222" />',
+        '<polygon points="0.4,-1.725 0.4,-1.475 0.9,-1.6" fill="black" />',
         // short line
         '<line x1="0" y1="-1.6" x2="0.4" y2="-1.6" stroke="black" stroke-width="0.05" />',
     ],
     P07L: [
         // triangle
-        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="#222" />',
+        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="black" />',
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // circle
         '<circle cx="0" cy="0" r="0.2" fill="fuchsia"  stroke="fuchsia" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.525,-1.4 -0.275,-1.4 -0.4,-0.9" fill="#222" />',
+        '<polygon points="-0.525,-1.4 -0.275,-1.4 -0.4,-0.9" fill="black" />',
         // short line
         '<line x1="0" y1="-1.8" x2="-0.4" y2="-1.8" stroke="black" stroke-width="0.05" />',
         // short line
@@ -76,13 +76,13 @@ export const trafficLightShapes = {
     ],
     P08R: [
         // triangle
-        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="#222" />',
+        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="black" />',
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // circle
         '<circle cx="0" cy="0" r="0.2" fill="fuchsia"  stroke="fuchsia" stroke-width="0.05" />',
         // triangle
-        '<polygon points="0.525,-1.4 0.275,-1.4 0.4,-0.9" fill="#222" />',
+        '<polygon points="0.525,-1.4 0.275,-1.4 0.4,-0.9" fill="black" />',
         // short line
         '<line x1="0" y1="-1.8" x2="0.4" y2="-1.8" stroke="black" stroke-width="0.05" />',
         // short line
@@ -90,13 +90,13 @@ export const trafficLightShapes = {
     ],
     PAO: [
         // triangle
-        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="#222" />',
+        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="black" />',
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // circle
         '<circle cx="0" cy="0" r="0.2" fill="fuchsia"  stroke="fuchsia" stroke-width="0.05" />',
         // triangle
-        '<polygon points="0.525,-1.4 0.275,-1.4 0.4,-0.9" fill="#222" />',
+        '<polygon points="0.525,-1.4 0.275,-1.4 0.4,-0.9" fill="black" />',
         // short line
         '<line x1="0" y1="-1.8" x2="0.4" y2="-1.8" stroke="black" stroke-width="0.05" />',
         // short line
@@ -104,11 +104,11 @@ export const trafficLightShapes = {
     ],
     P09L: [
         // triangle
-        '<polygon points="-0.225,-0.8 0.225,-0.8 0,-1.6" fill="#222" />',
+        '<polygon points="-0.225,-0.8 0.225,-0.8 0,-1.6" fill="black" />',
         // long line
         '<line x1="0" y1="0" x2="0" y2="-0.8" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.525,-1.4 -0.275,-1.4 -0.4,-0.9" fill="#222" />',
+        '<polygon points="-0.525,-1.4 -0.275,-1.4 -0.4,-0.9" fill="black" />',
         // short line
         '<line x1="0" y1="-1.6" x2="-0.4" y2="-1.6" stroke="black" stroke-width="0.05" />',
         // short line
@@ -116,11 +116,11 @@ export const trafficLightShapes = {
     ],
     P10R: [
         // triangle
-        '<polygon points="-0.225,-0.8 0.225,-0.8 0,-1.6" fill="#222" />',
+        '<polygon points="-0.225,-0.8 0.225,-0.8 0,-1.6" fill="black" />',
         // long line
         '<line x1="0" y1="0" x2="0" y2="-0.8" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="0.525,-1.4 0.275,-1.4 0.4,-0.9" fill="#222" />',
+        '<polygon points="0.525,-1.4 0.275,-1.4 0.4,-0.9" fill="black" />',
         // short line
         '<line x1="0" y1="-1.6" x2="0.4" y2="-1.6" stroke="black" stroke-width="0.05" />',
         // short line
@@ -132,7 +132,7 @@ export const trafficLightShapes = {
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="0.55,-1.5 0.25,-1.5 0.4,-2.1" fill="#222" />',
+        '<polygon points="0.55,-1.5 0.25,-1.5 0.4,-2.1" fill="black" />',
         // short line
         '<line x1="-0.4" y1="-1" x2="0.4" y2="-1" stroke="black" stroke-width="0.05" />',
         // short line
@@ -144,24 +144,24 @@ export const trafficLightShapes = {
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="0.55,-1.5 0.25,-1.5 0.4,-2.1" fill="#222" />',
+        '<polygon points="0.55,-1.5 0.25,-1.5 0.4,-2.1" fill="black" />',
         // short line
         '<line x1="0.4" y1="-1.5" x2="0.4" y2="-1" stroke="black" stroke-width="0.05" />',
         // short line
         '<line x1="-0.4" y1="-1" x2="0.4" y2="-1" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.55,-1.5 -0.25,-1.5 -0.4,-2.1" fill="#222" />',
+        '<polygon points="-0.55,-1.5 -0.25,-1.5 -0.4,-2.1" fill="black" />',
         // short line
         '<line x1="-0.4" y1="-1.5" x2="-0.4" y2="-1" stroke="black" stroke-width="0.05" />',
 
         // triangle
-        '<polygon points="0.925,-1.7 0.675,-1.7 0.8,-1.2" fill="#222" />',
+        '<polygon points="0.925,-1.7 0.675,-1.7 0.8,-1.2" fill="black" />',
         // short line
         '<line x1="0.4" y1="-2.1" x2="0.8" y2="-2.1" stroke="black" stroke-width="0.05" />',
         // short line
         '<line x1="0.8" y1="-2.1" x2="0.8" y2="-1.7" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.8,-2.225 -0.8,-1.975 -1.3,-2.1" fill="#222" />',
+        '<polygon points="-0.8,-2.225 -0.8,-1.975 -1.3,-2.1" fill="black" />',
         // short line
         '<line x1="-0.4" y1="-2.1" x2="-0.8" y2="-2.1" stroke="black" stroke-width="0.05" />',
 
@@ -172,24 +172,24 @@ export const trafficLightShapes = {
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // triangle (mirrored)
-        '<polygon points="-0.55,-1.5 -0.25,-1.5 -0.4,-2.1" fill="#222" />',
+        '<polygon points="-0.55,-1.5 -0.25,-1.5 -0.4,-2.1" fill="black" />',
         // short line
         '<line x1="-0.4" y1="-1.5" x2="-0.4" y2="-1" stroke="black" stroke-width="0.05" />',
         // short line (horizontal)
         '<line x1="0.4" y1="-1" x2="-0.4" y2="-1" stroke="black" stroke-width="0.05" />',
         // triangle (mirrored other side)
-        '<polygon points="0.55,-1.5 0.25,-1.5 0.4,-2.1" fill="#222" />',
+        '<polygon points="0.55,-1.5 0.25,-1.5 0.4,-2.1" fill="black" />',
         // short line
         '<line x1="0.4" y1="-1.5" x2="0.4" y2="-1" stroke="black" stroke-width="0.05" />',
 
         // triangle (mirrored)
-        '<polygon points="-0.925,-1.7 -0.675,-1.7 -0.8,-1.2" fill="#222" />',
+        '<polygon points="-0.925,-1.7 -0.675,-1.7 -0.8,-1.2" fill="black" />',
         // short line
         '<line x1="-0.4" y1="-2.1" x2="-0.8" y2="-2.1" stroke="black" stroke-width="0.05" />',
         // short line
         '<line x1="-0.8" y1="-2.1" x2="-0.8" y2="-1.7" stroke="black" stroke-width="0.05" />',
         // triangle (mirrored)
-        '<polygon points="0.8,-2.225 0.8,-1.975 1.3,-2.1" fill="#222" />',
+        '<polygon points="0.8,-2.225 0.8,-1.975 1.3,-2.1" fill="black" />',
         // short line
         '<line x1="0.4" y1="-2.1" x2="0.8" y2="-2.1" stroke="black" stroke-width="0.05" />',
 
@@ -200,28 +200,28 @@ export const trafficLightShapes = {
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // triangle (mirrored)
-        '<polygon points="-0.75,-1.5 -0.45,-1.5 -0.6,-2.1" fill="#222" />',
+        '<polygon points="-0.75,-1.5 -0.45,-1.5 -0.6,-2.1" fill="black" />',
         // short line
         '<line x1="-0.6" y1="-1.5" x2="-0.6" y2="-1" stroke="black" stroke-width="0.05" />',
         // short line (horizontal)
         '<line x1="0.4" y1="-1" x2="-0.6" y2="-1" stroke="black" stroke-width="0.05" />',
         // triangle (mirrored other side)
-        '<polygon points="0.55,-1.5 0.25,-1.5 0.4,-2.1" fill="#222" />',
+        '<polygon points="0.55,-1.5 0.25,-1.5 0.4,-2.1" fill="black" />',
         // short line
         '<line x1="0.4" y1="-1.5" x2="0.4" y2="-1" stroke="black" stroke-width="0.05" />',
 
         // triangle
-        '<polygon points="-0.8,-2.225 -0.8,-1.975 -1.3,-2.1" fill="#222" />',
+        '<polygon points="-0.8,-2.225 -0.8,-1.975 -1.3,-2.1" fill="black" />',
         // short line
         '<line x1="-0.6" y1="-2.1" x2="-1.0" y2="-2.1" stroke="black" stroke-width="0.05" />',
 
         // triangle (mirrored)
-        '<polygon points="0.8,-2.225 0.8,-1.975 1.3,-2.1" fill="#222" />',
+        '<polygon points="0.8,-2.225 0.8,-1.975 1.3,-2.1" fill="black" />',
         // short line
         '<line x1="0.4" y1="-2.1" x2="0.8" y2="-2.1" stroke="black" stroke-width="0.05" />',
 
         // triangle (mirrored)
-        '<polygon points="-0.325,-1.7 -0.075,-1.7 -0.2,-1.2" fill="#222" />',
+        '<polygon points="-0.325,-1.7 -0.075,-1.7 -0.2,-1.2" fill="black" />',
         // short line
         '<line x1="-0.6" y1="-2.1" x2="-0.2" y2="-2.1" stroke="black" stroke-width="0.05" />',
         // short line
@@ -234,22 +234,22 @@ export const trafficLightShapes = {
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // triangle (mirrored)
-        '<polygon points="-0.55,-1.5 -0.25,-1.5 -0.4,-2.1" fill="#222" />',
+        '<polygon points="-0.55,-1.5 -0.25,-1.5 -0.4,-2.1" fill="black" />',
         // short line
         '<line x1="-0.4" y1="-1.5" x2="-0.4" y2="-1" stroke="black" stroke-width="0.05" />',
         // short line (horizontal)
         '<line x1="0.4" y1="-1" x2="-0.4" y2="-1" stroke="black" stroke-width="0.05" />',
         // triangle (mirrored other side)
-        '<polygon points="0.55,-1.5 0.25,-1.5 0.4,-2.1" fill="#222" />',
+        '<polygon points="0.55,-1.5 0.25,-1.5 0.4,-2.1" fill="black" />',
         // short line
         '<line x1="0.4" y1="-1.5" x2="0.4" y2="-1" stroke="black" stroke-width="0.05" />',
 
         // triangle
-        '<polygon points="-0.8,-2.225 -0.8,-1.975 -1.3,-2.1" fill="#222" />',
+        '<polygon points="-0.8,-2.225 -0.8,-1.975 -1.3,-2.1" fill="black" />',
         // short line
         '<line x1="-0.4" y1="-2.1" x2="-0.8" y2="-2.1" stroke="black" stroke-width="0.05" />',
         // triangle (mirrored)
-        '<polygon points="0.8,-2.225 0.8,-1.975 1.3,-2.1" fill="#222" />',
+        '<polygon points="0.8,-2.225 0.8,-1.975 1.3,-2.1" fill="black" />',
         // short line
         '<line x1="0.4" y1="-2.1" x2="0.8" y2="-2.1" stroke="black" stroke-width="0.05" />',
 
@@ -322,28 +322,28 @@ export const trafficLightShapes = {
     ],
     PTR01: [
         // triangle
-        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="#222" />',
+        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="black" />',
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // circle
         '<circle cx="0" cy="0" r="0.2" fill="fuchsia"  stroke="fuchsia" stroke-width="0.05" />',
         // text T
-        '<circle cx="0" cy="-2" r="0.2" fill="none"  stroke="#222" stroke-width="0.02" />',
-        '<text x="0" y="-1.85" text-anchor="middle" font-size="0.4" fill="#222">T</text>',
+        '<circle cx="0" cy="-2" r="0.2" fill="none"  stroke="black" stroke-width="0.02" />',
+        '<text x="0" y="-1.85" text-anchor="middle" font-size="0.4" fill="black">T</text>',
     ],
     PTR02: [
         // long line
         '<line x1="-0.75" y1="0" x2="-0.2" y2="0" stroke="black" stroke-width="0.05" />',
         // text T
-        '<circle cx="0" cy="0" r="0.2" fill="none"  stroke="#222" stroke-width="0.02" />',
-        '<text x="0" y="0.15" text-anchor="middle" font-size="0.4" transform="rotate(-90)" fill="#222">T</text>',
+        '<circle cx="0" cy="0" r="0.2" fill="none"  stroke="black" stroke-width="0.02" />',
+        '<text x="0" y="0.15" text-anchor="middle" font-size="0.4" transform="rotate(-90)" fill="black">T</text>',
     ],
     S01: [
         // slahses
-        '<line x1="-0.3" y1="-1.1" x2="-0.125" y2="-1.7" stroke="#222" stroke-width="0.05" />',
-        '<line x1="0.3" y1="-1.1" x2="0.125" y2="-1.7" stroke="#222" stroke-width="0.05" />',
+        '<line x1="-0.3" y1="-1.1" x2="-0.125" y2="-1.7" stroke="black" stroke-width="0.05" />',
+        '<line x1="0.3" y1="-1.1" x2="0.125" y2="-1.7" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="#222" />',
+        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="black" />',
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // circle
@@ -351,81 +351,81 @@ export const trafficLightShapes = {
     ],
     S02: [
         // slahses
-        '<line x1="-0.3" y1="-0.9" x2="-0.125" y2="-1.5" stroke="#222" stroke-width="0.05" />',
-        '<line x1="0.3" y1="-0.9" x2="0.125" y2="-1.5" stroke="#222" stroke-width="0.05" />',
+        '<line x1="-0.3" y1="-0.9" x2="-0.125" y2="-1.5" stroke="black" stroke-width="0.05" />',
+        '<line x1="0.3" y1="-0.9" x2="0.125" y2="-1.5" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.225,-0.8 0.225,-0.8 0,-1.6" fill="#222" />',
+        '<polygon points="-0.225,-0.8 0.225,-0.8 0,-1.6" fill="black" />',
         // long line
         '<line x1="0" y1="0" x2="0" y2="-0.8" stroke="black" stroke-width="0.05" />',
     ],
     S03L: [
         // slahses
-        '<line x1="-0.3" y1="-1.1" x2="-0.125" y2="-1.7" stroke="#222" stroke-width="0.05" />',
-        '<line x1="0.3" y1="-1.1" x2="0.125" y2="-1.7" stroke="#222" stroke-width="0.05" />',
+        '<line x1="-0.3" y1="-1.1" x2="-0.125" y2="-1.7" stroke="black" stroke-width="0.05" />',
+        '<line x1="0.3" y1="-1.1" x2="0.125" y2="-1.7" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="#222" />',
+        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="black" />',
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // circle
         '<circle cx="0" cy="0" r="0.2" fill="fuchsia"  stroke="fuchsia" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.4,-1.925 -0.4,-1.675 -0.9,-1.8" fill="#222" />',
+        '<polygon points="-0.4,-1.925 -0.4,-1.675 -0.9,-1.8" fill="black" />',
         // short line
         '<line x1="0" y1="-1.8" x2="-0.4" y2="-1.8" stroke="black" stroke-width="0.05" />',
     ],
     S04R: [
         // slahses
-        '<line x1="-0.3" y1="-1.1" x2="-0.125" y2="-1.7" stroke="#222" stroke-width="0.05" />',
-        '<line x1="0.3" y1="-1.1" x2="0.125" y2="-1.7" stroke="#222" stroke-width="0.05" />',
+        '<line x1="-0.3" y1="-1.1" x2="-0.125" y2="-1.7" stroke="black" stroke-width="0.05" />',
+        '<line x1="0.3" y1="-1.1" x2="0.125" y2="-1.7" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="#222" />',
+        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="black" />',
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // circle
         '<circle cx="0" cy="0" r="0.2" fill="fuchsia"  stroke="fuchsia" stroke-width="0.05" />',
         // triangle
-        '<polygon points="0.4,-1.925 0.4,-1.675 0.9,-1.8" fill="#222" />',
+        '<polygon points="0.4,-1.925 0.4,-1.675 0.9,-1.8" fill="black" />',
         // short line
         '<line x1="0" y1="-1.8" x2="0.4" y2="-1.8" stroke="black" stroke-width="0.05" />',
     ],
     S05L: [
         // slahses
-        '<line x1="-0.3" y1="-0.9" x2="-0.125" y2="-1.5" stroke="#222" stroke-width="0.05" />',
-        '<line x1="0.3" y1="-0.9" x2="0.125" y2="-1.5" stroke="#222" stroke-width="0.05" />',
+        '<line x1="-0.3" y1="-0.9" x2="-0.125" y2="-1.5" stroke="black" stroke-width="0.05" />',
+        '<line x1="0.3" y1="-0.9" x2="0.125" y2="-1.5" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.225,-0.8 0.225,-0.8 0,-1.6" fill="#222" />',
+        '<polygon points="-0.225,-0.8 0.225,-0.8 0,-1.6" fill="black" />',
         // long line
         '<line x1="0" y1="0" x2="0" y2="-0.8" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.4,-1.725 -0.4,-1.475 -0.9,-1.6" fill="#222" />',
+        '<polygon points="-0.4,-1.725 -0.4,-1.475 -0.9,-1.6" fill="black" />',
         // short line
         '<line x1="0" y1="-1.6" x2="-0.4" y2="-1.6" stroke="black" stroke-width="0.05" />',
     ],
     S06R: [
         // slahses
-        '<line x1="-0.3" y1="-0.9" x2="-0.125" y2="-1.5" stroke="#222" stroke-width="0.05" />',
-        '<line x1="0.3" y1="-0.9" x2="0.125" y2="-1.5" stroke="#222" stroke-width="0.05" />',
+        '<line x1="-0.3" y1="-0.9" x2="-0.125" y2="-1.5" stroke="black" stroke-width="0.05" />',
+        '<line x1="0.3" y1="-0.9" x2="0.125" y2="-1.5" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.225,-0.8 0.225,-0.8 0,-1.6" fill="#222" />',
+        '<polygon points="-0.225,-0.8 0.225,-0.8 0,-1.6" fill="black" />',
         // long line
         '<line x1="0" y1="0" x2="0" y2="-0.8" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="0.4,-1.725 0.4,-1.475 0.9,-1.6" fill="#222" />',
+        '<polygon points="0.4,-1.725 0.4,-1.475 0.9,-1.6" fill="black" />',
         // short line
         '<line x1="0" y1="-1.6" x2="0.4" y2="-1.6" stroke="black" stroke-width="0.05" />',
     ],
     S07L: [
         // slahses
-        '<line x1="-0.3" y1="-1.1" x2="-0.125" y2="-1.7" stroke="#222" stroke-width="0.05" />',
-        '<line x1="0.3" y1="-1.1" x2="0.125" y2="-1.7" stroke="#222" stroke-width="0.05" />',
+        '<line x1="-0.3" y1="-1.1" x2="-0.125" y2="-1.7" stroke="black" stroke-width="0.05" />',
+        '<line x1="0.3" y1="-1.1" x2="0.125" y2="-1.7" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="#222" />',
+        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="black" />',
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // circle
         '<circle cx="0" cy="0" r="0.2" fill="fuchsia"  stroke="fuchsia" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.525,-1.4 -0.275,-1.4 -0.4,-0.9" fill="#222" />',
+        '<polygon points="-0.525,-1.4 -0.275,-1.4 -0.4,-0.9" fill="black" />',
         // short line
         '<line x1="0" y1="-1.8" x2="-0.4" y2="-1.8" stroke="black" stroke-width="0.05" />',
         // short line
@@ -433,16 +433,16 @@ export const trafficLightShapes = {
     ],
     S08R: [
         // slahses
-        '<line x1="-0.3" y1="-1.1" x2="-0.125" y2="-1.7" stroke="#222" stroke-width="0.05" />',
-        '<line x1="0.3" y1="-1.1" x2="0.125" y2="-1.7" stroke="#222" stroke-width="0.05" />',
+        '<line x1="-0.3" y1="-1.1" x2="-0.125" y2="-1.7" stroke="black" stroke-width="0.05" />',
+        '<line x1="0.3" y1="-1.1" x2="0.125" y2="-1.7" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="#222" />',
+        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="black" />',
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // circle
         '<circle cx="0" cy="0" r="0.2" fill="fuchsia"  stroke="fuchsia" stroke-width="0.05" />',
         // triangle
-        '<polygon points="0.525,-1.4 0.275,-1.4 0.4,-0.9" fill="#222" />',
+        '<polygon points="0.525,-1.4 0.275,-1.4 0.4,-0.9" fill="black" />',
         // short line
         '<line x1="0" y1="-1.8" x2="0.4" y2="-1.8" stroke="black" stroke-width="0.05" />',
         // short line
@@ -450,14 +450,14 @@ export const trafficLightShapes = {
     ],
     S09L: [
         // slahses
-        '<line x1="-0.3" y1="-0.9" x2="-0.125" y2="-1.5" stroke="#222" stroke-width="0.05" />',
-        '<line x1="0.3" y1="-0.9" x2="0.125" y2="-1.5" stroke="#222" stroke-width="0.05" />',
+        '<line x1="-0.3" y1="-0.9" x2="-0.125" y2="-1.5" stroke="black" stroke-width="0.05" />',
+        '<line x1="0.3" y1="-0.9" x2="0.125" y2="-1.5" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.225,-0.8 0.225,-0.8 0,-1.6" fill="#222" />',
+        '<polygon points="-0.225,-0.8 0.225,-0.8 0,-1.6" fill="black" />',
         // long line
         '<line x1="0" y1="0" x2="0" y2="-0.8" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.525,-1.2 -0.275,-1.2 -0.4,-0.7" fill="#222" />',
+        '<polygon points="-0.525,-1.2 -0.275,-1.2 -0.4,-0.7" fill="black" />',
         // short line
         '<line x1="0" y1="-1.6" x2="-0.4" y2="-1.6" stroke="black" stroke-width="0.05" />',
         // short line
@@ -465,14 +465,14 @@ export const trafficLightShapes = {
     ],
     S10R: [
         // slahses
-        '<line x1="-0.3" y1="-0.9" x2="-0.125" y2="-1.5" stroke="#222" stroke-width="0.05" />',
-        '<line x1="0.3" y1="-0.9" x2="0.125" y2="-1.5" stroke="#222" stroke-width="0.05" />',
+        '<line x1="-0.3" y1="-0.9" x2="-0.125" y2="-1.5" stroke="black" stroke-width="0.05" />',
+        '<line x1="0.3" y1="-0.9" x2="0.125" y2="-1.5" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.225,-0.8 0.225,-0.8 0,-1.6" fill="#222" />',
+        '<polygon points="-0.225,-0.8 0.225,-0.8 0,-1.6" fill="black" />',
         // long line
         '<line x1="0" y1="0" x2="0" y2="-0.8" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="0.525,-1.2 0.275,-1.2 0.4,-0.7" fill="#222" />',
+        '<polygon points="0.525,-1.2 0.275,-1.2 0.4,-0.7" fill="black" />',
         // short line
         '<line x1="0" y1="-1.6" x2="0.4" y2="-1.6" stroke="black" stroke-width="0.05" />',
         // short line
@@ -486,17 +486,17 @@ export const trafficLightShapes = {
         // short line
         '<line x1="-0.4" y1="-1" x2="0.4" y2="-1" stroke="black" stroke-width="0.05" />',
         // slahses
-        '<line x1="0.2" y1="-1.575" x2="0.325" y2="-2.025" stroke="#222" stroke-width="0.05" />',
-        '<line x1="0.6" y1="-1.575" x2="0.475" y2="-2.025" stroke="#222" stroke-width="0.05" />',
+        '<line x1="0.2" y1="-1.575" x2="0.325" y2="-2.025" stroke="black" stroke-width="0.05" />',
+        '<line x1="0.6" y1="-1.575" x2="0.475" y2="-2.025" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="0.55,-1.5 0.25,-1.5 0.4,-2.1" fill="#222" />',
+        '<polygon points="0.55,-1.5 0.25,-1.5 0.4,-2.1" fill="black" />',
         // short line
         '<line x1="0.4" y1="-1.5" x2="0.4" y2="-1" stroke="black" stroke-width="0.05" />',
         // slahses
-        '<line x1="-0.2" y1="-1.575" x2="-0.325" y2="-2.025" stroke="#222" stroke-width="0.05" />',
-        '<line x1="-0.6" y1="-1.575" x2="-0.475" y2="-2.025" stroke="#222" stroke-width="0.05" />',
+        '<line x1="-0.2" y1="-1.575" x2="-0.325" y2="-2.025" stroke="black" stroke-width="0.05" />',
+        '<line x1="-0.6" y1="-1.575" x2="-0.475" y2="-2.025" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.55,-1.5 -0.25,-1.5 -0.4,-2.1" fill="#222" />',
+        '<polygon points="-0.55,-1.5 -0.25,-1.5 -0.4,-2.1" fill="black" />',
         // short line
         '<line x1="-0.4" y1="-1.5" x2="-0.4" y2="-1" stroke="black" stroke-width="0.05" />',
     ],
@@ -506,30 +506,30 @@ export const trafficLightShapes = {
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // slahses
-        '<line x1="0.2" y1="-1.575" x2="0.325" y2="-2.025" stroke="#222" stroke-width="0.05" />',
-        '<line x1="0.6" y1="-1.575" x2="0.475" y2="-2.025" stroke="#222" stroke-width="0.05" />',
+        '<line x1="0.2" y1="-1.575" x2="0.325" y2="-2.025" stroke="black" stroke-width="0.05" />',
+        '<line x1="0.6" y1="-1.575" x2="0.475" y2="-2.025" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="0.55,-1.5 0.25,-1.5 0.4,-2.1" fill="#222" />',
+        '<polygon points="0.55,-1.5 0.25,-1.5 0.4,-2.1" fill="black" />',
         // short line
         '<line x1="0.4" y1="-1.5" x2="0.4" y2="-1" stroke="black" stroke-width="0.05" />',
         // short line
         '<line x1="-0.4" y1="-1" x2="0.4" y2="-1" stroke="black" stroke-width="0.05" />',
         // slahses
-        '<line x1="-0.2" y1="-1.575" x2="-0.325" y2="-2.025" stroke="#222" stroke-width="0.05" />',
-        '<line x1="-0.6" y1="-1.575" x2="-0.475" y2="-2.025" stroke="#222" stroke-width="0.05" />',
+        '<line x1="-0.2" y1="-1.575" x2="-0.325" y2="-2.025" stroke="black" stroke-width="0.05" />',
+        '<line x1="-0.6" y1="-1.575" x2="-0.475" y2="-2.025" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.55,-1.5 -0.25,-1.5 -0.4,-2.1" fill="#222" />',
+        '<polygon points="-0.55,-1.5 -0.25,-1.5 -0.4,-2.1" fill="black" />',
         // short line
         '<line x1="-0.4" y1="-1.5" x2="-0.4" y2="-1" stroke="black" stroke-width="0.05" />',
 
         // triangle
-        '<polygon points="0.925,-1.7 0.675,-1.7 0.8,-1.2" fill="#222" />',
+        '<polygon points="0.925,-1.7 0.675,-1.7 0.8,-1.2" fill="black" />',
         // short line
         '<line x1="0.4" y1="-2.1" x2="0.8" y2="-2.1" stroke="black" stroke-width="0.05" />',
         // short line
         '<line x1="0.8" y1="-2.1" x2="0.8" y2="-1.7" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.8,-2.225 -0.8,-1.975 -1.3,-2.1" fill="#222" />',
+        '<polygon points="-0.8,-2.225 -0.8,-1.975 -1.3,-2.1" fill="black" />',
         // short line
         '<line x1="-0.4" y1="-2.1" x2="-0.8" y2="-2.1" stroke="black" stroke-width="0.05" />',
 
@@ -540,30 +540,30 @@ export const trafficLightShapes = {
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // slahses
-        '<line x1="0.2" y1="-1.575" x2="0.325" y2="-2.025" stroke="#222" stroke-width="0.05" />',
-        '<line x1="0.6" y1="-1.575" x2="0.475" y2="-2.025" stroke="#222" stroke-width="0.05" />',
+        '<line x1="0.2" y1="-1.575" x2="0.325" y2="-2.025" stroke="black" stroke-width="0.05" />',
+        '<line x1="0.6" y1="-1.575" x2="0.475" y2="-2.025" stroke="black" stroke-width="0.05" />',
         // triangle (mirrored)
-        '<polygon points="-0.55,-1.5 -0.25,-1.5 -0.4,-2.1" fill="#222" />',
+        '<polygon points="-0.55,-1.5 -0.25,-1.5 -0.4,-2.1" fill="black" />',
         // short line
         '<line x1="-0.4" y1="-1.5" x2="-0.4" y2="-1" stroke="black" stroke-width="0.05" />',
         // short line (horizontal)
         '<line x1="0.4" y1="-1" x2="-0.4" y2="-1" stroke="black" stroke-width="0.05" />',
         // slahses
-        '<line x1="-0.2" y1="-1.575" x2="-0.325" y2="-2.025" stroke="#222" stroke-width="0.05" />',
-        '<line x1="-0.6" y1="-1.575" x2="-0.475" y2="-2.025" stroke="#222" stroke-width="0.05" />',
+        '<line x1="-0.2" y1="-1.575" x2="-0.325" y2="-2.025" stroke="black" stroke-width="0.05" />',
+        '<line x1="-0.6" y1="-1.575" x2="-0.475" y2="-2.025" stroke="black" stroke-width="0.05" />',
         // triangle (mirrored other side)
-        '<polygon points="0.55,-1.5 0.25,-1.5 0.4,-2.1" fill="#222" />',
+        '<polygon points="0.55,-1.5 0.25,-1.5 0.4,-2.1" fill="black" />',
         // short line
         '<line x1="0.4" y1="-1.5" x2="0.4" y2="-1" stroke="black" stroke-width="0.05" />',
 
         // triangle (mirrored)
-        '<polygon points="-0.925,-1.7 -0.675,-1.7 -0.8,-1.2" fill="#222" />',
+        '<polygon points="-0.925,-1.7 -0.675,-1.7 -0.8,-1.2" fill="black" />',
         // short line
         '<line x1="-0.4" y1="-2.1" x2="-0.8" y2="-2.1" stroke="black" stroke-width="0.05" />',
         // short line
         '<line x1="-0.8" y1="-2.1" x2="-0.8" y2="-1.7" stroke="black" stroke-width="0.05" />',
         // triangle (mirrored)
-        '<polygon points="0.8,-2.225 0.8,-1.975 1.3,-2.1" fill="#222" />',
+        '<polygon points="0.8,-2.225 0.8,-1.975 1.3,-2.1" fill="black" />',
         // short line
         '<line x1="0.4" y1="-2.1" x2="0.8" y2="-2.1" stroke="black" stroke-width="0.05" />',
 
@@ -574,80 +574,80 @@ export const trafficLightShapes = {
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // slahses
-        '<line x1="0.2" y1="-1.575" x2="0.325" y2="-2.025" stroke="#222" stroke-width="0.05" />',
-        '<line x1="0.6" y1="-1.575" x2="0.475" y2="-2.025" stroke="#222" stroke-width="0.05" />',
+        '<line x1="0.2" y1="-1.575" x2="0.325" y2="-2.025" stroke="black" stroke-width="0.05" />',
+        '<line x1="0.6" y1="-1.575" x2="0.475" y2="-2.025" stroke="black" stroke-width="0.05" />',
         // triangle (mirrored)
-        '<polygon points="-0.55,-1.5 -0.25,-1.5 -0.4,-2.1" fill="#222" />',
+        '<polygon points="-0.55,-1.5 -0.25,-1.5 -0.4,-2.1" fill="black" />',
         // short line
         '<line x1="-0.4" y1="-1.5" x2="-0.4" y2="-1" stroke="black" stroke-width="0.05" />',
         // short line (horizontal)
         '<line x1="0.4" y1="-1" x2="-0.4" y2="-1" stroke="black" stroke-width="0.05" />',
         // slahses
-        '<line x1="-0.2" y1="-1.575" x2="-0.325" y2="-2.025" stroke="#222" stroke-width="0.05" />',
-        '<line x1="-0.6" y1="-1.575" x2="-0.475" y2="-2.025" stroke="#222" stroke-width="0.05" />',
+        '<line x1="-0.2" y1="-1.575" x2="-0.325" y2="-2.025" stroke="black" stroke-width="0.05" />',
+        '<line x1="-0.6" y1="-1.575" x2="-0.475" y2="-2.025" stroke="black" stroke-width="0.05" />',
         // triangle (mirrored other side)
-        '<polygon points="0.55,-1.5 0.25,-1.5 0.4,-2.1" fill="#222" />',
+        '<polygon points="0.55,-1.5 0.25,-1.5 0.4,-2.1" fill="black" />',
         // short line
         '<line x1="0.4" y1="-1.5" x2="0.4" y2="-1" stroke="black" stroke-width="0.05" />',
 
         // triangle
-        '<polygon points="-0.8,-2.225 -0.8,-1.975 -1.3,-2.1" fill="#222" />',
+        '<polygon points="-0.8,-2.225 -0.8,-1.975 -1.3,-2.1" fill="black" />',
         // short line
         '<line x1="-0.4" y1="-2.1" x2="-0.8" y2="-2.1" stroke="black" stroke-width="0.05" />',
         // triangle (mirrored)
-        '<polygon points="0.8,-2.225 0.8,-1.975 1.3,-2.1" fill="#222" />',
+        '<polygon points="0.8,-2.225 0.8,-1.975 1.3,-2.1" fill="black" />',
         // short line
         '<line x1="0.4" y1="-2.1" x2="0.8" y2="-2.1" stroke="black" stroke-width="0.05" />',
 
     ],
     STR01: [
         // slahses
-        '<line x1="-0.3" y1="-1.1" x2="-0.125" y2="-1.7" stroke="#222" stroke-width="0.05" />',
-        '<line x1="0.3" y1="-1.1" x2="0.125" y2="-1.7" stroke="#222" stroke-width="0.05" />',
+        '<line x1="-0.3" y1="-1.1" x2="-0.125" y2="-1.7" stroke="black" stroke-width="0.05" />',
+        '<line x1="0.3" y1="-1.1" x2="0.125" y2="-1.7" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="#222" />',
+        '<polygon points="-0.225,-1 0.225,-1 0,-1.8" fill="black" />',
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="-1" stroke="black" stroke-width="0.05" />',
         // circle
         '<circle cx="0" cy="0" r="0.2" fill="fuchsia"  stroke="fuchsia" stroke-width="0.05" />',
         // text T
-        '<circle cx="0" cy="-2" r="0.2" fill="none"  stroke="#222" stroke-width="0.02" />',
-        '<text x="0" y="-1.85" text-anchor="middle" font-size="0.4" fill="#222">T</text>',
+        '<circle cx="0" cy="-2" r="0.2" fill="none"  stroke="black" stroke-width="0.02" />',
+        '<text x="0" y="-1.85" text-anchor="middle" font-size="0.4" fill="black">T</text>',
     ],
     STR02: [
         // long line
         '<line x1="0" y1="-0.125" x2="0.4" y2="-0.125" stroke="black" stroke-width="0.05" />',
         // text T
-        '<circle cx="0.6" cy="-0.125" r="0.2" fill="none"  stroke="#222" stroke-width="0.02" />',
-        '<text x="0.125" y="0.75" text-anchor="middle" font-size="0.4" transform="rotate(-90)" fill="#222">T</text>',
+        '<circle cx="0.6" cy="-0.125" r="0.2" fill="none"  stroke="black" stroke-width="0.02" />',
+        '<text x="0.125" y="0.75" text-anchor="middle" font-size="0.4" transform="rotate(-90)" fill="black">T</text>',
     ],
     M56: [
         // box
-        '<rect x="-0.3" y="-0.6" width="0.6" height="1.2" fill="none" stroke="#222" stroke-width="0.05" />',
+        '<rect x="-0.3" y="-0.6" width="0.6" height="1.2" fill="none" stroke="black" stroke-width="0.05" />',
         // text T
-        '<text x="0" y="0.15" text-anchor="middle" font-size="0.4" transform="rotate(-90)" fill="#222">C</text>',
+        '<text x="0" y="0.15" text-anchor="middle" font-size="0.4" transform="rotate(-90)" fill="black">C</text>',
     ],
     M51: [
         // slahses
-        '<line x1="-0.3" y1="-1.1" x2="-0.125" y2="-1.7" stroke="#222" stroke-width="0.05" />',
-        '<line x1="0.3" y1="-1.1" x2="0.125" y2="-1.7" stroke="#222" stroke-width="0.05" />',
+        '<line x1="-0.3" y1="-1.1" x2="-0.125" y2="-1.7" stroke="black" stroke-width="0.05" />',
+        '<line x1="0.3" y1="-1.1" x2="0.125" y2="-1.7" stroke="black" stroke-width="0.05" />',
     ],
     M52: [
         // triangle
-        '<polygon points="-0.15,-0.5 0.15,-0.5 0,-1.1" fill="#222" />',
+        '<polygon points="-0.15,-0.5 0.15,-0.5 0,-1.1" fill="black" />',
         // short line
         '<line x1="0" y1="0" x2="0" y2="-0.5" stroke="black" stroke-width="0.05" />',
     ],
     M53L: [
         // triangle
-        '<polygon points="-0.55,0.5 -0.25,0.5 -0.4,1.1" fill="#222" />',
+        '<polygon points="-0.55,0.5 -0.25,0.5 -0.4,1.1" fill="black" />',
         // short line
         '<line x1="-0.4" y1="0.5" x2="-0.4" y2="0" stroke="black" stroke-width="0.05" />',
         '<line x1="0" y1="0" x2="-0.4" y2="0" stroke="black" stroke-width="0.05" />',
     ],
     M54R: [
         // triangle
-        '<polygon points="0.55,0.5 0.25,0.5 0.4,1.1" fill="#222" />',
+        '<polygon points="0.55,0.5 0.25,0.5 0.4,1.1" fill="black" />',
         // short line
         '<line x1="0.4" y1="0.5" x2="0.4" y2="0" stroke="black" stroke-width="0.05" />',
         '<line x1="0" y1="0" x2="0.4" y2="0" stroke="black" stroke-width="0.05" />',
@@ -667,15 +667,15 @@ export const trafficLightShapes = {
 
     TRAML: [
         // text T
-        '<circle cx="0" cy="0.4" r="0.2" fill="none"  stroke="#222" stroke-width="0.02" />',
-        '<text x="0.4" y="0.15" text-anchor="middle" font-size="0.4" transform="rotate(90)" fill="#222">T</text>',
+        '<circle cx="0" cy="0.4" r="0.2" fill="none"  stroke="black" stroke-width="0.02" />',
+        '<text x="0.4" y="0.15" text-anchor="middle" font-size="0.4" transform="rotate(90)" fill="black">T</text>',
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="0.4" stroke="black" stroke-width="0.05" />',
     ],
     TRAMR: [
         // text T
-        '<circle cx="0" cy="-0.4" r="0.2" fill="none"  stroke="#222" stroke-width="0.02" />',
-        '<text x="0.4" y="0.15" text-anchor="middle" font-size="0.4" transform="rotate(-90)" fill="#222">T</text>',
+        '<circle cx="0" cy="-0.4" r="0.2" fill="none"  stroke="black" stroke-width="0.02" />',
+        '<text x="0.4" y="0.15" text-anchor="middle" font-size="0.4" transform="rotate(-90)" fill="black">T</text>',
         // long line
         '<line x1="0" y1="-0.2" x2="0" y2="0.4" stroke="black" stroke-width="0.05" />',
     ],
@@ -708,11 +708,11 @@ export const trafficLightShapes = {
         // lozenge
         '<path d="M 0 -0.8 -0.4 -1 0 -1.2 0.4 -1 Z" fill="none" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="0.55,-1.5 0.25,-1.5 0.4,-2.1" fill="#222" />',
+        '<polygon points="0.55,-1.5 0.25,-1.5 0.4,-2.1" fill="black" />',
         // short line
         '<line x1="0.4" y1="-1.5" x2="0.4" y2="-1" stroke="black" stroke-width="0.05" />',
         // triangle
-        '<polygon points="-0.55,-1.5 -0.25,-1.5 -0.4,-2.1" fill="#222" />',
+        '<polygon points="-0.55,-1.5 -0.25,-1.5 -0.4,-2.1" fill="black" />',
         // short line
         '<line x1="-0.4" y1="-1.5" x2="-0.4" y2="-1" stroke="black" stroke-width="0.05" />',
 
@@ -1559,9 +1559,9 @@ export const trafficLightIcon = {
 };
 
 // Build a full SVG string for a refname by wrapping shapes, computing viewBox from rendered bounds.
-export const buildSvgForRefname = (refname) => {
+export const buildSvgForRefname = (refname, themeColor) => {
     const normalizedRefname = String(refname || '').trim().toUpperCase();
-    const shapes = trafficLightShapes[normalizedRefname];
+    const shapes = trafficLightShapes[normalizedRefname].map(shape => shape.replace(/"black"/g, `"${themeColor || '#22c55e'}"`));
     if (!shapes || shapes.length === 0) return null;
 
     const svgText = `<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid">` +
