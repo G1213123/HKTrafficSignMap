@@ -16,7 +16,7 @@ WFS_BASE_URL = "https://portal.csdi.gov.hk/server/services/common/td_rcd_1638928
 HONG_KONG_BBOX = "22.13,113.82,22.58,114.52,urn:ogc:def:crs:EPSG::4326"
 ZOOM_LEVEL = 16
 
-REQUEST_TIMEOUT = 45
+REQUEST_TIMEOUT = 40000
 MAX_RETRIES = 3
 RETRY_BASE_SECONDS = 1.0
 
