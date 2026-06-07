@@ -53,17 +53,129 @@ const BASEMAP_THEME = {
     }
 };
 
+const darkModeColors = {
+    "#CCEDFF": "#2A4A5A",
+    "#FFFFFF": "#121212",
+    "#CCECFF": "#2A495A",
+    "#F4F7E8": "#2E3328",
+    "#F3F5E6": "#2D3227",
+    "#EDF0DF": "#2A2E25",
+    "#E7EBD5": "#272C23",
+    "#E1E6CC": "#242A21",
+    "#E2E3E4": "#242424",
+    "#DEE3C5": "#232921",
+    "#D8DEBF": "#21271F",
+    "#D2D9B6": "#1F251E",
+    "#CBD4AE": "#1D241C",
+    "#C7D1A7": "#1C231B",
+    "#FFE1A9": "#8A5A2A",
+    "#FED591": "#7F5026",
+    "#DEE3F5": "#232739",
+    "#9C9C9C": "#2E2E2E",
+    "#C4D9AD": "#1B231A",
+    "#CEE3C1": "#1D291E",
+    "#BBD4EE": "#1A273A",
+    "#97BDDB": "#16304A",
+    "#9CCBEC": "#163A56",
+    "#D9E0C8": "#21271F",
+    "#C7C8B1": "#1C1D17",
+    "#D2D7EB": "#1F2333",
+    "#FEFEFE": "#121212",
+    "#C8CDE1": "#1C1F2A",
+    "#E2F7D5": "#242E21",
+    "#91D1EB": "#16445A",
+    "#B2B2B2": "#1A1A1A",
+    "#E1E1E1": "#242424",
+    "#D2D3D4": "#1F2020",
+    "#A89A77": "#2E2619",
+    "#BCAE8B": "#2A2419",
+    "#B8B8B8": "#1C1C1C",
+    "#79B5E0": "#123A56",
+    "#C7C9CB": "#1C1D1E",
+    "#646464": "#1A1A1A",
+    "#D6D6D6": "#202020",
+    "#686868": "#1C1C1C",
+    "#9D2133": "#5A0F18",
+    "#C4D9A3": "#1B2319",
+    "#7EA7D5": "#12304A",
+    "#CCCCCC": "#1E1E1E",
+    "#FFD37F": "#9B580B",
+    "#FFB012": "#A65A00",
+    "#E2E0E2": "#242324",
+    "#DCDBDD": "#212021",
+    "#A0E8FF": "#1A3A56",
+    "#8D8E8D": "#1A1A1A",
+    "rgba(240,240,240,0)": "rgba(18,18,18,0)",
+};
+
+const lightModeColors = {
+    "#CCEDFF": "#EAF8FF",
+    "#FFFFFF": "#FFFFFF",
+    "#CCECFF": "#EAF7FF",
+    "#F4F7E8": "#FAFBF3",
+    "#F3F5E6": "#FAFAF2",
+    "#EDF0DF": "#F7F9F0",
+    "#E7EBD5": "#F5F7EB",
+    "#E1E6CC": "#F3F6E8",
+    "#E2E3E4": "#F9F9F9",
+    "#DEE3C5": "#F2F6E6",
+    "#D8DEBF": "#F0F5E3",
+    "#D2D9B6": "#EEF3E0",
+    "#CBD4AE": "#ECF2DD",
+    "#C7D1A7": "#EBF1DB",
+    "#FFE1A9": "#FFF3DC",
+    "#FED591": "#FFE9C8",
+    "#DEE3F5": "#F2F5FB",
+    "#9C9C9C": "#E6E6E6",
+    "#C4D9AD": "#EDF6E5",
+    "#CEE3C1": "#F0F8EB",
+    "#BBD4EE": "#E6F2FB",
+    "#97BDDB": "#D9ECF8",
+    "#9CCBEC": "#DAF0FB",
+    "#D9E0C8": "#F1F5E9",
+    "#C7C8B1": "#E8E9DD",
+    "#D2D7EB": "#EDF0FA",
+    "#FEFEFE": "#FFFFFF",
+    "#C8CDE1": "#E9ECF7",
+    "#E2F7D5": "#F5FDF0",
+    "#91D1EB": "#D6F0FA",
+    "#B2B2B2": "#E8E8E8",
+    "#E1E1E1": "#F7F7F7",
+    "#D2D3D4": "#ECEDED",
+    "#A89A77": "#E8E2D2",
+    "#BCAE8B": "#F0E8D6",
+    "#B8B8B8": "#EAEAEA",
+    "#79B5E0": "#D2EBFA",
+    "#C7C9CB": "#ECEDEE",
+    "#646464": "#DADADA",
+    "#D6D6D6": "#F2F2F2",
+    "#686868": "#DBDBDB",
+    "#9D2133": "#F5B8C0",
+    "#C4D9A3": "#EDF6E3",
+    "#7EA7D5": "#D6E6F7",
+    "#CCCCCC": "#F0F0F0",
+    "#FFD37F": "#FFEFD2",
+    "#FFB012": "#FFDCA8",
+    "#E2E0E2": "#F9F8F9",
+    "#DCDBDD": "#F7F6F7",
+    "#A0E8FF": "#E0F9FF",
+    "#8D8E8D": "#E8E8E8",
+    "rgba(240,240,240,0)": "rgba(255,255,255,0)"
+};
+
+
+
 const isBasemapDarkMode = (basemapMode) => {
     const prefersDarkMode = typeof window !== 'undefined'
         && window.matchMedia
         && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    return basemapMode === 'dark' ;
+    return basemapMode === 'dark';
 };
 
 const normalizeBasemapStyle = (styleData, basemapMode) => {
     const style = JSON.parse(JSON.stringify(styleData));
     const isDarkMode = isBasemapDarkMode(basemapMode);
-    const theme = isDarkMode ? BASEMAP_THEME.dark : BASEMAP_THEME.light;
+    const theme = isDarkMode ? darkModeColors : lightModeColors;
     const layers = Array.isArray(style.layers) ? style.layers : [];
 
     const matchesAny = (value, patterns) => patterns.some((pattern) => pattern.test(value));
@@ -71,66 +183,29 @@ const normalizeBasemapStyle = (styleData, basemapMode) => {
     const mapLayerPaint = (layer) => {
         const layerKey = `${layer.id || ''} ${layer['source-layer'] || ''}`.toLowerCase();
         const paint = layer.paint ? { ...layer.paint } : {};
-        const isWater = matchesAny(layerKey, [
-            /hydro/, /water/, /stream/, /river/, /drain/, /nullah/, /seawall/, /canal/, /marine/, /sea/, /ocean/
-        ]);
-        const isGreen = matchesAny(layerKey, [
-            /landcover/, /forest/, /grass/, /park/, /garden/, /tree/, /cultiv/, /wood/, /green/
-        ]);
-        const isRoad = matchesAny(layerKey, [
-            /road/, /expressway/, /flyover/, /highway/, /motorway/, /bridge/, /tunnel/, /path/, /walkway/, /ped/, /bike/, /rail/, /tram/, /mtr/, /station/, /transport/
-        ]);
-        const isStructure = matchesAny(layerKey, [
-            /building/, /structure/, /terminal/, /airport/, /port/, /pier/, /dock/, /facility/
-        ]);
-        const isRelief = matchesAny(layerKey, [
-            /contour/, /relief/, /slope/, /terrain/, /elevation/, /hill/
-        ]);
-        const isLabel = layer.type === 'symbol' || paint['text-color'] || paint['text-halo-color'];
+
 
         if ('fill-pattern' in paint) {
             delete paint['fill-pattern'];
         }
 
-        if (layer.type === 'background') {
-            paint['background-color'] = theme.background;
-        }
+        // if (layer.type === 'background') {
+        //     paint['background-color'] = theme.background;
+        // }
 
-        if (layer.type === 'fill' || 'fill-color' in paint || 'fill-outline-color' in paint) {
-            paint['fill-color'] = isWater
-                ? theme.waterFill
-                : isGreen
-                    ? theme.greenFill
-                    : isRoad
-                        ? theme.roadFill
-                        : isStructure
-                            ? theme.structureFill
-                            : isRelief
-                                ? theme.reliefFill
-                                : theme.surfaceFill;
-
+        if (layer.type === 'fill' && ('fill-color' in paint || 'fill-outline-color' in paint)) {
+            paint['fill-color'] = theme[paint['fill-color']] || paint['fill-color'];
             if ('fill-outline-color' in paint) {
-                paint['fill-outline-color'] = isWater ? theme.waterLine : theme.outline;
+                paint['fill-outline-color'] = theme[paint['fill-outline-color']] || paint['fill-outline-color'];
             }
         }
 
         if (layer.type === 'line' || 'line-color' in paint) {
-            paint['line-color'] = isWater
-                ? theme.waterLine
-                : isRoad
-                    ? theme.roadLine
-                    : isRelief
-                        ? theme.contourLine
-                        : theme.outline;
+            paint['line-color'] = theme[paint['line-color']] || paint['line-color'];
         }
 
         if ('icon-color' in paint) {
-            paint['icon-color'] = theme.symbol;
-        }
-
-        if (isLabel) {
-            paint['text-color'] = theme.text;
-            paint['text-halo-color'] = theme.halo;
+            paint['icon-color'] = theme[paint['icon-color']] || paint['icon-color'];
         }
 
         layer.paint = paint;
@@ -143,7 +218,7 @@ const normalizeBasemapStyle = (styleData, basemapMode) => {
             {
                 id: 'plain-basemap-background',
                 type: 'background',
-                paint: { 'background-color': theme.background }
+                paint: { 'background-color': theme['#FFFFFF'] }
             },
             ...layers
         ];
@@ -534,11 +609,11 @@ export default function Map() {
                         }
                         popupContent += '</div>';
 
-                            new maplibregl.Popup()
-                                .setLngLat(e.lngLat)
-                                .setHTML(popupContent)
-                                .addTo(map);
-                        }
+                        new maplibregl.Popup()
+                            .setLngLat(e.lngLat)
+                            .setHTML(popupContent)
+                            .addTo(map);
+                    }
                 });
 
                 map.on('mousemove', (e) => {
@@ -913,7 +988,7 @@ export default function Map() {
                     <div className="info legend map-info-legend" style={{
                         position: 'absolute', bottom: '20px', left: '10px',
                         background: 'white', padding: '5px 10px', border: '1px solid #ccc',
-                        zIndex: 10, color: (mapMessage.includes('Zoom in')||mapMessage.includes('縮放')) ? 'red' : 'green',
+                        zIndex: 10, color: (mapMessage.includes('Zoom in') || mapMessage.includes('縮放')) ? 'red' : 'green',
                         borderRadius: '4px', fontSize: '13px', pointerEvents: 'none',
                         boxShadow: '0 2px 5px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', gap: '6px'
                     }}>
@@ -1044,7 +1119,7 @@ export default function Map() {
                                 maxWidth: '500px', width: '90%', maxHeight: '90%', overflowY: 'auto',
                                 boxShadow: '0 4px 12px rgba(0,0,0,0.2)', position: 'relative'
                             }}>
-                                <button 
+                                <button
                                     onClick={() => setShowInfoOverlay(false)}
                                     style={{
                                         position: 'absolute', top: '15px', right: '15px',
@@ -1055,7 +1130,7 @@ export default function Map() {
                                     &times;
                                 </button>
                                 <h3 style={{ marginTop: 0, marginBottom: '15px', color: '#333' }}>{t('Map Information & Open Data')}</h3>
-                                
+
                                 <p style={{ fontSize: '14px', lineHeight: '1.5', color: '#444' }}>
                                     {t('Map open data intro')}
                                 </p>
@@ -1069,11 +1144,11 @@ export default function Map() {
                                 </ul>
 
                                 <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '20px 0' }} />
-                                
+
                                 <h4 style={{ margin: '0 0 10px 0', color: '#333' }}>{t('Disclaimer & Legal Notice')}</h4>
                                 <p style={{ fontSize: '13px', lineHeight: '1.5', color: '#666', textAlign: 'justify' }}>
-                                    {t('Map disclaimer paragraph 1')} <br/><br/>
-                                    <strong>{t('No Warranty of Accuracy:')}</strong> {t('Map disclaimer paragraph 2')}<br/><br/>
+                                    {t('Map disclaimer paragraph 1')} <br /><br />
+                                    <strong>{t('No Warranty of Accuracy:')}</strong> {t('Map disclaimer paragraph 2')}<br /><br />
                                     <strong>{t('Limitation of Liability:')}</strong> {t('Map disclaimer paragraph 3')}
                                 </p>
                                 <div style={{ marginTop: '14px' }}>
