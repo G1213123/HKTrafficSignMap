@@ -1633,12 +1633,14 @@ const escapeHtml = (value = '') => String(value)
 export const buildTrafficLightPreviewHtmlForRefname = (refname, options = {}) => {
     const previewSvg = buildTrafficLightTooltipSvgForRefname(refname, options);
     if (!previewSvg) return '';
+    const signalGroup = refname.substring(0, 1) === 'P' ? 'Primary' : refname.substring(0, 1) === 'S' ? 'Secondary' : '';
 
     return `
         <div style="display:flex; justify-content:center; margin: 0 0 10px 0;">
             <div style="width: 180px; max-width: 90%; height: 120px;">${previewSvg}</div>
         </div>
         <div style="display:flex; justify-content:center; margin: 0 0 8px 0; font-size: 12px; color: #4b5563;">REFNAME: ${escapeHtml(refname || '-')}</div>
+        <div style="display:flex; justify-content:center; margin: 0 0 8px 0; font-size: 12px; color: #4b5563;">${escapeHtml(signalGroup)}</div>
     `;
 };
 
