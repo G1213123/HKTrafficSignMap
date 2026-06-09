@@ -2,6 +2,7 @@ import { fetchWithRetry } from './mapUtils';
 import { layersConfig } from './layerConfig';
 import { renderLines } from './rendererLine';
 import { renderPoints } from './rendererPoint';
+import { renderRdMarkPoints } from './rendererRdMarkPoint';
 import { renderTsPolePt } from './rendererTsPolePt';
 import { renderTsAbvPt } from './rendererTsAbvPt';
 import { renderDsPolePt } from './rendererDsPolePt';
@@ -11,6 +12,7 @@ import { renderYlBoxPoly } from './rendererYlBoxPoly';
 
 // Renderer dispatch maps allow easy extension by typeName
 const pointRenderers = {
+    'csdi:DTAD_RD_MARK_SYM_PT': renderRdMarkPoints,
     'csdi:DTAD_TS_POLE_PT': renderTsPolePt,
     'csdi:DTAD_TS_ABV_PT': renderTsAbvPt,
     'csdi:DTAD_DS_POLE_PT': renderDsPolePt,
@@ -26,7 +28,7 @@ const polyRenderers = {
     'csdi:DTAD_YL_BOX_POLY': renderYlBoxPoly,
 };
 
-const getPointRenderer = (typeName) => pointRenderers[typeName] || renderPoints;
+const getPointRenderer = (typeName) => pointRenderers[typeName] || renderPoints; // Default to generic point renderer if no specific one is found
 const getAnnoRenderer = (typeName) => annoRenderers[typeName] || null;
 const getPolyRenderer = (typeName) => polyRenderers[typeName] || null;
 

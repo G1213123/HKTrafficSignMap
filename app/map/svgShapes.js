@@ -1,5 +1,23 @@
 // SVG shapes registry for traffic light symbols.
 // Each key is a REFNAME and value is an array of SVG shape strings (without outer <svg> wrapper).
+
+export const roadMarkShapes = {
+    // Example: S01 shapes (extracted from public/data/svgs/RM_S01.svg)
+    1048: [
+        '<line x1="0" y1="0" x2="1.125" y2="0" stroke="black" stroke-width="0.1" />',
+        '<line x1="2.125" y1="0" x2="3.25" y2="-0" stroke="black" stroke-width="0.1" />',
+        '<line x1="3.25" y1="-0" x2="3.25" y2="-1" stroke="black" stroke-width="0.1" />',
+        '<line x1="3.25" y1="-2" x2="3.25" y2="-3" stroke="black" stroke-width="0.1" />',
+        '<line x1="3.25" y1="-4" x2="3.25" y2="-5" stroke="black" stroke-width="0.1" />',
+        '<line x1="3.25" y1="-6" x2="3.25" y2="-7" stroke="black" stroke-width="0.1" />',
+        '<line x1="3.25" y1="-8" x2="3.25" y2="-9" stroke="black" stroke-width="0.1" />',
+        '<line x1="3.25" y1="-10" x2="3.25" y2="-11" stroke="black" stroke-width="0.1" />',
+        '<line x1="3.25" y1="-12" x2="3.25" y2="-13" stroke="black" stroke-width="0.1" />',
+        '<line x1="2.125" y1="-13" x2="3.25" y2="-13" stroke="black" stroke-width="0.1" />',
+        '<line x1="0" y1="-13" x2="1.125" y2="-13" stroke="black" stroke-width="0.1" />',
+    ]
+};
+
 export const trafficLightShapes = {
     // Example: S01 shapes (extracted from public/data/svgs/S01.svg)
     P01: [

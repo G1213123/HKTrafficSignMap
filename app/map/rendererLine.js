@@ -5,6 +5,7 @@ import { getMetersPerPixel, getThemeColor } from './mapUtils';
 import { attachMarkerPopup, buildPopupContent, createMarkerElement } from './markerDom';
 
 const ICON_LINE_LAYERS = new Set([
+    'csdi:DTAD_RD_MARK_LINE',
     'csdi:DTAD_RD_MARK_LINE_C',
     'csdi:DTAD_LV22_LINE',
     'csdi:DTAD_TG_PATH_LINE',

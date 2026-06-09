@@ -1,6 +1,6 @@
 {
   "name": "hk-traffic-sign-map-web",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "private": true,
   "scripts": {
     "update-version": "node scripts/update-version.js",

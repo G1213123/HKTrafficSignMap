@@ -149,7 +149,7 @@
         "letterHeight": 1600,
         "characterHeight": 2700,
         "verticalSpacing": 1000,
-                "length": 12150
+        "length": 12150
     },
     {
         "signNumber": "1033",
@@ -165,7 +165,7 @@
         "letterHeight": 1600,
         "characterHeight": 2700,
         "verticalSpacing": 1000,
-                "length": 12150
+        "length": 12150
     },
     {
         "signNumber": "1035",
@@ -238,7 +238,7 @@
         "signNumber": "1047 (n)",
         "letterHeight": 1600,
         "characterHeight": 2700,
-        "length": 12150
+        "length": 10000
     },
     {
         "signNumber": "1047 (w)",
@@ -281,7 +281,7 @@
         "signNumber": "1050",
         "letterHeight": 1600,
         "characterHeight": 2700,
-                "length": 12150
+        "length": 12150
     },
     {
         "signNumber": "1051",
@@ -676,7 +676,7 @@
         "signNumber": "1137",
         "letterHeight": 1600,
         "characterHeight": 2700,
-                "length": 18450
+        "length": 18450
     },
     {
         "signNumber": "1138",
@@ -702,7 +702,7 @@
             "x": 0,
             "y": -800
         },
-        "symbolSizeScale": 0.8
+        "symbolSizeScale": 0.9
     },
     {
         "signNumber": "1141",
@@ -728,7 +728,7 @@
         "signNumber": "1144",
         "letterHeight": 1600,
         "characterHeight": 2700,
-                "length": 15850
+        "length": 15850
     },
     {
         "signNumber": "1145",
@@ -788,7 +788,7 @@
         "signNumber": "1153",
         "letterHeight": 1600,
         "characterHeight": 2700,
-                "length": 6150
+        "length": 6150
     },
     {
         "signNumber": "1154",
@@ -798,7 +798,7 @@
         "maxCharacterHeight": 1750,
         "minNumeralHeight": 1600,
         "maxNumeralHeight": 2800,
-        "angleCorrection": -90,        
+        "angleCorrection": -90,
         "length": 4450
     },
     {
@@ -809,7 +809,7 @@
         "maxCharacterHeight": 1750,
         "minNumeralHeight": 1600,
         "maxNumeralHeight": 2800,
-        "angleCorrection": -90,        
+        "angleCorrection": -90,
         "length": 2200
     },
     {
@@ -820,7 +820,7 @@
         "maxCharacterHeight": 1750,
         "minNumeralHeight": 1600,
         "maxNumeralHeight": 2800,
-        "angleCorrection": -90,        
+        "angleCorrection": -90,
         "length": 2200
     },
     {
@@ -831,7 +831,7 @@
         "maxCharacterHeight": 1750,
         "minNumeralHeight": 1600,
         "maxNumeralHeight": 2800,
-        "angleCorrection": -90,        
+        "angleCorrection": -90,
         "length": 2200
     },
     {
@@ -842,7 +842,7 @@
         "maxCharacterHeight": 1750,
         "minNumeralHeight": 1600,
         "maxNumeralHeight": 2800,
-        "angleCorrection": -90,        
+        "angleCorrection": -90,
         "length": 2200
     },
     {
@@ -853,7 +853,7 @@
         "maxCharacterHeight": 1750,
         "minNumeralHeight": 1600,
         "maxNumeralHeight": 2800,
-        "angleCorrection": -90,        
+        "angleCorrection": -90,
         "length": 4450
     },
     {

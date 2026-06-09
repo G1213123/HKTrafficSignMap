@@ -276,7 +276,7 @@ export default function Home() {
                                 </a>
                                 <div className="version-display">
                                     <span className="version-number">
-                                        v1.4.2
+                                        v1.4.3
                                     </span>
                                     <span className="version-label">{t('Current Build')}</span>
                                 </div>
