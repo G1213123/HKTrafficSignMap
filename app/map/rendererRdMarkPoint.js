@@ -51,7 +51,7 @@ export const renderRdMarkPoints = (map, typeName, points, markersRef, activeLaye
             // 3. Triangle: base centered at (0,-2) width 0.25, tip at (0,-2.5) -> points: (-0.125,-2), (0.125,-2), (0,-2.5)
             const svgContent = `
             <svg viewBox="-0.5 -2.5 1 5" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%; display: block; overflow: visible;">
-                ${iconSvg.map(item => `${item}`).join('')}
+                ${iconSvg.map(shape => shape.replace(/"black"/g, `"${themeColor || '#22c55e'}"`)).map(item => `${item}`).join('')}
             </svg>
         `;
 
