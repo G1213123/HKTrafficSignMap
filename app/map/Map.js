@@ -18,41 +18,6 @@ const BASEMAP_LABEL_SOURCE_ID = 'geodata-basemap-labels';
 const BASEMAP_LABEL_LAYER_ID = 'geodata-basemap-labels-layer';
 const EPSG_2326_DEF = '+proj=tmerc +lat_0=22.3121333333333 +lon_0=114.178555555556 +k=1 +x_0=836694.05 +y_0=819069.8 +ellps=intl +towgs84=-162.619,-276.959,-161.764,-0.067753,2.243648,1.158828,-1.094246 +units=m +no_defs +type=crs';
 
-const BASEMAP_THEME = {
-    light: {
-        background: '#F7F5EF',
-        surfaceFill: '#EFE9DE',
-        waterFill: '#D7E6F1',
-        greenFill: '#E1E8D7',
-        roadFill: '#FDFBF7',
-        structureFill: '#DEE1E7',
-        reliefFill: '#E8E0D1',
-        outline: '#C9C1B6',
-        waterLine: '#84B4D4',
-        roadLine: '#A19B92',
-        contourLine: '#A08E73',
-        text: '#2E2A24',
-        halo: '#F7F5EF',
-        symbol: '#4F4A43'
-    },
-    dark: {
-        background: '#151A20',
-        surfaceFill: '#20262C',
-        waterFill: '#1D313F',
-        greenFill: '#233128',
-        roadFill: '#2B3036',
-        structureFill: '#2A2F36',
-        reliefFill: '#322C25',
-        outline: '#4A525A',
-        waterLine: '#5C87A8',
-        roadLine: '#8A9199',
-        contourLine: '#7D6E55',
-        text: '#E8E2D8',
-        halo: '#151A20',
-        symbol: '#D4D9DF'
-    }
-};
-
 const darkModeColors = {
     "#CCEDFF": "#2A4A5A",
     "#FFFFFF": "#121212",
@@ -68,8 +33,8 @@ const darkModeColors = {
     "#D2D9B6": "#1F251E",
     "#CBD4AE": "#1D241C",
     "#C7D1A7": "#1C231B",
-    "#FFE1A9": "#8A5A2A",
-    "#FED591": "#7F5026",
+    "#FFE1A9": "#121212",
+    "#FED591": "#121212",
     "#DEE3F5": "#232739",
     "#9C9C9C": "#2E2E2E",
     "#C4D9AD": "#1B231A",
@@ -84,7 +49,7 @@ const darkModeColors = {
     "#C8CDE1": "#1C1F2A",
     "#E2F7D5": "#242E21",
     "#91D1EB": "#16445A",
-    "#B2B2B2": "#1A1A1A",
+    "#B2B2B2": "#535353",
     "#E1E1E1": "#242424",
     "#D2D3D4": "#1F2020",
     "#A89A77": "#2E2619",
@@ -99,8 +64,8 @@ const darkModeColors = {
     "#C4D9A3": "#1B2319",
     "#7EA7D5": "#12304A",
     "#CCCCCC": "#1E1E1E",
-    "#FFD37F": "#9B580B",
-    "#FFB012": "#A65A00",
+    "#FFD37F": "#493017",
+    "#FFB012": "#472801",
     "#E2E0E2": "#242324",
     "#DCDBDD": "#212021",
     "#A0E8FF": "#1A3A56",
@@ -154,8 +119,8 @@ const lightModeColors = {
     "#C4D9A3": "#EDF6E3",
     "#7EA7D5": "#D6E6F7",
     "#CCCCCC": "#F0F0F0",
-    "#FFD37F": "#FFEFD2",
-    "#FFB012": "#FFDCA8",
+    "#FFD37F": "#121212",
+    "#FFB012": "#121212",
     "#E2E0E2": "#F9F8F9",
     "#DCDBDD": "#F7F6F7",
     "#A0E8FF": "#E0F9FF",
@@ -253,6 +218,7 @@ export default function Map() {
     const [openLegendSubmenu, setOpenLegendSubmenu] = useState(null);
     const [basemapStyleMode, setBasemapStyleMode] = useState(null);
     const [showBasemapSelector, setShowBasemapSelector] = useState(false);
+    const [showLabels, setShowLabels] = useState(true);
     const [showRawPoints, setShowRawPoints] = useState(false);
     const [geolocInProgress, setGeolocInProgress] = useState(false);
     const showRawPointsRef = useRef(showRawPoints);
@@ -334,7 +300,7 @@ export default function Map() {
         return proj4('EPSG:2326', 'WGS84', [x, y]);
     };
 
-    const syncBasemapLabels = useCallback((map) => {
+    const syncBasemapLabels = useCallback((map, forceShowLabels) => {
         if (!map) return;
 
         const lang = locale === 'zh' ? 'tc' : 'en';
@@ -349,6 +315,8 @@ export default function Map() {
             map.removeSource(BASEMAP_LABEL_SOURCE_ID);
         }
 
+        const shouldShow = forceShowLabels !== undefined ? forceShowLabels : showLabels;
+        if (!shouldShow) return;
         map.addSource(BASEMAP_LABEL_SOURCE_ID, {
             type: 'raster',
             tiles: labelTiles,
@@ -365,7 +333,7 @@ export default function Map() {
                 'raster-opacity': 1,
             },
         });
-    }, [locale]);
+    }, [locale, showLabels]);
 
     useEffect(() => {
         activeLayersRef.current = activeLayers;
@@ -415,6 +383,7 @@ export default function Map() {
                 if (typeof state.showRawPoints === 'boolean') setShowRawPoints(state.showRawPoints);
                 if (typeof state.elevationFilter === 'string') setElevationFilter(state.elevationFilter);
                 if (typeof state.basemapStyleMode === 'string') setBasemapStyleMode(state.basemapStyleMode);
+                if (typeof state.showLabels === 'boolean') setShowLabels(state.showLabels);
                 else setBasemapStyleMode('default');
             } else {
                 setBasemapStyleMode('default');
@@ -512,7 +481,9 @@ export default function Map() {
                 map.on('load', () => {
                     mapInstanceRef.current = map;
                     setMapLoaded(true);
-                    syncBasemapLabels(map);
+                    if (showLabels) {
+                        syncBasemapLabels(map);
+                    }
                     updateScaleIndicator();
                 });
 
@@ -636,8 +607,10 @@ export default function Map() {
 
     useEffect(() => {
         if (!mapLoaded || !mapInstanceRef.current) return;
-        syncBasemapLabels(mapInstanceRef.current);
-    }, [mapLoaded, syncBasemapLabels]);
+        if (showLabels) {
+            syncBasemapLabels(mapInstanceRef.current);
+        }
+    }, [mapLoaded, syncBasemapLabels, showLabels]);
 
     const fetchLayerData = useCallback((typeName) => {
         setPendingFetches(prev => prev + 1);
@@ -841,7 +814,8 @@ export default function Map() {
             activeLayers: Array.from(activeLayers),
             showRawPoints,
             elevationFilter,
-            basemapStyleMode
+            basemapStyleMode,
+            showLabels
         }));
 
         Object.values(layersConfig).flat().forEach(typeName => {
@@ -979,6 +953,22 @@ export default function Map() {
                                 ))}
                             </div>
                         )}
+                    </div>
+
+                    <div className="map-label-toggle-group">
+                        <select
+                            className="map-label-toggle"
+                            value={showLabels ? 'show' : 'hide'}
+                            onChange={(e) => {
+                                e.stopPropagation();
+                                const newValue = e.target.value === 'show';
+                                setShowLabels(newValue);
+                                syncBasemapLabels(mapInstanceRef.current, newValue);
+                            }}
+                        >
+                            <option value="show">{t('Show labels')}</option>
+                            <option value="hide">{t('Hide labels')}</option>
+                        </select>
                     </div>
                     {mapLoaded && (
                         <MeasureTool

@@ -145,7 +145,10 @@ export const renderRdMarkPoints = (map, typeName, points, markersRef, activeLaye
         }
 
         const previewHtml = typeName.includes('DTAD_RD_MARK_SYM') && iconUrl
-            ? `<div style="display:flex; justify-content:center; margin: 0 0 10px 0;"><img src="${iconUrl}" alt="${refname || ''}" style="width:75%; max-width:75%; height:auto; display:block;" /></div>`
+            ? `<div style="display:flex; justify-content:center; margin: 0 0 10px 0;"><img src="${iconUrl}" alt="${refname || ''}" style="width:75%; max-width:75%; height:auto; display:block;" /></div>
+            <div style="display:flex; justify-content:center; margin: 0 0 8px 0; font-size: 12px; color: #4b5563;">REFNAME: ${(refname || '-')}</div>
+            `
+            
             : '';
 
         attachMarkerPopup(el, map, coords, buildPopupContentWithPreview(typeName, feature.properties || {}, previewHtml));

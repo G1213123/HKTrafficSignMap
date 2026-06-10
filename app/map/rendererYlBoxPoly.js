@@ -304,6 +304,19 @@ const removePreviousMapLayers = (map, typeName) => {
     }
 };
 
+const unionPolygons = (polygons) => {
+    if (polygons.length === 0) return null;
+
+    const polygonsCollection = turf.featureCollection(polygons.map(poly => poly.geometry.type === 'Polygon' ? turf.polygon(poly.geometry.coordinates) : turf.multiPolygon(poly.geometry.coordinates)));
+    let union = polygonsCollection.features.length > 1 ? turf.union(polygonsCollection) : polygonsCollection.features[0];
+
+    return {
+        type: 'Feature',
+        geometry: union.geometry,
+        properties: {},
+    };
+};
+
 export const renderYlBoxPoly = (map, typeName, features, markersRef, activeLayersRef, showRawPoints = false, options = {}) => {
     // Use a single GeoJSON source named by `typeName` and three layers:
     // - polygon fill/outline
@@ -311,17 +324,25 @@ export const renderYlBoxPoly = (map, typeName, features, markersRef, activeLayer
     // - perpendicular hatch lines
     removePreviousMapLayers(map, typeName);
 
+    const processedFeatures = []
+
     const geojson = { type: 'FeatureCollection', features: [] };
     let sampleLat = 0;
 
     features.forEach(feature => {
-        const geom = buildCanvasGeometry(feature);
+        if (processedFeatures.includes(feature)) return;
+        processedFeatures.push(feature);
+
+        const sameFeatures = features.filter(f => f.properties?.FEATUREID === feature.properties?.FEATUREID).map(f => turf.feature(f.geometry));
+        const unioned = unionPolygons(sameFeatures);
+
+        const geom = buildCanvasGeometry(unioned);
         if (!geom) return;
 
         // add original polygon geometry (preserve properties)
         geojson.features.push({
             type: 'Feature',
-            geometry: feature.geometry,
+            geometry: unioned.geometry,
             properties: feature.properties || {},
         });
 
@@ -332,7 +353,7 @@ export const renderYlBoxPoly = (map, typeName, features, markersRef, activeLayer
         const latMeters = EARTH_METERS_PER_DEGREE;
         const toLonLat = ([mx, my]) => [origin[0] + mx / lonMeters, origin[1] + my / latMeters];
 
-        const polyFeature = { type: 'Feature', geometry: feature.geometry, properties: feature.properties || {} };
+        const polyFeature = { type: 'Feature', geometry: unioned.geometry, properties: feature.properties || {} };
 
         const addClippedLineFeatures = (s, e, hatchType) => {
             const a = toLonLat(s);

@@ -11,7 +11,7 @@ This is the markdown todo file for project map.
 - [ ] glowing edge on selected object and related description
 - [ ] timestamp versioning of traffic aids from csdi
 - [X] fix map label z-index
-- [ ] coloring of base map
+- [X] coloring of base map
 - [X] handle data TS ABV ANNO, TS YELLOW BOX
 - [X] Add map button to navbar
 - [X] data loading warning as banner in mobile

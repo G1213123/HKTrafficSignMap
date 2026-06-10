@@ -12,7 +12,11 @@
         "pattern": "- Local:.+(https?://.+)",
         "uriFormat": "%s",
         "webRoot": "${workspaceFolder}"
-      }
+      },
+      "skipFiles": [
+        "<node_internals>/**",
+        "${workspaceFolder}/node_modules/**"
+      ]
     },
     {
       "name": "Next.js: debug client-side",
@@ -28,7 +32,9 @@
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "envFile": "${workspaceFolder}/.env.local",
-      "args": ["public/data/svgs/TS_101.svg"]
+      "args": [
+        "public/data/svgs/TS_101.svg"
+      ]
     }
   ]
 }

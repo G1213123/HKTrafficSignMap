@@ -206,6 +206,8 @@ const dictionaries = {
     "Search location": '搜尋地點',
     "Search a place in Hong Kong": '搜尋香港地點',
     "Layer Legend": '圖層說明',
+    "Show labels": '顯示標籤',
+    "Hide labels": '隱藏標籤',
     "Road Marking Line": '道路標記線',
     "Tactile Pedestrian Path":"凹凸紋引導徑",
     "Default": '預設',
