@@ -9,6 +9,7 @@ import proj4 from 'proj4';
 import Navbar from '../components/Navbar';
 import MapSidebar from './MapSidebar';
 import MeasureTool from './MeasureTool';
+import ShareTool from './ShareTool';
 import { useI18n } from '../components/I18nProvider';
 import { loadLayerData, renderLayerData, applyVisibilityOverlays } from './layerDataManager';
 import { buildTrafficLightPreviewHtmlForRefname } from './svgShapes';
@@ -392,6 +393,30 @@ export default function Map() {
             setBasemapStyleMode('default');
         }
     }, []);
+
+    useEffect(() => {
+        if (!mapLoaded || !mapInstanceRef.current) return;
+
+        const params = new URLSearchParams(window.location.search);
+        const x = params.get('x');
+        const y = params.get('y');
+
+        if (x && y) {
+            try {
+                const [lng, lat] = convertEpsg2326ToWgs84(parseFloat(x), parseFloat(y));
+                const z = params.get('z');
+                const targetZoom = z ? Math.min(parseFloat(z), 22) : 18;
+
+                mapInstanceRef.current.flyTo({
+                    center: [lng, lat],
+                    zoom: targetZoom,
+                    essential: true
+                });
+            } catch (err) {
+                console.error('Failed to center map to EPSG:2326 coordinates:', err);
+            }
+        }
+    }, [mapLoaded]);
 
     // Initial Active layer config loading
     useEffect(() => {
@@ -879,7 +904,8 @@ export default function Map() {
 
     const changeElevationFilter = (value) => {
         setElevationFilter(value);
-    };
+    }
+
 
     return (
         <div className="map-root" style={{ width: '100%', height: '100%' }}>
@@ -970,11 +996,15 @@ export default function Map() {
                             <option value="hide">{t('Hide labels')}</option>
                         </select>
                     </div>
-                    {mapLoaded && (
-                        <MeasureTool
-                            map={mapInstanceRef.current}
-                        />
-                    )}
+
+                    <MeasureTool
+                        map={mapInstanceRef.current}
+                    />
+                    <ShareTool 
+                        map={mapInstanceRef.current}
+                        t={t}
+                    />
+
                     <div className="info legend map-info-legend" style={{
                         position: 'absolute', bottom: '20px', left: '10px',
                         background: 'white', padding: '5px 10px', border: '1px solid #ccc',
