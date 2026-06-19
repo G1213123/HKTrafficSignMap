@@ -1,0 +1,11 @@
+{
+  "auth": {
+    "providers": {
+      "emailPassword": true,
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "roadsignfactoryAuth",
+        "supportEmail": "g1213123@road-sign-factory.iam.gserviceaccount.com"
+      }
+    }
+  }
+}
