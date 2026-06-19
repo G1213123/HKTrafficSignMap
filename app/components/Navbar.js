@@ -1,20 +1,58 @@
- 'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useI18n } from './I18nProvider';
+import { signInWithGoogle, signOut, onAuthStateChanged } from '../../lib/firebase/auth';
+import { setCookie, deleteCookie } from 'cookies-next';
+
+function useUserSession() {
+  useEffect(() => {
+    return onAuthStateChanged(async (user) => {
+      if (user) {
+        const idToken = await user.getIdToken();
+        await setCookie('__session', idToken);
+      } else {
+        await deleteCookie('__session');
+      }
+      window.location.reload();
+    });
+  }, []);
+}
 
 export default function Navbar() {
+  useUserSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { t, locale, changeLocale } = useI18n();
   const pathname = usePathname();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    return onAuthStateChanged((u) => setUser(u));
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   const isActive = (path) => pathname === path ? 'active' : '';
+
+  const handleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (err) {
+      console.error('Sign in failed', err);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (err) {
+      console.error('Sign out failed', err);
+    }
+  };
 
   return (
     <nav className="navbar">
@@ -32,6 +70,17 @@ export default function Navbar() {
           <Link href="/sign-index" className={`nav-link ${isActive('/sign-index')}`} data-i18n="Index">{t('Index')}</Link>
           <Link href="/map" className={`nav-link ${isActive('/map')}`} data-i18n="Map">{t('Map')}</Link>
           <a href="https://github.com/G1213123/TrafficSign" className="nav-link" target="_blank" rel="noreferrer" data-i18n="GitHub">{t('GitHub')}</a>
+          
+          {user ? (
+            <button onClick={handleSignOut} className="nav-link" style={{ background: 'none', border: 'none', cursor: 'pointer', font: 'inherit' }}>
+              {t('Sign Out')}
+            </button>
+          ) : (
+            <button onClick={handleSignIn} className="nav-link" style={{ background: 'none', border: 'none', cursor: 'pointer', font: 'inherit' }}>
+              {t('Sign In')}
+            </button>
+          )}
+
           <a href="/design" className="nav-button" data-i18n="Launch App">{t('Launch App')}</a>
           <div className="nav-lang" aria-label="Language">
             <button id="lang-en" className={`lang-btn ${locale === 'en' ? 'active' : ''}`} aria-label="English" onClick={() => changeLocale('en')}>EN</button>

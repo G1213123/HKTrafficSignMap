@@ -60,3 +60,6 @@ ads.txt
 export/
 
 source
+
+# firebase
+firebaseConfig.js
