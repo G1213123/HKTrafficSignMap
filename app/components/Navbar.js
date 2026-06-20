@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useI18n } from './I18nProvider';
 import { signInWithGoogle, signOut, onAuthStateChanged } from '../../lib/firebase/auth';
 import { setCookie, deleteCookie } from 'cookies-next';
@@ -16,7 +16,7 @@ function useUserSession() {
       } else {
         await deleteCookie('__session');
       }
-      window.location.reload();
+      // Removed window.location.reload() to prevent infinite refresh loops
     });
   }, []);
 }
@@ -26,6 +26,7 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { t, locale, changeLocale } = useI18n();
   const pathname = usePathname();
+  const router = useRouter();
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -38,12 +39,8 @@ export default function Navbar() {
 
   const isActive = (path) => pathname === path ? 'active' : '';
 
-  const handleSignIn = async () => {
-    try {
-      await signInWithGoogle();
-    } catch (err) {
-      console.error('Sign in failed', err);
-    }
+  const handleSignIn = () => {
+    router.push('/auth');
   };
 
   const handleSignOut = async () => {
