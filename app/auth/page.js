@@ -86,6 +86,7 @@ export default function AuthPage() {
             {isForgotPassword ? (
               <button type="submit" className="auth-submit">{t('Send Reset Link')}</button>
             ) : (
+<<<<<<< HEAD
               <>
                 <button type="submit" className="auth-submit">{t('Sign In')}</button>
                 <button 
@@ -97,6 +98,9 @@ export default function AuthPage() {
                   {t('Create a Design without Signing In')}
                 </button>
               </>
+=======
+              <button type="submit" className="auth-submit">{t('Sign In')}</button>
+>>>>>>> 000c542 (feat: implement authentication pages with email/password and Google sign-in functionality. Added user registration form.)
             )}
           </div>
         </form>

@@ -26,7 +26,11 @@ export default function RegisterPage() {
     }
 
     try {
+<<<<<<< HEAD
       await createUserWithEmailAndPassword(email, password, username);
+=======
+      await createUserWithEmailAndPassword(email, password);
+>>>>>>> 000c542 (feat: implement authentication pages with email/password and Google sign-in functionality. Added user registration form.)
       setMessage({ type: 'success', text: t('Account created successfully! Please sign in.') });
       setTimeout(() => {
         router.push('/auth');
