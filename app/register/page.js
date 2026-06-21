@@ -26,7 +26,7 @@ export default function RegisterPage() {
     }
 
     try {
-      await createUserWithEmailAndPassword(email, password);
+      await createUserWithEmailAndPassword(email, password, username);
       setMessage({ type: 'success', text: t('Account created successfully! Please sign in.') });
       setTimeout(() => {
         router.push('/auth');

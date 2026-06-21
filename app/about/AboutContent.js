@@ -174,7 +174,7 @@ export default function AboutContent() {
                   <i className="fas fa-envelope"></i>
                   <span>{t('Contact Us')}</span>
                 </a>
-                <Link href="/design" className="btn btn-primary">
+                <Link href="/dashboard" className="btn btn-primary">
                   <i className="fas fa-play"></i>
                   <span>{t('Launch Application')}</span>
                 </Link>
