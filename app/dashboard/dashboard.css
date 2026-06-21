@@ -1,0 +1,325 @@
+.dashboard-layout {
+    display: flex;
+    height: 100vh;
+    background-color: #f4f7f6;
+    color: #333;
+}
+
+.dashboard-sidebar {
+    width: 260px;
+    background-color: #fff;
+    border-right: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.02);
+}
+
+/* ...existing code... */
+.back-home-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    transition: color 0.2s;
+}
+
+.back-home-link:hover {
+    color: var(--primary, #007bff);
+}
+
+.sidebar-user-info {
+/* ...existing code... */
+}
+
+/* Profile View Styles */
+.profile-view {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 2rem;
+    background-color: #f8f9fa;
+}
+
+.profile-card {
+    background: white;
+    padding: 3rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+}
+
+.profile-card h1 {
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+    color: #222;
+}
+
+.profile-info-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    text-align: left;
+    margin-bottom: 2.5rem;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.info-item label {
+    font-size: 0.85rem;
+    color: #888;
+    font-weight: 500;
+}
+
+.info-item span {
+    font-size: 1.1rem;
+    color: #333;
+    font-weight: 600;
+}
+
+.logout-btn {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background 0.2s;
+}
+
+.logout-btn:hover {
+    background-color: #c82333;
+}
+
+
+.user-avatar {
+    width: 45px;
+    height: 45px;
+    background-color: var(--primary, #007bff);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.user-name {
+    font-weight: 600;
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-email {
+    font-size: 0.8rem;
+    color: #888;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nav-tab {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0.8rem 1rem;
+    border: none;
+    background: transparent;
+    color: #666;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.nav-tab i {
+    width: 20px;
+    text-align: center;
+}
+
+.nav-tab:hover {
+    background-color: #f8f9fa;
+    color: var(--primary, #007bff);
+}
+
+.nav-tab.active {
+    background-color: #eef6ff;
+    color: var(--primary, #007bff);
+    font-weight: 600;
+}
+
+.dashboard-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    background: white;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.content-header h1 {
+    font-size: 1.5rem;
+    margin: 0;
+    color: #222;
+}
+
+.create-btn {
+    background-color: var(--primary, #007bff);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: opacity 0.2s;
+}
+
+.create-btn:hover {
+    opacity: 0.9;
+}
+
+.designs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.design-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+
+.design-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+.card-snapshot {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background-color: #eee;
+    overflow: hidden;
+}
+
+.card-snapshot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-info {
+    padding: 1rem;
+    flex: 1;
+}
+
+.design-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.design-date {
+    font-size: 0.8rem;
+    color: #999;
+    margin: 0;
+}
+
+.card-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 0.5rem 1rem 1rem;
+}
+
+.action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.action-btn.open {
+    color: var(--primary, #007bff);
+}
+
+.action-btn.delete {
+    color: #dc3545;
+}
+
+.action-btn:hover {
+    background: #f8f9fa;
+}
+
+.loading-state, .empty-state {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    color: #888;
+    gap: 1rem;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    color: #ccc;
+}

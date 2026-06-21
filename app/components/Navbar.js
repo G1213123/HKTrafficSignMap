@@ -30,7 +30,25 @@ export default function Navbar() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    return onAuthStateChanged((u) => setUser(u));
+    return onAuthStateChanged(async (u) => {
+      if (u) {
+        try {
+          const { doc, getDoc } = await import('firebase/firestore');
+          const { db } = await import('../../lib/firebase/clientApp');
+          const userDoc = await getDoc(doc(db, 'users', u.uid));
+          if (userDoc.exists()) {
+            setUser({ ...u, username: userDoc.data().username });
+          } else {
+            setUser(u);
+          }
+        } catch (e) {
+          console.error('Error fetching user metadata', e);
+          setUser(u);
+        }
+      } else {
+        setUser(null);
+      }
+    });
   }, []);
 
   const toggleMenu = () => {
@@ -78,7 +96,7 @@ export default function Navbar() {
             </button>
           )}
 
-          <a href="/design" className="nav-button" data-i18n="Launch App">{t('Launch App')}</a>
+          <a href="/dashboard" className="nav-button" data-i18n="Launch App">{t('Launch App')}</a>
           <div className="nav-lang" aria-label="Language">
             <button id="lang-en" className={`lang-btn ${locale === 'en' ? 'active' : ''}`} aria-label="English" onClick={() => changeLocale('en')}>EN</button>
             <button id="lang-zh" className={`lang-btn ${locale === 'zh' ? 'active' : ''}`} aria-label="中文" onClick={() => changeLocale('zh')}>中</button>
