@@ -86,7 +86,17 @@ export default function AuthPage() {
             {isForgotPassword ? (
               <button type="submit" className="auth-submit">{t('Send Reset Link')}</button>
             ) : (
-              <button type="submit" className="auth-submit">{t('Sign In')}</button>
+              <>
+                <button type="submit" className="auth-submit">{t('Sign In')}</button>
+                <button 
+                  type="button" 
+                  className="auth-submit auth-submit-secondary" 
+                  onClick={() => router.push('/design')}
+                  style={{ marginTop: '10px', backgroundColor: 'var(--secondary, #6c757d)' }}
+                >
+                  {t('Create a Design without Signing In')}
+                </button>
+              </>
             )}
           </div>
         </form>
