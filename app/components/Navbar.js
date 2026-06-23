@@ -57,8 +57,6 @@ export default function Navbar() {
 
   const isActive = (path) => pathname === path ? 'active' : '';
 
-<<<<<<< HEAD
-=======
   const handleSignIn = () => {
     router.push('/auth');
   };
@@ -70,7 +68,6 @@ export default function Navbar() {
       console.error('Sign out failed', err);
     }
   };
->>>>>>> 000c542 (feat: implement authentication pages with email/password and Google sign-in functionality. Added user registration form.)
 
   return (
     <nav className="navbar">
