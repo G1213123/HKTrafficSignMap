@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useI18n } from '../components/I18nProvider';
 import { onAuthStateChanged, signOut } from '../../lib/firebase/auth';
 import { db } from '../../lib/firebase/clientApp';
-import { collection, query, where, getDocs, orderBy, doc, getDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, orderBy, doc, getDoc, addDoc, updateDoc, deleteDoc, setDoc } from 'firebase/firestore';
 import './dashboard.css';
 
 export default function UserDashboard() {
@@ -38,16 +38,16 @@ export default function UserDashboard() {
       }
     });
     return () => unsubscribe();
-  }, [router]);
+  }, [router, activeTab]); // Added activeTab to dependencies to refetch when switching tabs
 
   const fetchUserDesigns = async (uid) => {
     setLoading(true);
     try {
-      const designsRef = collection(db, 'designs');
+      const collectionName = activeTab === 'design' ? 'designs' : 'deleted';
+      const designsRef = collection(db, collectionName);
       const q = query(
         designsRef, 
-        where('userId', '==', uid),
-        orderBy('updatedAt', 'desc')
+        where('userID', '==', uid),
       );
       const querySnapshot = await getDocs(q);
       const designsData = querySnapshot.docs.map(doc => ({
@@ -71,6 +71,94 @@ export default function UserDashboard() {
     }
   };
 
+  const handleMoveToTrash = async (designId) => {
+    if (!confirm(t('Are you sure you want to move this design to trash?'))) return;
+    
+    setLoading(true);
+    try {
+      const designRef = doc(db, 'designs', designId);
+      const deletedRef = doc(db, 'deleted', designId);
+      const designSnap = await getDoc(designRef);
+      
+      if (designSnap.exists()) {
+        const data = designSnap.data();
+        // Copy to deleted
+        await setDoc(deletedRef, data);
+        // Remove from designs
+        await deleteDoc(designRef);
+        
+        await fetchUserDesigns(user.uid);
+      }
+    } catch (err) {
+      console.error('Error moving to trash:', err);
+      alert(t('Failed to move design to trash'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRestore = async (designId) => {
+    if (!confirm(t('Are you sure you want to restore this design?'))) return;
+    
+    setLoading(true);
+    try {
+      const designRef = doc(db, 'deleted', designId);
+      const designSnap = await getDoc(designRef);
+      
+      if (designSnap.exists()) {
+        const data = designSnap.data();
+        // Copy back to designs
+        await setDoc(doc(db, 'designs', designId), data);
+        // Remove from deleted
+        await deleteDoc(designRef);
+        
+        await fetchUserDesigns(user.uid);
+      }
+    } catch (err) {
+      console.error('Error restoring design:', err);
+      alert(t('Failed to restore design'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePermanentDelete = async (designId) => {
+    if (!confirm(t('Are you sure you want to permanently delete this design? This action cannot be undone.'))) return;
+    
+    setLoading(true);
+    try {
+      await deleteDoc(doc(db, 'deleted', designId));
+      await fetchUserDesigns(user.uid);
+    } catch (err) {
+      console.error('Error permanently deleting design:', err);
+      alert(t('Failed to permanently delete design'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateNewDesign = async () => {
+    try {
+      const designData = {
+        title: t('Untitled Design'),
+        userID: user?.uid,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        data: '{}', // Initial empty design data
+        snapshot: '', 
+      };
+      
+      // Add a new document to the 'designs' collection
+      const docRef = await addDoc(collection(db, 'designs'), designData);
+      
+      // Redirect to the design page with the new fileId
+      router.push(`/design?userId=${user?.uid}&fileId=${docRef.id}`);
+    } catch (err) {
+      console.error('Error creating new design:', err);
+      alert(t('Failed to create new design'));
+    }
+  };
+
   return (
     <div className="dashboard-layout">
       <aside className="dashboard-sidebar">
@@ -88,24 +176,28 @@ export default function UserDashboard() {
           </div>
         </div>
 
-        {!showProfile && (
           <nav className="sidebar-nav">
             <button 
               className={`nav-tab ${activeTab === 'design' ? 'active' : ''}`} 
-              onClick={() => setActiveTab('design')}
+              onClick={() => {
+                setActiveTab('design');
+                setShowProfile(false);
+              }}
             >
               <i className="fas fa-layer-group"></i>
               {t('My Designs')}
             </button>
             <button 
               className={`nav-tab ${activeTab === 'trash' ? 'active' : ''}`} 
-              onClick={() => setActiveTab('trash')}
+              onClick={() => {
+                setActiveTab('trash');
+                setShowProfile(false);
+              }}
             >
               <i className="fas fa-trash"></i>
               {t('Trash')}
             </button>
           </nav>
-        )}
       </aside>
 
       <main className="dashboard-content">
@@ -137,9 +229,9 @@ export default function UserDashboard() {
             <header className="content-header">
               <h1>{activeTab === 'design' ? t('My Designs') : t('Trash')}</h1>
               <div className="header-actions">
-                <Link href="/design" className="create-btn">
+                <button className="create-btn" style={{ cursor: 'pointer' }} onClick={handleCreateNewDesign}>
                   <i className="fas fa-plus"></i> {t('New Design')}
-                </Link>
+                </button>
               </div>
             </header>
 
@@ -153,10 +245,19 @@ export default function UserDashboard() {
                 </div>
               ) : (
                 designs.map((design) => (
-                  <div key={design.id} className="design-card">
+                  <div 
+                    key={design.id} 
+                    className="design-card" 
+                    onClick={() => {
+                      if (activeTab === 'design') {
+                        router.push(`/design?userId=${user?.uid}&fileId=${design.id}`);
+                      }
+                    }}
+                    style={{ cursor: activeTab === 'design' ? 'pointer' : 'default' }}
+                  >
                     <div className="card-snapshot">
                       <img 
-                        src={design.snapshotUrl || '/images/placeholder-design.svg'} 
+                        src={design.snapshot || '/images/placeholder-design.svg'} 
                         alt={design.title} 
                       />
                     </div>
@@ -167,12 +268,38 @@ export default function UserDashboard() {
                       </p>
                     </div>
                     <div className="card-actions">
-                      <button className="action-btn open" onClick={() => router.push(`/design/${design.id}`)}>
-                        <i className="fas fa-external-link-alt"></i>
-                      </button>
-                      <button className="action-btn delete" onClick={() => {/* handle delete */}}>
-                        <i className="fas fa-trash"></i>
-                      </button>
+                      {activeTab === 'design' ? (
+                        <button className="action-btn delete" onClick={(e) => {
+                          e.stopPropagation();
+                          handleMoveToTrash(design.id);
+                        }}>
+                          <i className="fas fa-trash"></i>
+                        </button>
+                      ) : (
+                        <div className="trash-actions" style={{ display: 'flex', gap: '5px' }}>
+                          <button 
+                            className="action-btn restore" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRestore(design.id);
+                            }}
+                            title={t('Restore')}
+                          >
+                            <i className="fas fa-undo"></i>
+                          </button>
+                          <button 
+                            className="action-btn perma-delete" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handlePermanentDelete(design.id);
+                            }}
+                            title={t('Permanently Delete')}
+                            style={{ color: 'red' }}
+                          >
+                            <i className="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))
