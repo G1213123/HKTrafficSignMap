@@ -12,7 +12,7 @@
     display: flex;
     flex-direction: column;
     padding: 1.5rem;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.02);
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.02);
 }
 
 /* ...existing code... */
@@ -32,7 +32,12 @@
 }
 
 .sidebar-user-info {
-/* ...existing code... */
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 0.5rem;
 }
 
 /* Profile View Styles */
@@ -49,7 +54,7 @@
     background: white;
     padding: 3rem;
     border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     width: 100%;
     max-width: 500px;
     text-align: center;
@@ -242,7 +247,7 @@
 
 .design-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .card-snapshot {
@@ -308,7 +313,8 @@
     background: #f8f9fa;
 }
 
-.loading-state, .empty-state {
+.loading-state,
+.empty-state {
     grid-column: 1 / -1;
     display: flex;
     flex-direction: column;
