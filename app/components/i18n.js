@@ -202,6 +202,7 @@ const dictionaries = {
     'Map disclaimer paragraph 3': '使用本地圖即表示你知悉，本工具的開發者及維護者不會就任何錯誤、遺漏、錯述，或因依賴或使用本地圖而引致的任何直接、間接或衍生損失及損害承擔責任。本地圖不應作為關鍵導航、法律或施工決策的主要依據。',
     'Map Overlays': '地圖圖層',
     'Show raw points (debug)': '顯示原始點位（除錯）',
+    'Data Record Date': '資料記錄日期',
     "Searching...": '搜尋中…',
     "Search location": '搜尋地點',
     "Search a place in Hong Kong": '搜尋香港地點',

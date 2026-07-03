@@ -227,6 +227,8 @@ export default function Map() {
     const mvtBuildDateRef = useRef(mvtBuildDate);
     const [mvtManifestReady, setMvtManifestReady] = useState(false);
     const mvtManifestReadyRef = useRef(mvtManifestReady);
+    const [availableBuilds, setAvailableBuilds] = useState([]);
+    const [selectedBuildDate, setSelectedBuildDate] = useState('');
     const [elevationFilter, setElevationFilter] = useState('ALL');
     const elevationFilterRef = useRef(elevationFilter);
     const layerDataRef = useRef({});
@@ -363,8 +365,12 @@ export default function Map() {
             .then(res => (res.ok ? res.json() : null))
             .then(manifest => {
                 if (cancelled || !manifest) return;
-                const latestBuildDate = manifest.latestBuildDate || manifest.latestData?.buildDate || '';
+                const latestBuildDate = manifest.latestBuildDate || '';
                 setMvtBuildDate(latestBuildDate);
+                setSelectedBuildDate(latestBuildDate);
+                if (manifest.builds) {
+                    setAvailableBuilds(manifest.builds);
+                }
             })
             .catch(err => console.warn('Failed to load MVT manifest:', err))
             .finally(() => {
@@ -906,6 +912,23 @@ export default function Map() {
         setElevationFilter(value);
     }
 
+    const handleSelectBuild = (date) => {
+        setSelectedBuildDate(date);
+        setMvtBuildDate(date);
+        mvtBuildDateRef.current = date;
+        
+        // Clear existing layer data and markers to force reload
+        layerDataRef.current = {};
+        Object.values(markersRef.current).forEach(marker => marker.remove());
+        markersRef.current = {};
+        
+        // Trigger a map move or zoom to fire the 'moveend' event and reload data
+        if (mapInstanceRef.current) {
+            const center = mapInstanceRef.current.getCenter();
+            const zoom = mapInstanceRef.current.getZoom();
+            mapInstanceRef.current.jumpTo({ center, zoom });
+        }
+    };
 
     return (
         <div className="map-root" style={{ width: '100%', height: '100%' }}>
@@ -929,6 +952,9 @@ export default function Map() {
                     onRecenter={recenterHK}
                     onSearchLocationSelect={handleSearchLocationSelect}
                     panError={panError}
+                    availableBuilds={availableBuilds}
+                    selectedBuildDate={selectedBuildDate}
+                    onSelectBuild={handleSelectBuild}
                 />
 
                 <main className="map-main">

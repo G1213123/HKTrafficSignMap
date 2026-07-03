@@ -19,7 +19,10 @@ const MapSidebar = ({
     onPanTo,
     onRecenter,
     onSearchLocationSelect,
-    panError
+    panError,
+    availableBuilds,
+    selectedBuildDate,
+    onSelectBuild
 }) => {
     const { t } = useI18n();
     // Open by default on larger screens, closed on mobile
@@ -196,6 +199,21 @@ const MapSidebar = ({
             </div>
 
             <div className="sidebar-body">
+                    <section className="sidebar-section">
+                        <label>{t('Data Record Date')}</label>
+                        <select 
+                            value={selectedBuildDate} 
+                            onChange={(e) => onSelectBuild(e.target.value)}
+                            style={{ width: '100%', padding: '4px 8px', borderRadius: '4px', border: '1px solid #d0d7de' }}
+                        >
+                            {availableBuilds.map(build => (
+                                <option key={build.buildDate} value={build.buildDate}>
+                                    {build.buildDate}
+                                </option>
+                            ))}
+                        </select>
+                    </section>
+
                     <section className="sidebar-section sidebar-crs">
                         <label>{t('Search location')}</label>
                         <div style={{ position: 'relative' }}>
