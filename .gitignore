@@ -31,7 +31,8 @@ yarn-error.log
 dist/
 build/
 
-
+# Design files
+public/design/
 
 # IDE specific files
 .idea/

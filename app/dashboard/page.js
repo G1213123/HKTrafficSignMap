@@ -152,7 +152,7 @@ export default function UserDashboard() {
       const docRef = await addDoc(collection(db, 'designs'), designData);
       
       // Redirect to the design page with the new fileId
-      router.push(`/design?fileId=${docRef.id}`);
+      window.location.href = `/design/index.html?fileId=${docRef.id}`;
     } catch (err) {
       console.error('Error creating new design:', err);
       alert(t('Failed to create new design'));
@@ -250,7 +250,7 @@ export default function UserDashboard() {
                     className="design-card" 
                     onClick={() => {
                       if (activeTab === 'design') {
-                        router.push(`/design?fileId=${design.id}`);
+                        window.location.href = `/design/index.html?fileId=${design.id}`;
                       }
                     }}
                     style={{ cursor: activeTab === 'design' ? 'pointer' : 'default' }}
