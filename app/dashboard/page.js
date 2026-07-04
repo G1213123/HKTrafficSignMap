@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useI18n } from '../components/I18nProvider';
 import { onAuthStateChanged, signOut } from '../../lib/firebase/auth';
-import { db } from '../../lib/firebase/clientApp';
+import { db, firebaseConfig } from '../../lib/firebase/clientApp';
 import { collection, query, where, getDocs, orderBy, doc, getDoc, addDoc, updateDoc, deleteDoc, setDoc } from 'firebase/firestore';
 import './dashboard.css';
 
@@ -21,6 +21,12 @@ export default function UserDashboard() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(async (u) => {
       if (u) {
+        // 1. Get the latest secure JWT token from Firebase Auth
+        const token = await u.getIdToken();
+
+        // 2. Save token and config to localStorage so the subpage can see it
+        localStorage.setItem('fb_auth_token', token);
+        localStorage.setItem('fb_config', JSON.stringify(firebaseConfig));
         try {
           const userDoc = await getDoc(doc(db, 'users', u.uid));
           if (userDoc.exists()) {
@@ -34,6 +40,9 @@ export default function UserDashboard() {
         }
         fetchUserDesigns(u.uid);
       } else {
+        // Clear tokens if the user logs out
+        localStorage.removeItem('fb_auth_token');
+        localStorage.removeItem('fb_config');
         router.push('/auth');
       }
     });
@@ -46,7 +55,7 @@ export default function UserDashboard() {
       const collectionName = activeTab === 'design' ? 'designs' : 'deleted';
       const designsRef = collection(db, collectionName);
       const q = query(
-        designsRef, 
+        designsRef,
         where('userID', '==', uid),
       );
       const querySnapshot = await getDocs(q);
@@ -73,20 +82,20 @@ export default function UserDashboard() {
 
   const handleMoveToTrash = async (designId) => {
     if (!confirm(t('Are you sure you want to move this design to trash?'))) return;
-    
+
     setLoading(true);
     try {
       const designRef = doc(db, 'designs', designId);
       const deletedRef = doc(db, 'deleted', designId);
       const designSnap = await getDoc(designRef);
-      
+
       if (designSnap.exists()) {
         const data = designSnap.data();
         // Copy to deleted
         await setDoc(deletedRef, data);
         // Remove from designs
         await deleteDoc(designRef);
-        
+
         await fetchUserDesigns(user.uid);
       }
     } catch (err) {
@@ -99,19 +108,19 @@ export default function UserDashboard() {
 
   const handleRestore = async (designId) => {
     if (!confirm(t('Are you sure you want to restore this design?'))) return;
-    
+
     setLoading(true);
     try {
       const designRef = doc(db, 'deleted', designId);
       const designSnap = await getDoc(designRef);
-      
+
       if (designSnap.exists()) {
         const data = designSnap.data();
         // Copy back to designs
         await setDoc(doc(db, 'designs', designId), data);
         // Remove from deleted
         await deleteDoc(designRef);
-        
+
         await fetchUserDesigns(user.uid);
       }
     } catch (err) {
@@ -124,7 +133,7 @@ export default function UserDashboard() {
 
   const handlePermanentDelete = async (designId) => {
     if (!confirm(t('Are you sure you want to permanently delete this design? This action cannot be undone.'))) return;
-    
+
     setLoading(true);
     try {
       await deleteDoc(doc(db, 'deleted', designId));
@@ -145,12 +154,12 @@ export default function UserDashboard() {
         createdAt: new Date(),
         updatedAt: new Date(),
         data: '{}', // Initial empty design data
-        snapshot: '', 
+        snapshot: '',
       };
-      
+
       // Add a new document to the 'designs' collection
       const docRef = await addDoc(collection(db, 'designs'), designData);
-      
+
       // Redirect to the design page with the new fileId
       window.location.href = `/design/index.html?fileId=${docRef.id}`;
     } catch (err) {
@@ -176,28 +185,28 @@ export default function UserDashboard() {
           </div>
         </div>
 
-          <nav className="sidebar-nav">
-            <button 
-              className={`nav-tab ${activeTab === 'design' ? 'active' : ''}`} 
-              onClick={() => {
-                setActiveTab('design');
-                setShowProfile(false);
-              }}
-            >
-              <i className="fas fa-layer-group"></i>
-              {t('My Designs')}
-            </button>
-            <button 
-              className={`nav-tab ${activeTab === 'trash' ? 'active' : ''}`} 
-              onClick={() => {
-                setActiveTab('trash');
-                setShowProfile(false);
-              }}
-            >
-              <i className="fas fa-trash"></i>
-              {t('Trash')}
-            </button>
-          </nav>
+        <nav className="sidebar-nav">
+          <button
+            className={`nav-tab ${activeTab === 'design' ? 'active' : ''}`}
+            onClick={() => {
+              setActiveTab('design');
+              setShowProfile(false);
+            }}
+          >
+            <i className="fas fa-layer-group"></i>
+            {t('My Designs')}
+          </button>
+          <button
+            className={`nav-tab ${activeTab === 'trash' ? 'active' : ''}`}
+            onClick={() => {
+              setActiveTab('trash');
+              setShowProfile(false);
+            }}
+          >
+            <i className="fas fa-trash"></i>
+            {t('Trash')}
+          </button>
+        </nav>
       </aside>
 
       <main className="dashboard-content">
@@ -245,9 +254,9 @@ export default function UserDashboard() {
                 </div>
               ) : (
                 designs.map((design) => (
-                  <div 
-                    key={design.id} 
-                    className="design-card" 
+                  <div
+                    key={design.id}
+                    className="design-card"
                     onClick={() => {
                       if (activeTab === 'design') {
                         window.location.href = `/design/index.html?fileId=${design.id}`;
@@ -256,9 +265,9 @@ export default function UserDashboard() {
                     style={{ cursor: activeTab === 'design' ? 'pointer' : 'default' }}
                   >
                     <div className="card-snapshot">
-                      <img 
-                        src={design.snapshot || '/images/placeholder-design.svg'} 
-                        alt={design.title} 
+                      <img
+                        src={design.snapshot || '/images/placeholder-design.svg'}
+                        alt={design.title}
                       />
                     </div>
                     <div className="card-info">
@@ -277,8 +286,8 @@ export default function UserDashboard() {
                         </button>
                       ) : (
                         <div className="trash-actions" style={{ display: 'flex', gap: '5px' }}>
-                          <button 
-                            className="action-btn restore" 
+                          <button
+                            className="action-btn restore"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleRestore(design.id);
@@ -287,8 +296,8 @@ export default function UserDashboard() {
                           >
                             <i className="fas fa-undo"></i>
                           </button>
-                          <button 
-                            className="action-btn perma-delete" 
+                          <button
+                            className="action-btn perma-delete"
                             onClick={(e) => {
                               e.stopPropagation();
                               handlePermanentDelete(design.id);
