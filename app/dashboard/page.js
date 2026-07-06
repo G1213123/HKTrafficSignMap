@@ -264,7 +264,7 @@ export default function UserDashboard() {
                   >
                     <div className="card-snapshot">
                       <img
-                        src={design.snapshot || '/images/placeholder-design.svg'}
+                        src={design.snapshot || '/api/proxy?asset=%2Fdata%2Fsvgs%2FTS_115.svg'}
                         alt={design.title}
                       />
                     </div>
