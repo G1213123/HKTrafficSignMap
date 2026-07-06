@@ -6,20 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useI18n } from './I18nProvider';
 import { signInWithGoogle, signOut, onAuthStateChanged } from '../../lib/firebase/auth';
 import { setCookie, deleteCookie } from 'cookies-next';
-
-function useUserSession() {
-  useEffect(() => {
-    return onAuthStateChanged(async (user) => {
-      if (user) {
-        const idToken = await user.getIdToken();
-        await setCookie('__session', idToken);
-      } else {
-        await deleteCookie('__session');
-      }
-      // Removed window.location.reload() to prevent infinite refresh loops
-    });
-  }, []);
-}
+import { useUserSession } from './header';
 
 export default function Navbar() {
   useUserSession();

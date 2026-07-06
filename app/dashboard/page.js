@@ -25,7 +25,6 @@ export default function UserDashboard() {
         const token = await u.getIdToken();
 
         // 2. Save token and config to localStorage so the subpage can see it
-        localStorage.setItem('fb_auth_token', token);
         localStorage.setItem('fb_config', JSON.stringify(firebaseConfig));
         try {
           const userDoc = await getDoc(doc(db, 'users', u.uid));
@@ -41,7 +40,6 @@ export default function UserDashboard() {
         fetchUserDesigns(u.uid);
       } else {
         // Clear tokens if the user logs out
-        localStorage.removeItem('fb_auth_token');
         localStorage.removeItem('fb_config');
         router.push('/auth');
       }
