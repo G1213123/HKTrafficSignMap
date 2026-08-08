@@ -516,13 +516,38 @@ async function main() {
   };
 
   const buildMetadataPath = path.join(buildRootDir, 'metadata.json');
-  const manifest = {
+  await fs.writeFile(buildMetadataPath, `${JSON.stringify(metadata, null, 2)}\n`, 'utf8');
+
+  let manifest = {
     generatedAt: metadata.generatedAt,
     latestBuildDate: buildDate,
     latestData: metadata,
+    builds: [],
   };
 
-  await fs.writeFile(buildMetadataPath, `${JSON.stringify(metadata, null, 2)}\n`, 'utf8');
+  try {
+    const manifestText = await fs.readFile(MVT_MANIFEST_PATH, 'utf8');
+    const existingManifest = JSON.parse(manifestText);
+    if (Array.isArray(existingManifest.builds)) {
+      manifest.builds = existingManifest.builds;
+    }
+  } catch (e) {
+    // Manifest doesn't exist or is invalid, start with empty builds list
+  }
+
+  // Add current build to history
+  manifest.builds.push({
+    buildDate: buildDate,
+    generatedAt: metadata.generatedAt,
+    outputRoot: metadata.outputRoot,
+    layers: metadata.layers,
+  });
+
+  // Keep history manageable (e.g., last 10 builds)
+  if (manifest.builds.length > 10) {
+    manifest.builds = manifest.builds.slice(-10);
+  }
+
   await fs.writeFile(MVT_MANIFEST_PATH, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
   console.log(`Metadata written: ${path.relative(BASE_DIR, buildMetadataPath)}`);
   console.log(`Manifest written: ${path.relative(BASE_DIR, MVT_MANIFEST_PATH)}`);

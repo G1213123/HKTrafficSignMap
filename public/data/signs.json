@@ -3785,11 +3785,6 @@
     "mtime": 1773791756419
   },
   {
-    "filename": "TS_960.svg",
-    "signNumber": "960",
-    "mtime": 1773791756517
-  },
-  {
     "filename": "TS_2101.svg",
     "signNumber": "2101",
     "mtime": 1773791478164
@@ -4880,33 +4875,18 @@
     "mtime": 1773791525747
   },
   {
-    "filename": "TS_2701-L.svg",
-    "signNumber": "2701",
-    "mtime": 1773791526010
-  },
-  {
     "filename": "TS_2701-LANTAU.svg",
-    "signNumber": "2701",
+    "signNumber": "2701-LANTAU",
     "mtime": 1773579023540
   },
   {
-    "filename": "TS_2701-N.svg",
-    "signNumber": "2701",
-    "mtime": 1773791525984
-  },
-  {
     "filename": "TS_2701-NT.svg",
-    "signNumber": "2701",
+    "signNumber": "2701-NT",
     "mtime": 1773579023476
   },
   {
-    "filename": "TS_2701-U.svg",
-    "signNumber": "2701",
-    "mtime": 1773791525957
-  },
-  {
     "filename": "TS_2701-URBAN.svg",
-    "signNumber": "2701",
+    "signNumber": "2701-URBAN",
     "mtime": 1773579023415
   },
   {
