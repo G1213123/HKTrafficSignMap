@@ -1,28 +1,30 @@
 {
   "version": "0.2.0",
   "configurations": [
-    {
-      "name": "Next.js: debug server-side",
-      "type": "node-terminal",
+{
+      "name": "Next.js: debug with Chrome",
+      "type": "node",
       "request": "launch",
-      "command": "npm run dev -- --inspect",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "restart": true,
+      "skipFiles": ["<node_internals>/**"],
       "serverReadyAction": {
-        "action": "debugWithChrome",
-        "killOnServerStop": false,
-        "pattern": "- Local:.+(https?://.+)",
+        "pattern": "Local:\\s+(https?://.+)|ready - started server on .*",
         "uriFormat": "%s",
-        "webRoot": "${workspaceFolder}"
-      },
-      "skipFiles": [
-        "<node_internals>/**",
-        "${workspaceFolder}/node_modules/**"
-      ]
+        "action": "debugWithChrome"
+      }
     },
     {
-      "name": "Next.js: debug client-side",
+      "name": "Next.js: Chrome (manual)",
       "type": "chrome",
       "request": "launch",
-      "url": "http://localhost:3000"
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}",
+      "sourceMaps": true,
+      "skipFiles": ["${workspaceFolder}/node_modules/**", "<node_internals>/**"]
     },
     {
       "name": "Generate Signed URL (Google Cloud Storage)",

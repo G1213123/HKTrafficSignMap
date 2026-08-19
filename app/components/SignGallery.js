@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useI18n } from './I18nProvider';
+import { normalizeDownloadAsset } from './signDownloadUtils';
 
 // Lazy image component that only sets src when in view
 const LazyImage = ({ src, alt, className, style }) => {
@@ -134,9 +135,7 @@ export default function SignGallery() {
   const handleDownload = (format) => {
     if (!selectedSign) return;
 
-    const imageUrl = selectedSign.imageUrl;
-    // Proxy URL to bypass CORS and force download behavior
-    const proxyUrl = `/api/proxy?url=${encodeURIComponent(imageUrl)}`;
+    const proxyUrl = normalizeDownloadAsset(selectedSign.imageUrl, selectedSign.filename, window.location.origin);
 
     // Remove query params for filename
     const filename = `TrafficSign_${selectedSign.signNumber}`;
