@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useI18n } from './I18nProvider';
+import { normalizeDownloadAsset } from './signDownloadUtils';
 
 // Lazy image component that only sets src when in view
 const LazyImage = ({ src, alt, className, style }) => {
@@ -111,7 +112,7 @@ export default function SignGallery() {
   // Handle deep linking for Road Markings once loaded
   // useEffect(() => {
   //   if (!roadMarkings || roadMarkings.length === 0) return;
-    
+
   //   if (typeof window !== 'undefined' && !selectedSign) {
   //     const params = new URLSearchParams(window.location.search);
   //     const signParam = params.get('sign');
@@ -134,9 +135,7 @@ export default function SignGallery() {
   const handleDownload = (format) => {
     if (!selectedSign) return;
 
-    const imageUrl = selectedSign.imageUrl;
-    // Proxy URL to bypass CORS and force download behavior
-    const proxyUrl = `/api/proxy?url=${encodeURIComponent(imageUrl)}`;
+    const proxyUrl = normalizeDownloadAsset(selectedSign.imageUrl, selectedSign.filename, window.location.origin);
 
     // Remove query params for filename
     const filename = `TrafficSign_${selectedSign.signNumber}`;
@@ -186,10 +185,10 @@ export default function SignGallery() {
     const navigateToItem = (item, type) => {
       // Clear search to show the sign if it was hidden
       if (searchQuery) setSearchQuery('');
-      
+
       const id = item.filename || item.id;
       setHighlightedSignId(id);
-      
+
       // If we need to switch views
       if (type === 'signs' && viewMode !== 'signs') {
         setViewMode('signs');
@@ -242,7 +241,7 @@ export default function SignGallery() {
     ])
       .then(([signsData, descriptionsData, supersededData, rmData, dimData]) => {
         const supSet = new Set((supersededData || []).map(String));
-        
+
         // Process Dimensions into a map
         const dimMap = (dimData || []).reduce((acc, item) => {
           if (item && item.signNumber) {
@@ -269,7 +268,7 @@ export default function SignGallery() {
           description: descriptionsData[rm.signNumber] || descriptionsData[rm.id] || rm.description || '',
           superseded: supSet.has(String(rm.signNumber || rm.id))
         }));
-        
+
         setSigns(processedSigns);
         setRoadMarkings(processedRm);
         setSupersededSet(supSet);
@@ -288,9 +287,9 @@ export default function SignGallery() {
               // Try switching to road markings to see if it exists there
               const targetRm = processedRm.find(rm => String(rm.signNumber || rm.id) === signParam);
               if (targetRm) {
-                 setViewMode('roadmarking');
-                 setSelectedSign(targetRm);
-                 document.body.style.overflow = 'hidden';
+                setViewMode('roadmarking');
+                setSelectedSign(targetRm);
+                document.body.style.overflow = 'hidden';
               }
             }
           }
@@ -399,20 +398,20 @@ export default function SignGallery() {
                0  0 -1  0  1
               -1  1 -1  0  1
               -1  0  0  0  1
-               0  0  0  1  0" 
+               0  0  0  1  0"
             />
           </filter>
         </defs>
       </svg>
       <div className="gallery-header" ref={headerRef}>
-          <div className="view-tabs">
-            <button className={`view-tab ${viewMode === 'signs' ? 'active' : ''}`} onClick={() => setViewMode('signs')}>
-              {t('Traffic Signs')} <span className="tab-count">{filteredSigns.length}</span>
-            </button>
-            <button className={`view-tab ${viewMode === 'roadmarking' ? 'active' : ''}`} onClick={() => setViewMode('roadmarking')}>
-              {t('Road Marking')} <span className="tab-count">{roadMarkings ? roadMarkings.length : 0}</span>
-            </button>
-          </div>
+        <div className="view-tabs">
+          <button className={`view-tab ${viewMode === 'signs' ? 'active' : ''}`} onClick={() => setViewMode('signs')}>
+            {t('Traffic Signs')} <span className="tab-count">{filteredSigns.length}</span>
+          </button>
+          <button className={`view-tab ${viewMode === 'roadmarking' ? 'active' : ''}`} onClick={() => setViewMode('roadmarking')}>
+            {t('Road Marking')} <span className="tab-count">{roadMarkings ? roadMarkings.length : 0}</span>
+          </button>
+        </div>
         <div className="gallery-controls">
 
           <div className="gallery-controls-group">
@@ -451,7 +450,7 @@ export default function SignGallery() {
             {t('Shuffle 🔀')}
           </button>
         </div>
-        
+
       </div>
 
       <div className="gallery-container">
@@ -578,97 +577,97 @@ export default function SignGallery() {
                         {(() => {
                           const dimensions = rmDimensions[selectedSign.signNumber];
                           const keys = Object.keys(dimensions).filter(key => !['signNumber', 'filename', 'mtime', 'id', 'angleCorrection', 'offset'].includes(key));
-                          
+
                           // Convert to array of entries for easier processing
                           const entries = keys.map(key => ({ key, value: dimensions[key] }));
-                          
+
                           // Helper for title case
                           const toTitleCase = (str) => str.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase()).trim();
 
                           // Process entries to group min/max pairs (and module)
                           const processedItems = [];
                           const processedKeys = new Set();
-                          
+
                           // Sort entries to make sure we process deterministically (e.g. min/max order shouldn't matter for pairing)
                           // But we want to preserve developer intent if possible.
                           // Let's just iterate through the entries.
 
                           // Wait, my previous logic was inside .map so it wouldn't work as expected if I want to skip handled keys.
                           // I need to iterate and push to a result array.
-                          
+
                           for (const entry of entries) {
                             if (processedKeys.has(entry.key)) continue;
 
                             // Special case: module
                             if (entry.key.toLowerCase().includes('module') && Array.isArray(entry.value) && entry.value.length >= 2) {
-                                processedItems.push({
-                                    type: 'single',
-                                    label: toTitleCase(entry.key),
-                                    value: `${entry.value[0]} ${t('Mark')}, ${entry.value[1]} ${t('Gap')}`
-                                });
-                                processedKeys.add(entry.key);
-                                continue;
+                              processedItems.push({
+                                type: 'single',
+                                label: toTitleCase(entry.key),
+                                value: `${entry.value[0]} ${t('Mark')}, ${entry.value[1]} ${t('Gap')}`
+                              });
+                              processedKeys.add(entry.key);
+                              continue;
                             }
 
                             // Check for min/max pairs
                             let pairKey = null;
                             if (entry.key.startsWith('min')) {
-                                const base = entry.key.substring(3);
-                                pairKey = `max${base}`;
+                              const base = entry.key.substring(3);
+                              pairKey = `max${base}`;
                             } else if (entry.key.startsWith('max')) {
-                                const base = entry.key.substring(3);
-                                pairKey = `min${base}`;
+                              const base = entry.key.substring(3);
+                              pairKey = `min${base}`;
                             }
 
                             if (pairKey) {
-                                const pairEntry = entries.find(e => e.key === pairKey);
-                                if (pairEntry && !processedKeys.has(pairKey)) {
-                                    // Found a pair!
-                                    // Determine order: typically min then max
-                                    const isMin = entry.key.startsWith('min');
-                                    const item1 = isMin ? entry : pairEntry;
-                                    const item2 = isMin ? pairEntry : entry;
-                                    
-                                    processedItems.push({
-                                        type: 'pair',
-                                        items: [
-                                            { label: toTitleCase(item1.key), value: item1.value },
-                                            { label: toTitleCase(item2.key), value: item2.value }
-                                        ]
-                                    });
-                                    processedKeys.add(entry.key);
-                                    processedKeys.add(pairEntry.key);
-                                    continue;
-                                }
+                              const pairEntry = entries.find(e => e.key === pairKey);
+                              if (pairEntry && !processedKeys.has(pairKey)) {
+                                // Found a pair!
+                                // Determine order: typically min then max
+                                const isMin = entry.key.startsWith('min');
+                                const item1 = isMin ? entry : pairEntry;
+                                const item2 = isMin ? pairEntry : entry;
+
+                                processedItems.push({
+                                  type: 'pair',
+                                  items: [
+                                    { label: toTitleCase(item1.key), value: item1.value },
+                                    { label: toTitleCase(item2.key), value: item2.value }
+                                  ]
+                                });
+                                processedKeys.add(entry.key);
+                                processedKeys.add(pairEntry.key);
+                                continue;
+                              }
                             }
 
                             // Default single row
                             processedItems.push({
-                                type: 'single',
-                                label: toTitleCase(entry.key),
-                                value: Array.isArray(entry.value) ? entry.value.join(', ') : String(entry.value)
+                              type: 'single',
+                              label: toTitleCase(entry.key),
+                              value: Array.isArray(entry.value) ? entry.value.join(', ') : String(entry.value)
                             });
                             processedKeys.add(entry.key);
                           }
 
                           return processedItems.map((item, index) => {
                             if (item.type === 'pair') {
-                                return (
-                                    <div key={index} className="dimension-row" style={{ display: 'flex', gap: '16px' }}>
-                                        {item.items.map((subItem, idx) => (
-                                            <div key={idx} className="dimension-pair-item" style={{ flex: 1, display: 'flex', gap: '4px' }}>
-                                                <span className="dim-label" style={{ fontWeight: 'bold' }}>{t(subItem.label)}:</span>
-                                                <span>{subItem.value}</span>
-                                            </div>
-                                        ))}
+                              return (
+                                <div key={index} className="dimension-row" style={{ display: 'flex', gap: '16px' }}>
+                                  {item.items.map((subItem, idx) => (
+                                    <div key={idx} className="dimension-pair-item" style={{ flex: 1, display: 'flex', gap: '4px' }}>
+                                      <span className="dim-label" style={{ fontWeight: 'bold' }}>{t(subItem.label)}:</span>
+                                      <span>{subItem.value}</span>
                                     </div>
-                                );
+                                  ))}
+                                </div>
+                              );
                             }
                             return (
-                                <div key={index} className="dimension-row" style={{ display: 'flex', gap: '4px' }}>
-                                    <span className="dim-label" style={{ fontWeight: 'bold' }}>{t(item.label)}:</span>
-                                    <span>{item.value}</span>
-                                </div>
+                              <div key={index} className="dimension-row" style={{ display: 'flex', gap: '4px' }}>
+                                <span className="dim-label" style={{ fontWeight: 'bold' }}>{t(item.label)}:</span>
+                                <span>{item.value}</span>
+                              </div>
                             );
                           });
                         })()}
@@ -709,8 +708,8 @@ export default function SignGallery() {
       )}
 
       {/* Back to top button - visible mainly on mobile */}
-      <button 
-        className="back-to-top" 
+      <button
+        className="back-to-top"
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         aria-label="Back to top"
       >
