@@ -40,7 +40,7 @@ export default function Footer() {
               <li><Link href="/sign-index" data-i18n="Sign Index">{t('Sign Index')}</Link></li>
               <li><Link href="/posters" data-i18n="Posters">{t('Posters')}</Link></li>
               <li><a href="https://github.com/G1213123/TrafficSign" target="_blank" rel="noreferrer" data-i18n="GitHub">{t('GitHub')}</a></li>
-              <li><a href="/dashboard" className="footer-launch-link" data-i18n="Launch App">{t('Launch App')}</a></li>
+              <li><a href="/design" className="footer-launch-link" data-i18n="Launch App">{t('Launch App')}</a></li>
             </ul>
           </div>
 

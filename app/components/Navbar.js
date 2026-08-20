@@ -61,7 +61,7 @@ export default function Navbar() {
           <Link href="/sign-index" className={`nav-link ${isActive('/sign-index')}`} data-i18n="Index">{t('Index')}</Link>
           <Link href="/map" className={`nav-link ${isActive('/map')}`} data-i18n="Map">{t('Map')}</Link>
           <a href="https://github.com/G1213123/TrafficSign" className="nav-link" target="_blank" rel="noreferrer" data-i18n="GitHub">{t('GitHub')}</a>
-          <a href="/dashboard" className="nav-button" data-i18n="Launch App">{t('Launch App')}</a>
+          <a href="/design" className="nav-button" data-i18n="Launch App">{t('Launch App')}</a>
           <div className="nav-lang" aria-label="Language">
             <button id="lang-en" className={`lang-btn ${locale === 'en' ? 'active' : ''}`} aria-label="English" onClick={() => changeLocale('en')}>EN</button>
             <button id="lang-zh" className={`lang-btn ${locale === 'zh' ? 'active' : ''}`} aria-label="中文" onClick={() => changeLocale('zh')}>中</button>

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
+import { redirect } from 'next/navigation';
 import Head from 'next/head';
 import Link from 'next/link';
 import Navbar from './components/Navbar';
@@ -270,7 +271,7 @@ export default function Home() {
                         <div className="hero-buttons">
                             {/* Primary Action Group (Launch + Version) */}
                             <div className="primary-action-group">
-                                <a href="/dashboard" className="btn btn-primary">
+                                <a href="/design" className="btn btn-primary">
                                     <i className="fas fa-play"></i>
                                     {t('Launch Application')}
                                 </a>
@@ -317,7 +318,7 @@ export default function Home() {
                             </div>
                             
                             <div className="preview-overlay">
-                                <a href="/dashboard" className="preview-launch">
+                                <a href="/design" className="preview-launch">
                                     <i className="fas fa-external-link-alt"></i>
                                     {t('Open Full App')}
                                 </a>
