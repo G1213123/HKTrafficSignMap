@@ -12,7 +12,7 @@ import { useI18n } from './components/I18nProvider';
 export default function Home() {
     const { t } = useI18n();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [showMigrationNotice, setShowMigrationNotice] = useState(true);
+    const [showMigrationNotice, setShowMigrationNotice] = useState(false);
     const [activeRouletteIndex, setActiveRouletteIndex] = useState(-1);
     const [resumeDelay, setResumeDelay] = useState(0);
 
@@ -189,16 +189,17 @@ export default function Home() {
         // Migration Notice Logic
         const currentDomain = window.location.hostname;
         const newDomain = 'roadsignfactory.hk';
+        setShowMigrationNotice(false); // Default to false for now, can be toggled based on domain check
 
         // Only show if not on new domain (mock logic for localhost)
-        if (currentDomain === newDomain) {
-            setShowMigrationNotice(false);
-        } else {
-            const timer = setTimeout(() => {
-                setShowMigrationNotice(false);
-            }, 5000);
-            return () => clearTimeout(timer);
-        }
+        // if (currentDomain === newDomain) {
+        //     setShowMigrationNotice(false);
+        // } else {
+        //     const timer = setTimeout(() => {
+        //         setShowMigrationNotice(false);
+        //     }, 5000);
+        //     return () => clearTimeout(timer);
+        // }
     }, []);
 
     return (

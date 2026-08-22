@@ -36,7 +36,7 @@ export default function ShareTool({ map, t }) {
     };
 
     return (
-        <div className="map-tool-container share-tool-container">
+        <div className="map-tool-container">
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '5px', background: '#fff', padding: '4px', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.2)', border: '1px solid #ddd' }}>
 
                 <button
