@@ -5,8 +5,8 @@ import { BorderTypeScheme, BorderColorScheme, BorderFrameWidth, BorderPaddingWid
 import { DividerMargin } from '../templates/dividerTemplate.js';
 import { vertexToPath } from './path.js';
 import { CanvasGlobals } from '../../components/canvas/canvas.js';
-import { drawDivider } from './divider.js';
-import { Path, Group } from 'fabric';
+import { drawDivider, DividerObject } from './divider.js';
+import { Path, Group, Rect, Polygon } from 'fabric';
 
 const getCanvas = () => CanvasGlobals.canvas; // Access the global canvas object
 const canvasObject = CanvasGlobals.canvasObject // Get all objects on the canvas
@@ -181,7 +181,8 @@ const BorderUtilities = {
         maxY = Math.max(maxY, vertex.y);
       });
     });
-    let borderWidth = maxX - minX;
+    const flagCornerCorrection = borderType.includes('flag') ? (1.5 * xHeight / 4) * (1 - Math.cos(Math.PI / 6)) : 0;
+    let borderWidth = maxX - minX - flagCornerCorrection;
     let borderHeight = maxY - minY;
 
     if (borderWidth > 2000 || borderHeight > 2000) {
@@ -1004,11 +1005,49 @@ class BorderGroup extends BaseGroup {
     // If there are no dividers, the entire inner area is one compartment
     if (this.VDivider.length === 0 && this.HDivider.length === 0) {
       this.compartmentBboxes.push({ ...this.inbbox });
+      this.refreshDividerCompartmentBoxes();
       return;
     }
 
     // Calculate compartments based on dividers
     this.calculateCompartments();
+    this.refreshDividerCompartmentBoxes();
+  }
+
+  refreshDividerCompartmentBoxes() {
+    if (!Array.isArray(this.compartmentBboxes) || this.compartmentBboxes.length === 0) {
+      return;
+    }
+
+    const columns = [...new Set(this.compartmentBboxes.map(box => box.left))].sort((a, b) => a - b);
+    const rows = [...new Set(this.compartmentBboxes.map(box => box.top))].sort((a, b) => a - b);
+
+    const findBoxByIndices = (columnIndex, rowIndex) => {
+      if (columnIndex == null || rowIndex == null) {
+        return null;
+      }
+
+      const left = columns[columnIndex];
+      const top = rows[rowIndex];
+      if (left == null || top == null) {
+        return null;
+      }
+
+      return this.compartmentBboxes.find(box => box.left === left && box.top === top) || null;
+    };
+
+    [...(this.VDivider || []), ...(this.HDivider || [])].forEach(divider => {
+      if (!divider || divider.functionalType === 'HLine') {
+        return;
+      }
+
+      const compartmentBox = findBoxByIndices(divider.compartmentColumn, divider.compartmentRow) || divider.compartmentBox || null;
+      if (compartmentBox && divider.compartmentColumn != null && divider.compartmentRow != null) {
+        divider.compartmentBox = compartmentBox;
+      }
+
+      divider.compartmentBox = compartmentBox || divider.compartmentBox || this.inbbox;
+    });
   }
 
   // Calculate compartments created by dividers
@@ -1110,7 +1149,7 @@ class BorderGroup extends BaseGroup {
         top: this.inbbox.bottom - d.height - DividerMargin[d.functionalType]['bottom'] * d.xHeight / 4,
       });
       const minLeft = this.inbbox.left + (this.frame) * d.xHeight / 4;
-      const maxLeft = this.inbbox.right - (this.frame) * d.xHeight / 4 - d.width;
+      const maxLeft =  this.inbbox.right - (this.frame) * d.xHeight / 4 - d.width;
       const clampedLeft = maxLeft >= minLeft ? Math.min(Math.max(initialLeft, minLeft), maxLeft) : minLeft;
       d.set({ left: clampedLeft });
       d.lockMovementY = true;
@@ -1129,7 +1168,7 @@ class BorderGroup extends BaseGroup {
         );
         d.replaceBasePolygon(res, false);
         d.set({
-          left: this.inbbox.left + DividerMargin[d.functionalType]['left'] * d.xHeight / 4
+          left:  this.inbbox.left + DividerMargin[d.functionalType]['left'] * d.xHeight / 4
         });
         const minTop = this.inbbox.top + (this.frame) * d.xHeight / 4;
         const maxTop = this.inbbox.bottom - (this.frame) * d.xHeight / 4 - d.height;

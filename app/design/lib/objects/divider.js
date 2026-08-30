@@ -48,6 +48,9 @@ class DividerObject extends BaseGroup {
 
         this.leftValue = options.left;
         this.aboveValue = options.top;
+        this.compartmentBox = options.compartmentBox || null;
+        this.compartmentColumn = options.compartmentColumn ?? null;
+        this.compartmentRow = options.compartmentRow ?? null;
 
         // Legacy properties for compatibility with existing create functions
         this.leftObjects = options.leftObjects || [];
@@ -71,6 +74,19 @@ class DividerObject extends BaseGroup {
     initialize() {
         if (this.dividerType !== 'HLine') {
             // placeholder meta, resize later in border assignWidthToDivider; if compartmentBox supplied, seed with its center
+            const hasExplicitLeft = Number.isFinite(Number(this.leftValue));
+            const hasExplicitTop = Number.isFinite(Number(this.aboveValue));
+            if (this.compartmentBox && !(hasExplicitLeft && hasExplicitTop)) {
+                const centerX = (this.compartmentBox.left + this.compartmentBox.right) / 2;
+                const centerY = (this.compartmentBox.top + this.compartmentBox.bottom) / 2;
+                if (this.dividerType === 'HDivider' || this.dividerType === 'HLine') {
+                    this.leftValue = centerX;
+                    this.aboveValue = centerY;
+                } else {
+                    this.leftValue = centerX;
+                    this.aboveValue = centerY;
+                }
+            }
             let objectBBox = { left: this.leftValue, top: this.aboveValue,  };
             let objectSize = { width: 0, height: 0 };
             const basePoly = drawDivider(this.xHeight, this.color, objectBBox, objectSize, this.dividerType);
