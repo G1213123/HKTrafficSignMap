@@ -342,40 +342,53 @@ body {
     height: 100%;
 }
 
-.map-measure-container {
-    position: absolute;
-    top: 205px;
-    right: 10px;
-    left: auto;
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    align-items: flex-end;
-}
-
-.map-tool-container {
+.map-right-toolbar {
     position: absolute;
     right: 10px;
     top: 155px;
     z-index: 10;
     display: flex;
     flex-direction: column;
+    align-items: flex-end;
     gap: 10px;
+}
+
+.map-tool-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.map-measure-container {
+    position: relative;
+    z-index: 9;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: flex-end;
 }
 
 .share-tool-container {
     bottom: 60px; /* Positioned above the measure tool if measure is at 20px */
 }
 
+.map-share-btn,
+.map-export-btn {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.map-share-btn:hover,
+.map-export-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.18);
+}
+
 @media (max-width: 768px) {
-    .map-tool-container {
-        right: 5px;
-        bottom: 10px;
+    .map-right-toolbar {
+        top: 180px;
     }
-    .share-tool-container {
-        bottom: 50px;
-    }
+
 }
 
 .map-legend-panel {
@@ -801,13 +814,6 @@ body {
         justify-content: center;
         text-align: center;
         z-index: 15 !important;
-    }
-
-    .map-measure-container {
-        top: 185px;
-        right: 10px;
-        left: auto;
-        align-items: flex-end;
     }
 
     .map-info-legend .spinner {

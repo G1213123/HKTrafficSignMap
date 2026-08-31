@@ -1023,13 +1023,15 @@ export default function Map() {
                         </select>
                     </div>
 
-                    <MeasureTool
-                        map={mapInstanceRef.current}
-                    />
-                    <ShareTool 
-                        map={mapInstanceRef.current}
-                        t={t}
-                    />
+                    <div className="map-right-toolbar">
+                        <ShareTool
+                            map={mapInstanceRef.current}
+                            t={t}
+                        />
+                        <MeasureTool
+                            map={mapInstanceRef.current}
+                        />
+                    </div>
 
                     <div className="info legend map-info-legend" style={{
                         position: 'absolute', bottom: '20px', left: '10px',

@@ -1,11 +1,59 @@
 'use client';
 
 import React from 'react';
+import html2canvas from 'html2canvas';
 import proj4 from 'proj4';
 import './map.css';
 
 export default function ShareTool({ map, t }) {
     if (!map) return null;
+
+    const exportCurrentMapToImage = async () => {
+        const exportTarget = map.getContainer()?.closest('.map-main') || document.querySelector('.map-main');
+        if (!exportTarget) return;
+
+        try {
+            map.triggerRepaint();
+            await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+            const canvas = await html2canvas(exportTarget, {
+                backgroundColor: '#ffffff',
+                useCORS: true,
+                allowTaint: true,
+                scale: Math.min(window.devicePixelRatio || 2, 3),
+                logging: false,
+                width: exportTarget.clientWidth,
+                height: exportTarget.clientHeight,
+                scrollX: 0,
+                scrollY: 0,
+                ignoreElements: (element) => {
+                    if (!element || typeof element.matches !== 'function') return false;
+                    return (
+                        element.matches('.map-right-toolbar') ||
+                        element.matches('.map-tool-container') ||
+                        element.matches('.map-measure-container') ||
+                        element.matches('.map-legend-toggle-group') ||
+                        element.matches('.map-basemap-toggle-group') ||
+                        element.matches('.map-label-toggle-group') ||
+                        element.matches('.map-geolocate-btn') ||
+                        element.matches('.map-info-btn') ||
+                        element.matches('.map-info-legend') ||
+                        element.matches('.coord-show-box') ||
+                        element.matches('.map-legend-stack') ||
+                        element.matches('.map-basemap-selector-panel')
+                    );
+                },
+            });
+
+            const link = document.createElement('a');
+            link.download = `hk-traffic-map-${new Date().toISOString().slice(0, 10)}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        } catch (error) {
+            console.error('Failed to export map image:', error);
+            alert(t('Failed to export map image'));
+        }
+    };
 
     const copyCurrentLocationToUrl = () => {
         const center = map.getCenter();
@@ -53,6 +101,22 @@ export default function ShareTool({ map, t }) {
                     }}
                 >
                     🔗
+                </button>
+
+                <button
+                    type="button"
+                    className="map-export-btn"
+                    onClick={exportCurrentMapToImage}
+                    title={t('Export current map as image')}
+                    aria-label={t('Export current map as image')}
+                    style={{
+                        width: '32px', height: '32px', padding: 0, background: 'white',
+                        color: 'black', border: '1px solid #ccc',
+                        borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                    }}
+                >
+                    ⤓
                 </button>
             </div>
         </div>
