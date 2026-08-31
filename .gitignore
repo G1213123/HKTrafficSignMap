@@ -55,7 +55,7 @@ road-sign-factory-*.json
 credentials/*.json
 
 # AdSense
-ads.txt
+# ads.txt
 
 # Exports
 export/
