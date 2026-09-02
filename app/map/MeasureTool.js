@@ -31,7 +31,16 @@ const MeasureTool = ({ map }) => {
                 id: 'measure-lines',
                 type: 'line',
                 source: 'measure-geojson',
-                filter: ['==', '$type', 'LineString'],
+                filter: ['all', ['==', '$type', 'LineString'], ['!=', 'closing', true]],
+                layout: { 'line-cap': 'round', 'line-join': 'round' },
+                paint: { 'line-color': '#000', 'line-width': 2.5, 'line-dasharray': [2, 2] }
+            });
+
+            map.addLayer({
+                id: 'measure-closing-line',
+                type: 'line',
+                source: 'measure-geojson',
+                filter: ['all', ['==', '$type', 'LineString'], ['==', 'closing', true]],
                 layout: { 'line-cap': 'round', 'line-join': 'round' },
                 paint: { 'line-color': '#000', 'line-width': 2.5, 'line-dasharray': [2, 2] }
             });
@@ -73,6 +82,10 @@ const MeasureTool = ({ map }) => {
                 if (drawPoints.length >= 3) {
                     const polyCoords = [...drawPoints, drawPoints[0]];
                     features.push(turf.polygon([polyCoords]));
+                    features.push({
+                        ...turf.lineString([drawPoints[drawPoints.length - 1], drawPoints[0]]),
+                        properties: { closing: true }
+                    });
                 }
                 features.push(turf.lineString(drawPoints));
             }
@@ -150,14 +163,30 @@ const MeasureTool = ({ map }) => {
             updateMeasureSource(newPoints);
         };
 
+        const onDoubleClick = (e) => {
+            if (!isMeasuringRef.current) return;
+            e.preventDefault();
+
+            const finishedPoints = pointsRef.current.length > 1
+                ? pointsRef.current.slice(0, -1)
+                : pointsRef.current;
+            setPoints(finishedPoints);
+            setMeasurement(calculateMeasurements(finishedPoints));
+            updateMeasureSource(finishedPoints);
+            setIsMeasuring(false);
+            map.getCanvas().style.cursor = '';
+        };
+
         map.on('click', onClick);
         map.on('mousemove', onMouseMove);
         map.on('contextmenu', onContextMenu);
+        map.on('dblclick', onDoubleClick);
 
         return () => {
             map.off('click', onClick);
             map.off('mousemove', onMouseMove);
             map.off('contextmenu', onContextMenu);
+            map.off('dblclick', onDoubleClick);
             if (!isMeasuringRef.current && map) {
                 map.getCanvas().style.cursor = '';
             }

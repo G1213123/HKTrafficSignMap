@@ -120,6 +120,7 @@ export const applyVisibilityOverlays = ({ map, activeLayers, markersRef }) => {
     Object.values(layersConfig).flat().forEach(typeName => {
         const isActive = activeLayers.has(typeName);
         const rawOutlineLayerId = `${typeName}-raw-perimeter-layer`;
+        const rawLineLayerId = `${typeName}-raw-line-layer`;
         const iconLineSourceId = `${typeName}-icon-lines`;
         const iconLineLayerId = `${typeName}-icon-lines-layer`;
         const iconLineLayerLinesId = `${iconLineLayerId}-lines`;
@@ -135,6 +136,9 @@ export const applyVisibilityOverlays = ({ map, activeLayers, markersRef }) => {
                     map.setLayoutProperty(l.id, 'visibility', isActive ? 'visible' : 'none');
                 }
                 if (l.id === rawOutlineLayerId) {
+                    map.setLayoutProperty(l.id, 'visibility', isActive ? 'visible' : 'none');
+                }
+                if (l.id === rawLineLayerId) {
                     map.setLayoutProperty(l.id, 'visibility', isActive ? 'visible' : 'none');
                 }
                 if (l.id === iconLineLayerId || l.id === iconLineLayerLinesId) {

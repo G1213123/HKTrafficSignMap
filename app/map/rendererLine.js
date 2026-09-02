@@ -16,6 +16,31 @@ const ICON_LINE_LAYERS = new Set([
 
 const normalizeBearing = bearing => ((bearing % 360) + 360) % 360;
 
+const getRawLineSourceId = (typeName) => `${typeName}-raw-line`;
+const getRawLineLayerId = (typeName) => `${typeName}-raw-line-layer`;
+const rawLineDataBySource = new WeakMap();
+
+export const setRawLineSelection = (map, typeName, featureId, visible) => {
+    const source = map.getSource(getRawLineSourceId(typeName));
+    if (!source) return;
+
+    const data = rawLineDataBySource.get(source);
+    if (!data || !Array.isArray(data.features)) return;
+
+    const selectedData = {
+        ...data,
+        features: data.features.map(feature => ({
+            ...feature,
+            properties: {
+                ...feature.properties,
+                _rawSelected: visible && feature.properties?._rawFeatureId === featureId
+            }
+        }))
+    };
+    rawLineDataBySource.set(source, selectedData);
+    source.setData(selectedData);
+};
+
 /**
  * Convert MM coordinates in iconGeometry to lat/lng coordinates
  * Rotates and positions geometry relative to a point with a given bearing
@@ -305,14 +330,27 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
     const isIconLineLayer = ICON_LINE_LAYERS.has(typeName);
     const nonPoints = [];
     const iconLineFeatures = [];
+    const rawLineFeatures = [];
     const themeColor = getThemeColor(options.isDarkMode === true);
 
     if (!markersRef.current) markersRef.current = {};
     if (!markersRef.current[typeName]) markersRef.current[typeName] = [];
 
-    features.forEach(f => {
+    features.forEach((f, featureIndex) => {
+        const rawFeatureId = `${typeName}-${featureIndex}`;
         const linetype = f.properties && (f.properties.LINETYPE || f.properties.REFNAME); // ROADCLASS is fallback for older data without LINETYPE
         const isLineGeometry = f.geometry.type === 'LineString' || f.geometry.type === 'MultiLineString';
+
+        if (isLineGeometry) {
+            rawLineFeatures.push({
+                ...f,
+                properties: {
+                    ...(f.properties || {}),
+                    _rawFeatureId: rawFeatureId,
+                    _rawSelected: false
+                }
+            });
+        }
 
         if (isLineGeometry) {
             const linetype = f.properties && (f.properties.LINETYPE || f.properties.REFNAME);
@@ -337,6 +375,7 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
 
                     const clonedFeature = JSON.parse(JSON.stringify(f));
                     clonedFeature.properties._styleIndex = idx; // Differentiate identical linestyles
+                    clonedFeature.properties._rawFeatureId = rawFeatureId;
 
                     if (styleConfig.dashMeters && Array.isArray(styleConfig.dashMeters)) {
                         let newLines = [];
@@ -381,14 +420,50 @@ export const renderLines = (map, typeName, features, markersRef = { current: {} 
                     nonPoints.push(clonedFeature);
                 });
             } else {
-                nonPoints.push(f);
+                nonPoints.push({
+                    ...f,
+                    properties: {
+                        ...(f.properties || {}),
+                        _rawFeatureId: rawFeatureId
+                    }
+                });
             }
         } else {
-            nonPoints.push(f);
+            nonPoints.push(isLineGeometry ? {
+                ...f,
+                properties: {
+                    ...(f.properties || {}),
+                    _rawFeatureId: rawFeatureId
+                }
+            } : f);
         }
     });
 
     renderIconLineMarkers(map, typeName, iconLineFeatures, markersRef, themeColor);
+
+    const rawLineSourceId = getRawLineSourceId(typeName);
+    const rawLineLayerId = getRawLineLayerId(typeName);
+    const rawLineSourceData = { type: 'FeatureCollection', features: rawLineFeatures };
+    if (!map.getSource(rawLineSourceId)) {
+        map.addSource(rawLineSourceId, { type: 'geojson', data: rawLineSourceData });
+    } else {
+        map.getSource(rawLineSourceId).setData(rawLineSourceData);
+    }
+    rawLineDataBySource.set(map.getSource(rawLineSourceId), rawLineSourceData);
+    if (!map.getLayer(rawLineLayerId)) {
+        map.addLayer({
+            id: rawLineLayerId,
+            type: 'line',
+            source: rawLineSourceId,
+            filter: ['==', ['get', '_rawSelected'], true],
+            paint: {
+                'line-color': '#ff0000',
+                'line-width': 2,
+                'line-opacity': 1
+            },
+            layout: { 'line-join': 'round', 'line-cap': 'round' }
+        });
+    }
 
     // 1. Install GeoJSON Source for Paths and Polygons
     const sourceData = { type: 'FeatureCollection', features: nonPoints };

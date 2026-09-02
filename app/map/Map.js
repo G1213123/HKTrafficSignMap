@@ -13,6 +13,7 @@ import ShareTool from './ShareTool';
 import { useI18n } from '../components/I18nProvider';
 import { loadLayerData, renderLayerData, applyVisibilityOverlays } from './layerDataManager';
 import { buildTrafficLightPreviewHtmlForRefname } from './svgShapes';
+import { setRawLineSelection } from './rendererLine';
 import './map.css';
 
 const BASEMAP_LABEL_SOURCE_ID = 'geodata-basemap-labels';
@@ -594,7 +595,16 @@ export default function Map() {
                     const clickableGeoJSONs = features.filter(f => f.source && f.source.startsWith('csdi:'));
 
                     if (clickableGeoJSONs.length > 0) {
-                        const feature = clickableGeoJSONs[0];
+                        const feature = clickableGeoJSONs.find(f => !f.source.includes('-raw-') && !f.source.includes('-icon-lines')) || clickableGeoJSONs[0];
+                        if (feature.geometry?.type === 'LineString' || feature.geometry?.type === 'MultiLineString') {
+                            const typeName = feature.source;
+                            setRawLineSelection(
+                                map,
+                                typeName,
+                                feature.properties?._rawFeatureId,
+                                showRawPointsRef.current
+                            );
+                        }
                         let label = feature.source.replace('csdi:DTAD_', '').replace(/_/g, ' ');
                         const refname = feature.properties?.REFNAME;
                         const previewHtml = feature.source.includes('TRAFFIC_LIGHT') && refname
