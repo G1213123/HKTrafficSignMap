@@ -147,6 +147,12 @@ const normalizeBasemapStyle = (styleData, basemapMode) => {
 
     const matchesAny = (value, patterns) => patterns.some((pattern) => pattern.test(value));
 
+    const remapThemeColors = (value) => {
+        if (Array.isArray(value)) return value.map(remapThemeColors);
+        if (typeof value === 'string') return theme[value] || value;
+        return value;
+    };
+
     const mapLayerPaint = (layer) => {
         const layerKey = `${layer.id || ''} ${layer['source-layer'] || ''}`.toLowerCase();
         const paint = layer.paint ? { ...layer.paint } : {};
@@ -160,20 +166,11 @@ const normalizeBasemapStyle = (styleData, basemapMode) => {
         //     paint['background-color'] = theme.background;
         // }
 
-        if (layer.type === 'fill' && ('fill-color' in paint || 'fill-outline-color' in paint)) {
-            paint['fill-color'] = theme[paint['fill-color']] || paint['fill-color'];
-            if ('fill-outline-color' in paint) {
-                paint['fill-outline-color'] = theme[paint['fill-outline-color']] || paint['fill-outline-color'];
+        Object.keys(paint).forEach(property => {
+            if (property.endsWith('-color') || property === 'fill-pattern') {
+                paint[property] = remapThemeColors(paint[property]);
             }
-        }
-
-        if (layer.type === 'line' || 'line-color' in paint) {
-            paint['line-color'] = theme[paint['line-color']] || paint['line-color'];
-        }
-
-        if ('icon-color' in paint) {
-            paint['icon-color'] = theme[paint['icon-color']] || paint['icon-color'];
-        }
+        });
 
         layer.paint = paint;
     };

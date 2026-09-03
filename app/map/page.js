@@ -3,8 +3,20 @@ import MapPageClient from './MapPageClient';
 export const metadata = {
   title: 'Traffic Aids Map',
   description:
-    'Interactive Traffic Aids Map for Hong Kong. Explore poles, traffic lights, signs, and vector tiles with a searchable map interface.',
+    '香港路牌及馬路標誌地圖，查閱交通標誌、道路標誌、交通燈、標誌柱及其他交通設施位置。支援搜尋、圖層及向量地圖資料。',
   keywords: [
+    '路牌地圖',
+    '馬路標誌',
+    '馬路標誌地圖',
+    '香港路牌地圖',
+    '香港交通標誌地圖',
+    '道路標誌地圖',
+    '交通標誌地圖',
+    '交通設施地圖',
+    '香港交通標誌',
+    '香港道路標誌',
+    '交通燈地圖',
+    '交通標誌柱',
     'traffic aids map',
     'vector tiles',
     'MVT',
@@ -18,9 +30,9 @@ export const metadata = {
     canonical: '/map',
   },
   openGraph: {
-    title: 'Traffic Aids Map | Road Sign Factory',
+    title: '香港路牌及馬路標誌地圖 | Road Sign Factory',
     description:
-      'Explore an interactive map of traffic aids in Hong Kong, including poles, traffic lights, signs, and vector tile data.',
+      '探索香港路牌及馬路標誌地圖，查閱交通標誌、交通燈、標誌柱和其他交通設施。',
     url: '/map',
     siteName: 'Road Sign Factory',
     type: 'website',
@@ -35,9 +47,9 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Traffic Aids Map | Road Sign Factory',
+    title: '香港路牌及馬路標誌地圖 | Road Sign Factory',
     description:
-      'Explore an interactive map of traffic aids in Hong Kong, including poles, traffic lights, signs, and vector tile data.',
+      '探索香港路牌及馬路標誌地圖，查閱交通標誌、交通燈、標誌柱和其他交通設施。',
     images: ['/images/preview-map.png'],
   },
   robots: {
@@ -59,7 +71,7 @@ export default function MapPage() {
     '@type': 'Dataset',
     name: 'Traffic Aids Map',
     description:
-      'Interactive Traffic Aids Map for Hong Kong. Includes vector tiles (MVT) and a manifest endpoint for integration with mapping clients.',
+      '香港路牌及馬路標誌地圖，展示交通標誌、道路標誌、交通燈、標誌柱及其他交通設施，並提供向量圖磚（MVT）資料。',
     url: 'https://roadsignfactory.hk/map',
     image: 'https://roadsignfactory.hk/images/preview-map.png',
     distribution: [
@@ -69,7 +81,23 @@ export default function MapPage() {
         contentUrl: 'https://roadsignfactory.hk/api/mvt-manifest/route.js',
       },
     ],
-    keywords: ['traffic aids map', 'vector tiles', 'MVT', 'Hong Kong', 'traffic lights', 'poles', 'signs'],
+    keywords: [
+      '路牌地圖',
+      '馬路標誌',
+      '馬路標誌地圖',
+      '香港路牌地圖',
+      '香港交通標誌地圖',
+      '道路標誌地圖',
+      '交通標誌地圖',
+      '交通設施地圖',
+      '香港交通標誌',
+      '香港道路標誌',
+      '交通燈地圖',
+      'traffic aids map',
+      'vector tiles',
+      'MVT',
+      'Hong Kong traffic signs',
+    ],
     provider: {
       '@type': 'Organization',
       name: 'Road Sign Factory',
@@ -94,7 +122,7 @@ export default function MapPage() {
             border: 0,
           }}
         >
-          Traffic Aids Map
+          香港路牌及馬路標誌地圖
         </h1>
         <MapPageClient />
       </main>
