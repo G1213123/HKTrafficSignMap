@@ -7,7 +7,7 @@ import { GeneralSettings } from '../../lib/utils/settings.js';
 import { TextObject } from '../../lib/objects/text.js';
 import { DividerObject } from '../../lib/objects/divider.js';
 import { anchorShape } from '../../lib/objects/anchor.js';
-import { FontPriorityManager } from '../../lib/modal/md-font.js';
+import { FontPriorityManager } from '../modal/md-font.js';
 import { EngDestinations, ChtDestinations } from '../../lib/templates/destinationTemplate.js';
 import { SymbolObject } from '../../lib/objects/symbols.js';
 import { CanvasGlobals } from '../canvas/canvas.js';
@@ -521,13 +521,17 @@ export default function TextPanel({ canvas }) {
                 onColorChange={setColor}
             />
 
-                <SidebarToggleGroup
-                    label={t('Font')}
-                    options={fontOptions}
+            <SidebarToggleGroup
+                label={t('Font')}
+                options={fontOptions}
                 value={fontOptions.some((option) => option.value === font) ? font : 'TransportMedium'}
                 onChange={setFont}
-                    hintPath="text/TextFont"
+                hintPath="text/TextFont"
             />
+
+            <button className="panel-button" onClick={() => FontPriorityManager.showModal()}>
+                {t('Open Font Settings')}
+            </button>
 
             <div>
                 <h2 className="tab-title">{t('Destination Settings')}</h2>
@@ -609,10 +613,6 @@ export default function TextPanel({ canvas }) {
 
                 <button className="panel-action-button" onClick={handleSubmit}>
                     {activeTextObject && language !== '2Liner' ? t('Update Text') : t('Add Text')}
-                </button>
-
-                <button className="toggle-button" onClick={() => FontPriorityManager.showModal()}>
-                    {t('Open Font Settings')}
                 </button>
 
                 <div className="input-group">
