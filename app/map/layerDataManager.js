@@ -42,7 +42,7 @@ const matchesElevationFilter = (feature, elevationFilter) => {
     return normalizeElevationValue(feature?.properties?.ELEVATION) === elevationFilter;
 };
 
-export const renderLayerData = (typeName, data, { map, markersRef, activeLayersRef, showRawPoints = false, elevationFilter = 'ALL', layerDataRef = null, isDarkMode = false }) => {
+export const renderLayerData = (typeName, data, { map, markersRef, activeLayersRef, showRawPoints = false, showTsAbvSymbols = false, elevationFilter = 'ALL', layerDataRef = null, isDarkMode = false }) => {
     if (!data || !data.features || !map) return;
 
     const polyRenderer = getPolyRenderer(typeName);
@@ -83,7 +83,7 @@ export const renderLayerData = (typeName, data, { map, markersRef, activeLayersR
 
     const pointRenderer = getPointRenderer(typeName);
     if (pointRenderer) {
-        pointRenderer(map, typeName, points, markersRef, activeLayersRef, showRawPoints, { layerDataRef, isDarkMode });
+        pointRenderer(map, typeName, points, markersRef, activeLayersRef, showRawPoints, { layerDataRef, isDarkMode, showTsAbvSymbols });
     }
 
     const annoRenderer = getAnnoRenderer(typeName);

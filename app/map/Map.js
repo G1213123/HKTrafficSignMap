@@ -219,8 +219,11 @@ export default function Map() {
     const [showBasemapSelector, setShowBasemapSelector] = useState(false);
     const [showLabels, setShowLabels] = useState(true);
     const [showRawPoints, setShowRawPoints] = useState(false);
+    const [showTsAbvSymbols, setShowTsAbvSymbols] = useState(false);
+    const [tsAbvSymbolScale, setTsAbvSymbolScale] = useState(1);
     const [geolocInProgress, setGeolocInProgress] = useState(false);
     const showRawPointsRef = useRef(showRawPoints);
+    const showTsAbvSymbolsRef = useRef(showTsAbvSymbols);
     const [mvtBuildDate, setMvtBuildDate] = useState('');
     const mvtBuildDateRef = useRef(mvtBuildDate);
     const [mvtManifestReady, setMvtManifestReady] = useState(false);
@@ -345,6 +348,16 @@ export default function Map() {
     }, [showRawPoints]);
 
     useEffect(() => {
+        showTsAbvSymbolsRef.current = showTsAbvSymbols;
+    }, [showTsAbvSymbols]);
+
+    useEffect(() => {
+        if (mapContainerRef.current) {
+            mapContainerRef.current.style.setProperty('--ts-abv-symbol-scale', tsAbvSymbolScale);
+        }
+    }, [mapLoaded, tsAbvSymbolScale]);
+
+    useEffect(() => {
         mvtBuildDateRef.current = mvtBuildDate;
     }, [mvtBuildDate]);
 
@@ -386,6 +399,8 @@ export default function Map() {
             if (savedState) {
                 const state = JSON.parse(savedState);
                 if (typeof state.showRawPoints === 'boolean') setShowRawPoints(state.showRawPoints);
+                if (typeof state.showTsAbvSymbols === 'boolean') setShowTsAbvSymbols(state.showTsAbvSymbols);
+                if (typeof state.tsAbvSymbolScale === 'number') setTsAbvSymbolScale(Math.min(2, Math.max(0.5, state.tsAbvSymbolScale)));
                 if (typeof state.elevationFilter === 'string') setElevationFilter(state.elevationFilter);
                 if (typeof state.basemapStyleMode === 'string') setBasemapStyleMode(state.basemapStyleMode);
                 if (typeof state.showLabels === 'boolean') setShowLabels(state.showLabels);
@@ -573,6 +588,7 @@ export default function Map() {
                                             markersRef,
                                             activeLayersRef,
                                             showRawPoints: showRawPointsRef.current,
+                                            showTsAbvSymbols: showTsAbvSymbolsRef.current,
                                             elevationFilter: elevationFilterRef.current,
                                             layerDataRef,
                                             isDarkMode: isDarkMode,
@@ -669,6 +685,7 @@ export default function Map() {
                         markersRef,
                         activeLayersRef,
                         showRawPoints: showRawPointsRef.current,
+                        showTsAbvSymbols: showTsAbvSymbolsRef.current,
                         elevationFilter: elevationFilterRef.current,
                         layerDataRef,
                         isDarkMode: isDarkMode,
@@ -712,6 +729,7 @@ export default function Map() {
                 markersRef,
                 activeLayersRef,
                 showRawPoints: showRawPointsRef.current,
+                showTsAbvSymbols: showTsAbvSymbolsRef.current,
                 elevationFilter: elevationFilterRef.current,
                 layerDataRef,
                 isDarkMode: isDarkMode,
@@ -851,6 +869,8 @@ export default function Map() {
             zoom: map.getZoom(),
             activeLayers: Array.from(activeLayers),
             showRawPoints,
+            showTsAbvSymbols,
+            tsAbvSymbolScale,
             elevationFilter,
             basemapStyleMode,
             showLabels
@@ -877,11 +897,11 @@ export default function Map() {
 
         applyVisibilityOverlays({ map, activeLayers, markersRef });
 
-    }, [activeLayers, mapLoaded, fetchLayerData, prefetchLayerData, showRawPoints, mvtBuildDate, mvtManifestReady, basemapStyleMode]);
+    }, [activeLayers, mapLoaded, fetchLayerData, prefetchLayerData, showRawPoints, showTsAbvSymbols, mvtBuildDate, mvtManifestReady, basemapStyleMode]);
 
     useEffect(() => {
         rerenderCachedLayers();
-    }, [elevationFilter, showRawPoints, rerenderCachedLayers]);
+    }, [elevationFilter, showRawPoints, showTsAbvSymbols, rerenderCachedLayers]);
 
     const toggleLayer = (layerName) => {
         setActiveLayers(prev => {
@@ -979,7 +999,7 @@ export default function Map() {
                             <span style={{ fontSize: '18px', lineHeight: 1 }}>≡</span>
                         </button>
                     </div>
-                    <div className="map-basemap-toggle-group">
+                    <div className={`map-basemap-toggle-group${showTsAbvSymbols ? ' map-basemap-toggle-group--ts-symbols' : ''}`}>
                         <button
                             type="button"
                             className={showBasemapSelector ? 'map-basemap-toggle-button map-basemap-toggle-button--active' : 'map-basemap-toggle-button'}
@@ -1028,6 +1048,30 @@ export default function Map() {
                             <option value="show">{t('Show labels')}</option>
                             <option value="hide">{t('Hide labels')}</option>
                         </select>
+                        <label className="map-ts-symbol-switch">
+                            <input
+                                type="checkbox"
+                                checked={showTsAbvSymbols}
+                                onChange={(e) => setShowTsAbvSymbols(e.target.checked)}
+                            />
+                            <span className="map-ts-symbol-switch-track" aria-hidden="true"><span /></span>
+                            <span>{t('TS symbols')}</span>
+                        </label>
+                        {showTsAbvSymbols && (
+                            <label className="map-ts-symbol-size">
+                                <span>{t('Symbol size')}</span>
+                                <input
+                                    type="range"
+                                    min="0.5"
+                                    max="10"
+                                    step="0.1"
+                                    value={tsAbvSymbolScale}
+                                    onChange={(e) => setTsAbvSymbolScale(Number(e.target.value))}
+                                    aria-label={t('TS symbol size')}
+                                />
+                                <output>{Math.round(tsAbvSymbolScale)}</output>
+                            </label>
+                        )}
                     </div>
 
                     <div className="map-right-toolbar">

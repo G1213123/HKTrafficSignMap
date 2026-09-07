@@ -30,8 +30,6 @@ export const attachMarkerPopup = (el, map, coords, popupContent, isMeasuringActi
             .setLngLat(coords)
             .setHTML(popupContent)
             .addTo(map);
-
-        popup.style.color = themeColor
     });
 };
 

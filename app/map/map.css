@@ -432,6 +432,10 @@ body {
     z-index: 13;
 }
 
+.map-basemap-toggle-group--ts-symbols {
+    top: 160px;
+}
+
 .map-legend-toggle-button {
     width: 32px;
     height: 32px;
@@ -518,6 +522,10 @@ body {
     top: 16px;
     left: 10px;
     z-index: 13;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
 }
 
 .map-label-toggle {
@@ -791,6 +799,10 @@ body {
         left: 10px;
     }
 
+    .map-basemap-toggle-group--ts-symbols {
+        top: 205px;
+    }
+
     .map-label-toggle-group {
         top: 50px;
         left: 10px;
@@ -1016,4 +1028,73 @@ body.measuring-active .icon-line-marker {
     .layer-item:hover span {
         color: #fff;
     }
+}
+
+.map-ts-symbol-switch,
+.map-ts-symbol-size {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 9px;
+    background: rgba(255, 255, 255, 0.98);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-size: 0.82rem;
+    color: #1f2937;
+    white-space: nowrap;
+}
+
+.map-ts-symbol-switch input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.map-ts-symbol-switch-track {
+    width: 30px;
+    height: 18px;
+    padding: 2px;
+    border-radius: 999px;
+    background: #cbd5e1;
+    transition: background 0.2s ease;
+}
+
+.map-ts-symbol-switch-track span {
+    display: block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    transition: transform 0.2s ease;
+}
+
+.map-ts-symbol-switch input:checked + .map-ts-symbol-switch-track {
+    background: #2563eb;
+}
+
+.map-ts-symbol-switch input:checked + .map-ts-symbol-switch-track span {
+    transform: translateX(12px);
+}
+
+.map-ts-symbol-switch:focus-within,
+.map-ts-symbol-size:focus-within {
+    border-color: #2563eb;
+}
+
+.map-ts-symbol-size {
+    display: grid;
+    grid-template-columns: auto 74px auto;
+}
+
+.map-ts-symbol-size input[type="range"] {
+    width: 74px;
+    accent-color: #2563eb;
+}
+
+.map-ts-symbol-size output {
+    min-width: 34px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
 }

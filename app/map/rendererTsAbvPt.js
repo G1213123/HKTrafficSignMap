@@ -46,10 +46,14 @@ export const renderTsAbvPt = (map, typeName, points, markersRef, activeLayersRef
             : (feature.properties?.Angle != null ? Number(feature.properties.Angle) : 0);
 
         const el = createMarkerElement({ className: 'custom-svg-icon-wrapper ts-abv-text-wrapper', width: '0px', height: '0px' });
+        const previewIcon = !isSeparator && options.showTsAbvSymbols ? getTsPreviewUrl(signId) : null;
         const text = isSeparator ? '/' : (signId ? escapeHtml(signId) : 'TS');
+        const markerContent = previewIcon
+            ? `<img src="${previewIcon}" alt="${escapeHtml(signId)}" style="width: calc(30px * var(--map-icon-scale, 1) * var(--ts-abv-symbol-scale, 1)); height: calc(30px * var(--map-icon-scale, 1) * var(--ts-abv-symbol-scale, 1)); object-fit: contain; display: block;" />`
+            : text;
         el.innerHTML = `
             <div class="custom-svg-icon ts-abv-text" style="position: absolute; left: 0%; top: 0%; transform: translate(-50%, -50%) rotate(${angle}deg); transform-origin: center center; pointer-events: auto; width: max-content; height: max-content; overflow: visible; display: flex; align-items: center; justify-content: center;">
-                <span style="display: inline-block; font-family: 'PT Sans Narrow', 'PT Sans', Arial, sans-serif; font-size: calc(30px * var(--map-icon-scale, 1)); font-weight: 100; color: ${themeColor}; text-align: center; white-space: nowrap; line-height: 1;">${text}</span>
+                <span style="display: inline-block; font-family: 'PT Sans Narrow', 'PT Sans', Arial, sans-serif; font-size: calc(30px * var(--map-icon-scale, 1)); font-weight: 100; color: ${themeColor}; text-align: center; white-space: nowrap; line-height: 1;">${markerContent}</span>
             </div>
         `;
 

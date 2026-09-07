@@ -334,6 +334,7 @@ const dictionaries = {
     'Layers': '圖層',
     'Toggle All': '全部切換',
     'Show raw points': '顯示原始資料位置',
+    'Show TS sign symbols': '顯示交通標誌圖案',
     'Traffic Signs': '交通標誌',
     'Directional Signs': '方向指示標誌',
     'Pedestrian Signs': '行人標誌',

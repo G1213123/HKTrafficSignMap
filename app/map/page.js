@@ -1,9 +1,9 @@
 import MapPageClient from './MapPageClient';
 
 export const metadata = {
-  title: 'Traffic Aids Map',
+  title: '香港交通標誌地圖 | Hong Kong Traffic Aids Map',
   description:
-    '香港路牌及馬路標誌地圖，查閱交通標誌、道路標誌、交通燈、標誌柱及其他交通設施位置。支援搜尋、圖層及向量地圖資料。',
+    '香港交通標誌及道路設施地圖，搜尋路牌、交通燈、標誌柱及其他設施。Explore Hong Kong traffic signs and road facilities with searchable layers and vector map data.',
   keywords: [
     '路牌地圖',
     '馬路標誌',
@@ -17,7 +17,15 @@ export const metadata = {
     '香港道路標誌',
     '交通燈地圖',
     '交通標誌柱',
+    '香港交通設施地圖',
+    '香港路牌位置',
     'traffic aids map',
+    'Hong Kong traffic aids map',
+    'Hong Kong traffic sign map',
+    'Hong Kong road sign map',
+    'traffic signs map',
+    'road facilities map',
+    'traffic sign locations',
     'vector tiles',
     'MVT',
     'Hong Kong',
@@ -30,9 +38,9 @@ export const metadata = {
     canonical: '/map',
   },
   openGraph: {
-    title: '香港路牌及馬路標誌地圖 | Road Sign Factory',
+    title: '香港交通標誌地圖 | Hong Kong Traffic Aids Map',
     description:
-      '探索香港路牌及馬路標誌地圖，查閱交通標誌、交通燈、標誌柱和其他交通設施。',
+      '香港交通標誌及道路設施地圖，搜尋路牌、交通燈、標誌柱及其他設施。Explore Hong Kong traffic signs and road facilities with searchable layers and vector map data.',
     url: '/map',
     siteName: 'Road Sign Factory',
     type: 'website',
@@ -47,9 +55,9 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: '香港路牌及馬路標誌地圖 | Road Sign Factory',
+    title: '香港交通標誌地圖 | Hong Kong Traffic Aids Map',
     description:
-      '探索香港路牌及馬路標誌地圖，查閱交通標誌、交通燈、標誌柱和其他交通設施。',
+      '香港交通標誌及道路設施地圖，搜尋路牌、交通燈、標誌柱及其他設施。Explore Hong Kong traffic signs and road facilities with searchable layers and vector map data.',
     images: ['/images/preview-map.png'],
   },
   robots: {
@@ -69,9 +77,9 @@ export default function MapPage() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Dataset',
-    name: 'Traffic Aids Map',
+    name: '香港交通標誌地圖 | Hong Kong Traffic Aids Map',
     description:
-      '香港路牌及馬路標誌地圖，展示交通標誌、道路標誌、交通燈、標誌柱及其他交通設施，並提供向量圖磚（MVT）資料。',
+      '香港交通標誌及道路設施地圖，搜尋路牌、交通燈、標誌柱及其他設施。Explore Hong Kong traffic signs and road facilities with searchable layers and vector map data in MVT vector tiles.',
     url: 'https://roadsignfactory.hk/map',
     image: 'https://roadsignfactory.hk/images/preview-map.png',
     distribution: [
@@ -93,7 +101,15 @@ export default function MapPage() {
       '香港交通標誌',
       '香港道路標誌',
       '交通燈地圖',
+      '香港交通設施地圖',
+      '香港路牌位置',
       'traffic aids map',
+      'Hong Kong traffic aids map',
+      'Hong Kong traffic sign map',
+      'Hong Kong road sign map',
+      'traffic signs map',
+      'road facilities map',
+      'traffic sign locations',
       'vector tiles',
       'MVT',
       'Hong Kong traffic signs',
