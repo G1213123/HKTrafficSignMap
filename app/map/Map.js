@@ -220,7 +220,7 @@ export default function Map() {
     const [showLabels, setShowLabels] = useState(true);
     const [showRawPoints, setShowRawPoints] = useState(false);
     const [showTsAbvSymbols, setShowTsAbvSymbols] = useState(false);
-    const [tsAbvSymbolScale, setTsAbvSymbolScale] = useState(1);
+    const [tsAbvSymbolScale, setTsAbvSymbolScale] = useState(5);
     const [geolocInProgress, setGeolocInProgress] = useState(false);
     const showRawPointsRef = useRef(showRawPoints);
     const showTsAbvSymbolsRef = useRef(showTsAbvSymbols);
@@ -987,7 +987,7 @@ export default function Map() {
                 <main className="map-main">
                     <div ref={mapContainerRef} className="map-container" />
                     <div
-                        className="map-legend-toggle-group"
+                        className={`map-legend-toggle-group${showTsAbvSymbols ? ' map-legend-toggle-group--ts-symbols' : ''}`}
                         onClick={(e) => { e.stopPropagation(); setShowLegend(prev => !prev); }}
                     >
                         <button

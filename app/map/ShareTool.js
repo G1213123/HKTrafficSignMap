@@ -207,6 +207,17 @@ export default function ShareTool({ map, t }) {
                 height: exportTarget.clientHeight,
                 scrollX: 0,
                 scrollY: 0,
+                onclone: (clonedDocument) => {
+                    clonedDocument.querySelectorAll('.ts-abv-text img').forEach((image) => {
+                        if (!image.naturalWidth || !image.naturalHeight) return;
+                        const height = Number.parseFloat(window.getComputedStyle(image).height);
+                        const width = Number.parseFloat(window.getComputedStyle(image).width);
+                        if (!Number.isFinite(height) || height <= 0) return;
+                        image.style.width = `${width}px`;
+                        image.style.height = `${width / image.naturalWidth * image.naturalHeight}px`;
+                        image.style.objectFit = 'fill';
+                    });
+                },
                 ignoreElements: (element) => {
                     if (!element || typeof element.matches !== 'function') return false;
                     return (
@@ -294,8 +305,8 @@ export default function ShareTool({ map, t }) {
                     title={t('Share current location')}
                     aria-label={t('Share current location')}
                     style={{
-                        width: '32px', height: '32px', padding: 0, background:  'white', 
-                        color:  'black', border: '1px solid #ccc', 
+                        width: '32px', height: '32px', padding: 0, background: 'white',
+                        color: 'black', border: '1px solid #ccc',
                         borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                         boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
                     }}

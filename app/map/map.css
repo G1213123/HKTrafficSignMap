@@ -409,7 +409,7 @@ body {
 
 .map-legend-stack {
     position: absolute;
-    top: 54px;
+    top: 92px;
     left: 54px;
     right: auto;
     display: flex;
@@ -420,20 +420,24 @@ body {
 
 .map-legend-toggle-group {
     position: absolute;
-    top: 54px;
-    left: 10px;
-    z-index: 13;
-}
-
-.map-basemap-toggle-group {
-    position: absolute;
     top: 92px;
     left: 10px;
     z-index: 13;
 }
 
+.map-legend-toggle-group--ts-symbols {
+    top: 130px;
+}
+
+.map-basemap-toggle-group {
+    position: absolute;
+    top: 130px;
+    left: 10px;
+    z-index: 13;
+}
+
 .map-basemap-toggle-group--ts-symbols {
-    top: 160px;
+    top: 168px;
 }
 
 .map-legend-toggle-button {
@@ -786,16 +790,20 @@ body {
         align-items: stretch;
         left: 50px;
         right: 10px;
-        top: 90px;
+        top: 130px;
     }
 
     .map-legend-toggle-group {
-        top: 90px;
+        top: 130px;
         left: 10px;
     }
 
+    .map-legend-toggle-group--ts-symbols {
+        top: 167px;
+    }
+
     .map-basemap-toggle-group {
-        top: 130px;
+        top: 168px;
         left: 10px;
     }
 
