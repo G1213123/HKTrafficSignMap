@@ -4,32 +4,73 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useI18n } from './I18nProvider';
 import { normalizeDownloadAsset } from './signDownloadUtils';
 
+const lazyLoadScrollState = {
+  isScrolling: false,
+  timeoutId: null,
+  listeners: new Set(),
+  listening: false
+};
+
+const handleLazyLoadScroll = () => {
+  lazyLoadScrollState.isScrolling = true;
+  window.clearTimeout(lazyLoadScrollState.timeoutId);
+  lazyLoadScrollState.timeoutId = window.setTimeout(() => {
+    lazyLoadScrollState.isScrolling = false;
+    lazyLoadScrollState.listeners.forEach(listener => listener());
+  }, 150);
+};
+
+const subscribeToLazyLoadScroll = (listener) => {
+  lazyLoadScrollState.listeners.add(listener);
+  if (!lazyLoadScrollState.listening) {
+    window.addEventListener('scroll', handleLazyLoadScroll, { passive: true });
+    lazyLoadScrollState.listening = true;
+  }
+
+  return () => {
+    lazyLoadScrollState.listeners.delete(listener);
+    if (lazyLoadScrollState.listeners.size === 0) {
+      window.removeEventListener('scroll', handleLazyLoadScroll);
+      lazyLoadScrollState.listening = false;
+    }
+  };
+};
+
 // Lazy image component that only sets src when in view
 const LazyImage = ({ src, alt, className, style }) => {
   const [inView, setInView] = useState(false);
   const imgRef = useRef(null);
 
   useEffect(() => {
+    const loadIfVisible = () => {
+      if (!imgRef.current || lazyLoadScrollState.isScrolling) return;
+      const bounds = imgRef.current.getBoundingClientRect();
+      const isVisible = bounds.bottom >= 0 && bounds.top <= window.innerHeight;
+      if (isVisible) setInView(true);
+    };
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
+          if (entry.isIntersecting && !lazyLoadScrollState.isScrolling) {
             setInView(true);
             observer.disconnect();
           }
         });
       },
       {
-        rootMargin: '50px', // Start loading when 50px away
+        rootMargin: '0px',
         threshold: 0.1
       }
     );
 
+    const unsubscribe = subscribeToLazyLoadScroll(loadIfVisible);
     if (imgRef.current) {
       observer.observe(imgRef.current);
     }
 
     return () => {
+      unsubscribe();
       if (imgRef.current) observer.unobserve(imgRef.current);
     };
   }, []);
