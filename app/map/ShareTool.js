@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import html2canvas from 'html2canvas';
 import proj4 from 'proj4';
 import './map.css';
@@ -157,15 +157,29 @@ const renderMarkersToSvg = async (map) => {
         const y = rect.top - containerRect.top + rect.height / 2;
         const svg = marker.querySelector('svg');
         if (svg) {
-            return `<g transform="translate(${x.toFixed(2)} ${y.toFixed(2)})"><svg x="${(-rect.width / 2).toFixed(2)}" y="${(-rect.height / 2).toFixed(2)}" width="${rect.width.toFixed(2)}" height="${rect.height.toFixed(2)}" viewBox="${escapeXml(svg.getAttribute('viewBox') || `0 0 ${svg.clientWidth} ${svg.clientHeight}`)}">${svg.innerHTML}</svg></g>`;
+            const svgClone = svg.cloneNode(true);
+            svgClone.setAttribute('x', (-rect.width / 2).toFixed(2));
+            svgClone.setAttribute('y', (-rect.height / 2).toFixed(2));
+            svgClone.setAttribute('width', rect.width.toFixed(2));
+            svgClone.setAttribute('height', rect.height.toFixed(2));
+            return `<g transform="translate(${x.toFixed(2)} ${y.toFixed(2)})">${svgClone.outerHTML}</g>`;
         }
 
         const image = marker.querySelector('img');
         if (image?.src) {
-            const response = await fetch(image.src);
-            const imageText = await response.text();
-            if (imageText.trim().startsWith('<svg')) {
-                return `<g transform="translate(${x.toFixed(2)} ${y.toFixed(2)})"><svg x="${(-rect.width / 2).toFixed(2)}" y="${(-rect.height / 2).toFixed(2)}" width="${rect.width.toFixed(2)}" height="${rect.height.toFixed(2)}" preserveAspectRatio="none">${imageText.replace(/^\s*<svg[^>]*>|<\/svg>\s*$/g, '')}</svg></g>`;
+            try {
+                const response = await fetch(image.src);
+                const imageText = await response.text();
+                if (response.ok && imageText.trim().startsWith('<svg')) {
+                    const imageSvg = new DOMParser().parseFromString(imageText, 'image/svg+xml').documentElement;
+                    imageSvg.setAttribute('x', (-rect.width / 2).toFixed(2));
+                    imageSvg.setAttribute('y', (-rect.height / 2).toFixed(2));
+                    imageSvg.setAttribute('width', rect.width.toFixed(2));
+                    imageSvg.setAttribute('height', rect.height.toFixed(2));
+                    return `<g transform="translate(${x.toFixed(2)} ${y.toFixed(2)})">${imageSvg.outerHTML}</g>`;
+                }
+            } catch (error) {
+                console.warn('Unable to inline marker image in SVG export:', error);
             }
         }
 
@@ -186,8 +200,144 @@ const renderMarkersToSvg = async (map) => {
     }))).join('');
 };
 
+const buildMapSvg = async (map, width, height, includeBasemap = true) => {
+    const basemap = includeBasemap ? `<image href="${escapeXml(map.getCanvas().toDataURL('image/png'))}" x="0" y="0" width="${width}" height="${height}" />` : '';
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">${basemap}<g>${renderMapLayersToSvg(map)}${await renderMarkersToSvg(map)}</g></svg>`;
+};
+
+const loadImage = (source) => new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = source;
+});
+
+const loadSvgImage = (svg) => {
+    const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }));
+    return loadImage(url).finally(() => URL.revokeObjectURL(url));
+};
+
+const waitForMapRender = (map) => new Promise((resolve) => {
+    const onIdle = () => {
+        map.off('idle', onIdle);
+        window.setTimeout(resolve, 500);
+    };
+    map.once('idle', onIdle);
+    map.triggerRepaint();
+});
+
+const waitForNextFrame = () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+const exportMapPoster = async (map, options = {}) => {
+    const exportTarget = map.getContainer();
+    if (!exportTarget) throw new Error('Map export target not found');
+
+    const columns = Math.max(1, Math.floor(Number(options.columns) || 2));
+    const rows = Math.max(1, Math.floor(Number(options.rows) || 2));
+    const tileWidth = map.getCanvas().clientWidth;
+    const tileHeight = map.getCanvas().clientHeight;
+    if (!Number.isFinite(tileWidth) || !Number.isFinite(tileHeight) || tileWidth <= 0 || tileHeight <= 0) {
+        throw new Error(`Invalid map canvas size: ${tileWidth}x${tileHeight}`);
+    }
+    const currentZoom = map.getZoom();
+    const captureZoom = Number.isFinite(Number(options.zoom))
+        ? Number(options.zoom)
+        : currentZoom + Math.ceil(Math.log2(Math.max(columns, rows)));
+    const originalCenter = map.getCenter();
+    const originalZoom = map.getZoom();
+    const originalBearing = map.getBearing();
+    const originalPitch = map.getPitch();
+    const originalBounds = map.getBounds();
+    const originalTopLeft = map.project([originalBounds.getWest(), originalBounds.getNorth()]);
+    const originalBottomRight = map.project([originalBounds.getEast(), originalBounds.getSouth()]);
+    map.jumpTo({ center: originalCenter, zoom: captureZoom, bearing: originalBearing, pitch: originalPitch });
+    const captureCenter = [tileWidth / 2, tileHeight / 2];
+    const tileCenters = [];
+    for (let row = 0; row < rows; row += 1) {
+        for (let column = 0; column < columns; column += 1) {
+            const projectedCenter = [
+                captureCenter[0] + (column + 0.5 - columns / 2) * tileWidth,
+                captureCenter[1] + (row + 0.5 - rows / 2) * tileHeight
+            ];
+            const center = map.unproject(projectedCenter);
+            if (!Number.isFinite(center.lng) || !Number.isFinite(center.lat)) {
+                throw new Error(`Invalid tile center at ${column + 1},${row + 1}: ${JSON.stringify(projectedCenter)}`);
+            }
+            tileCenters.push(center);
+        }
+    }
+    console.groupCollapsed('[Map poster] capture bounds');
+    console.log('canvas size:', { width: tileWidth, height: tileHeight });
+    console.log('map center:', originalCenter);
+    console.log('map zoom:', currentZoom, 'capture zoom:', captureZoom);
+    console.log('grid:', { columns, rows });
+    console.log('geographic bounds:', {
+        west: originalBounds.getWest(),
+        east: originalBounds.getEast(),
+        north: originalBounds.getNorth(),
+        south: originalBounds.getSouth()
+    });
+    console.log('original projected bounds:', { topLeft: originalTopLeft, bottomRight: originalBottomRight });
+    console.log('capture projected center:', captureCenter);
+    console.groupEnd();
+    const tileCanvas = document.createElement('canvas');
+    tileCanvas.width = tileWidth;
+    tileCanvas.height = tileHeight;
+    const tileContext = tileCanvas.getContext('2d');
+    const mosaic = document.createElement('canvas');
+    mosaic.width = tileWidth * columns;
+    mosaic.height = tileHeight * rows;
+    const mosaicContext = mosaic.getContext('2d');
+
+    try {
+        for (let row = 0; row < rows; row += 1) {
+            for (let column = 0; column < columns; column += 1) {
+                const tileCenterLngLat = tileCenters[row * columns + column];
+                console.log(`[Map poster] tile ${column + 1},${row + 1}`, {
+                    center: tileCenterLngLat,
+                    plannedProjectedCenter: map.project(tileCenterLngLat)
+                });
+                map.jumpTo({ center: tileCenterLngLat, zoom: captureZoom, bearing: originalBearing, pitch: originalPitch });
+                await waitForMapRender(map);
+                await waitForNextFrame();
+                const renderedBounds = map.getBounds();
+                console.log(`[Map poster] rendered tile ${column + 1},${row + 1} bounds`, {
+                    west: renderedBounds.getWest(),
+                    east: renderedBounds.getEast(),
+                    north: renderedBounds.getNorth(),
+                    south: renderedBounds.getSouth()
+                });
+
+                const tileSvg = await buildMapSvg(map, tileWidth, tileHeight);
+                const tile = await loadSvgImage(tileSvg);
+                tileContext.clearRect(0, 0, tileWidth, tileHeight);
+                tileContext.drawImage(tile, 0, 0, tileWidth, tileHeight);
+                mosaicContext.drawImage(tileCanvas, column * tileWidth, row * tileHeight);
+            }
+        }
+
+        const link = document.createElement('a');
+        link.download = options.filename || `hk-traffic-map-poster-${new Date().toISOString().slice(0, 10)}.png`;
+        link.href = mosaic.toDataURL('image/png');
+        link.click();
+        return { width: mosaic.width, height: mosaic.height, columns, rows, zoom: captureZoom };
+    } finally {
+        map.jumpTo({ center: originalCenter, zoom: originalZoom, bearing: originalBearing, pitch: originalPitch });
+        await waitForMapRender(map);
+    }
+};
+
 export default function ShareTool({ map, t }) {
     if (!map) return null;
+
+    useEffect(() => {
+        if (typeof window === 'undefined' || !map) return undefined;
+        const posterExporter = (options) => exportMapPoster(map, options);
+        window.exportMapPoster = posterExporter;
+        return () => {
+            if (window.exportMapPoster === posterExporter) delete window.exportMapPoster;
+        };
+    }, [map]);
 
     const exportCurrentMapToImage = async () => {
         const exportTarget = map.getContainer()?.closest('.map-main') || document.querySelector('.map-main');
@@ -252,7 +402,7 @@ export default function ShareTool({ map, t }) {
             const canvas = map.getCanvas();
             const width = canvas.clientWidth;
             const height = canvas.clientHeight;
-            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><g>${renderMapLayersToSvg(map)}${await renderMarkersToSvg(map)}</g></svg>`;
+            const svg = await buildMapSvg(map, width, height);
             const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');

@@ -505,6 +505,7 @@ export default function Map() {
                     maxZoom: 22,
                     maxBounds: [[113.60, 22.00], [114.70, 22.80]], // Looser Hong Kong bounds [minLng, minLat], [maxLng, maxLat]
                     attributionControl: false,
+                    preserveDrawingBuffer: true,
                     pitchWithRotate: false,
                     dragPitch: false
                 });
