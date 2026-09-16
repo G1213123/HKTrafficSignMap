@@ -17,8 +17,25 @@ export default function UserDashboard() {
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState('design'); // 'design' or 'trash'
   const [designs, setDesigns] = useState([]);
+  const [snapshotUrls, setSnapshotUrls] = useState({});
   const [loading, setLoading] = useState(true);
   const [showProfile, setShowProfile] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all(designs.map(async design => [
+      design.id,
+      design.snapshot
+        ? await normalizeDownloadAsset(design.snapshot)
+        : await getFirebaseAssetUrl('/data/svgs/TS_115.svg'),
+    ])).then(entries => {
+      if (!cancelled) setSnapshotUrls(Object.fromEntries(entries));
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [designs]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(async (u) => {
@@ -266,9 +283,7 @@ export default function UserDashboard() {
                   >
                     <div className="card-snapshot">
                       <img
-                        src={design.snapshot
-                          ? normalizeDownloadAsset(design.snapshot)
-                          : getFirebaseAssetUrl('/data/svgs/TS_115.svg')}
+                        src={snapshotUrls[design.id] || ''}
                         alt={design.title}
                       />
                     </div>

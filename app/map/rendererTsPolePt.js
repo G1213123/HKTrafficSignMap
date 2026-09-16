@@ -12,7 +12,7 @@ const escapeHtml = (value = '') => String(value)
 
 const normalizeText = (value) => String(value || '').trim().toUpperCase();
 
-const buildAbvPreviewHtmlForPole = (poleFeature, abvFeatures = []) => {
+const buildAbvPreviewHtmlForPole = async (poleFeature, abvFeatures = []) => {
     const ggName = normalizeText(poleFeature?.properties?.GG_NAME);
     if (!ggName) return '';
 
@@ -22,9 +22,9 @@ const buildAbvPreviewHtmlForPole = (poleFeature, abvFeatures = []) => {
     const previewItems = [];
     const seenKeys = new Set();
 
-    related.forEach(feature => {
+    await Promise.all(related.map(async feature => {
         const signId = feature?.properties?.SIGNID ? String(feature.properties.SIGNID) : '';
-        const previewIcon = getTsPreviewUrl(signId);
+        const previewIcon = await getTsPreviewUrl(signId);
         if (!previewIcon) return;
 
         const key = `${signId}::${previewIcon}`;
@@ -39,7 +39,7 @@ const buildAbvPreviewHtmlForPole = (poleFeature, abvFeatures = []) => {
                 </div>
             </div>
         `);
-    });
+    }));
 
     if (previewItems.length === 0) return '';
 
@@ -50,7 +50,7 @@ const buildAbvPreviewHtmlForPole = (poleFeature, abvFeatures = []) => {
     `;
 };
 
-export const renderTsPolePt = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false, options = {}) => {
+export const renderTsPolePt = async (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false, options = {}) => {
     if (!markersRef.current[typeName]) {
         markersRef.current[typeName] = [];
     }
@@ -59,7 +59,7 @@ export const renderTsPolePt = (map, typeName, points, markersRef, activeLayersRe
     const abvData = options.layerDataRef?.current?.['csdi:DTAD_TS_ABV_PT'];
     const abvFeatures = Array.isArray(abvData?.features) ? abvData.features : [];
 
-    points.forEach(feature => {
+    await Promise.all(points.map(async feature => {
         const coords = feature.geometry.coordinates;
         if (!coords || isNaN(coords[0]) || isNaN(coords[1])) return;
         
@@ -114,7 +114,7 @@ export const renderTsPolePt = (map, typeName, points, markersRef, activeLayersRe
             rawMarker = new maplibregl.Marker({ element: rawEl, rotationAlignment: 'map', pitchAlignment: 'map' }).setLngLat(coords);
         }
 
-        const previewHtml = buildAbvPreviewHtmlForPole(feature, abvFeatures);
+        const previewHtml = await buildAbvPreviewHtmlForPole(feature, abvFeatures);
         const popupContent = previewHtml
             ? buildPopupContentWithPreview(typeName, feature.properties || {}, previewHtml)
             : buildPopupContent(typeName, feature.properties || {});
@@ -127,5 +127,5 @@ export const renderTsPolePt = (map, typeName, points, markersRef, activeLayersRe
         }
         markersRef.current[typeName].push(marker);
         if (rawMarker) markersRef.current[typeName].push(rawMarker);
-    });
+    }));
 };

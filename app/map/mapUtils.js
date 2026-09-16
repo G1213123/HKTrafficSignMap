@@ -26,23 +26,30 @@ export const fetchWithRetry = async (url, options, retries = 2) => {
     throw lastError;
 };
 
-const iconUrlCache = new Map();
+import { getDownloadURL, ref } from 'firebase/storage';
+import { assetStorage } from '../../lib/firebase/clientApp';
 
-export const getFirebaseAssetUrl = (assetPath) => {
+const assetUrlCache = new Map();
+
+export const getFirebaseAssetUrl = async (assetPath) => {
     if (!assetPath) return null;
 
-    const bucket = process.env.NEXT_PUBLIC_FIREBASE_ASSET_BUCKET || 'road-sign-factory-asset';
-    const token = process.env.NEXT_PUBLIC_FIREBASE_ASSET_DOWNLOAD_TOKEN;
-    if (!token) return assetPath;
+    if (!assetUrlCache.has(assetPath)) {
+        const objectName = `public${assetPath}`;
+        const urlPromise = getDownloadURL(ref(assetStorage, objectName)).catch(error => {
+            assetUrlCache.delete(assetPath);
+            throw error;
+        });
+        assetUrlCache.set(assetPath, urlPromise);
+    }
 
-    const objectName = `public${assetPath}`;
-    return `https://firebasestorage.googleapis.com/v0/b/${encodeURIComponent(bucket)}/o/${encodeURIComponent(objectName)}?alt=media&token=${encodeURIComponent(token)}`;
+    return assetUrlCache.get(assetPath);
 };
 
-export const getIconUrl = (typeName, refname) => {
+export const getIconUrl = async (typeName, refname) => {
     if (!refname) return null;
     const cacheKey = `${typeName || ''}::${String(refname)}`;
-    if (iconUrlCache.has(cacheKey)) return iconUrlCache.get(cacheKey);
+    if (assetUrlCache.has(cacheKey)) return assetUrlCache.get(cacheKey);
 
     let iconUrl = null;
 
@@ -50,6 +57,5 @@ export const getIconUrl = (typeName, refname) => {
     else if (typeName.includes('DTAD_TS_')) iconUrl = getFirebaseAssetUrl(`/data/svgs/TS_${refname}.svg`);
     else if (typeName.includes('DTAD_RD_MARK_SYM')) iconUrl = getFirebaseAssetUrl(`/data/svgs/RM_${refname}.svg`);
 
-    iconUrlCache.set(cacheKey, iconUrl);
     return iconUrl;
 };

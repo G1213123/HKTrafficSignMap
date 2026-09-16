@@ -1,6 +1,6 @@
 import { getFirebaseAssetUrl } from '../map/mapUtils';
 
-export function normalizeDownloadAsset(imageUrl, fallbackFilename, origin = 'http://localhost') {
+export async function normalizeDownloadAsset(imageUrl, fallbackFilename, origin = 'http://localhost') {
   const resolveAssetPath = (value) => {
     if (!value) return null;
 

@@ -5,14 +5,14 @@ import { attachMarkerPopup, buildPopupContent, buildPopupContentWithPreview, cre
 import { roadMarkShapes } from './svgShapes';
 
 
-export const renderPoints = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false, options = {}) => {
+export const renderPoints = async (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false, options = {}) => {
     const themeColor = getThemeColor(options.isDarkMode === true);
 
     if (!markersRef.current[typeName]) {
         markersRef.current[typeName] = [];
     }
 
-    points.forEach(feature => {
+    await Promise.all(points.map(async feature => {
         let coords = [...feature.geometry.coordinates];
         if (!coords || isNaN(coords[0]) || isNaN(coords[1])) return;
 
@@ -21,7 +21,7 @@ export const renderPoints = (map, typeName, points, markersRef, activeLayersRef,
         const metersPerPx = 40075016.686 * Math.cos(lat * Math.PI / 180) / Math.pow(2, 21 + 9);
 
         const refname = feature.properties?.REFNAME?.replace('*', ')');
-        const iconUrl = getIconUrl(typeName, refname);
+        const iconUrl = await getIconUrl(typeName, refname);
 
         const el = createMarkerElement({ className: 'custom-svg-icon-wrapper' });
 
@@ -50,5 +50,5 @@ export const renderPoints = (map, typeName, points, markersRef, activeLayersRef,
             marker.addTo(map);
         }
         markersRef.current[typeName].push(marker);
-    });
+    }));
 };

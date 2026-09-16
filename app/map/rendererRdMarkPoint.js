@@ -5,14 +5,14 @@ import { attachMarkerPopup, buildPopupContent, buildPopupContentWithPreview, cre
 import { roadMarkShapes } from './svgShapes';
 
 
-export const renderRdMarkPoints = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false, options = {}) => {
+export const renderRdMarkPoints = async (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false, options = {}) => {
     const themeColor = getThemeColor(options.isDarkMode === true);
 
     if (!markersRef.current[typeName]) {
         markersRef.current[typeName] = [];
     }
 
-    points.forEach(feature => {
+    await Promise.all(points.map(async feature => {
         let coords = [...feature.geometry.coordinates];
         if (!coords || isNaN(coords[0]) || isNaN(coords[1])) return;
 
@@ -22,7 +22,7 @@ export const renderRdMarkPoints = (map, typeName, points, markersRef, activeLaye
 
         const refname = feature.properties?.REFNAME?.replace('*', ')');
         const iconSvg = roadMarkShapes[refname] || null;
-        const iconUrl = getIconUrl(typeName, refname);
+        const iconUrl = await getIconUrl(typeName, refname);
 
         const el = createMarkerElement({ className: 'custom-svg-icon-wrapper' });
         let angle = (feature.properties && feature.properties.ANGLE != null) ? Number(feature.properties.ANGLE) - 90 : 0;
@@ -159,5 +159,5 @@ export const renderRdMarkPoints = (map, typeName, points, markersRef, activeLaye
         }
         markersRef.current[typeName].push(marker);
         if (rawMarker) markersRef.current[typeName].push(rawMarker);
-    });
+    }));
 };

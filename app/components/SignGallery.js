@@ -174,17 +174,18 @@ export default function SignGallery() {
     setSearchQuery(e.target.value);
   };
 
-  const handleDownload = (format) => {
+  const handleDownload = async (format) => {
     if (!selectedSign) return;
 
-    const proxyUrl = normalizeDownloadAsset(selectedSign.imageUrl, selectedSign.filename, window.location.origin);
+    const assetUrl = await normalizeDownloadAsset(selectedSign.imageUrl, selectedSign.filename, window.location.origin);
+    if (!assetUrl) return;
 
     // Remove query params for filename
     const filename = `TrafficSign_${selectedSign.signNumber}`;
 
     if (format === 'svg') {
       const link = document.createElement('a');
-      link.href = proxyUrl;
+      link.href = assetUrl;
       link.download = `${filename}.svg`;
       document.body.appendChild(link);
       link.click();
@@ -215,7 +216,7 @@ export default function SignGallery() {
         document.body.removeChild(link);
         setShowDownloadMenu(false);
       };
-      img.src = proxyUrl;
+      img.src = assetUrl;
     }
   };
 
@@ -281,7 +282,7 @@ export default function SignGallery() {
       fetch('/data/roadmarkings.json').then(res => res.json()).catch(() => ([])), // Load road markings initially
       fetch('/data/rm_dimension.json').then(res => res.json()).catch(() => ([])) // Load dimensions
     ])
-      .then(([signsData, descriptionsData, supersededData, rmData, dimData]) => {
+      .then(async ([signsData, descriptionsData, supersededData, rmData, dimData]) => {
         const supSet = new Set((supersededData || []).map(String));
 
         // Process Dimensions into a map
@@ -294,20 +295,20 @@ export default function SignGallery() {
         setRmDimensions(dimMap);
 
         // Construct imageUrl since JSON only has filename and mtime.
-        const processedSigns = signsData.map(sign => ({
+        const processedSigns = await Promise.all(signsData.map(async sign => ({
           ...sign,
-          imageUrl: getFirebaseAssetUrl(`/data/svgs/${sign.filename}`),
+          imageUrl: await getFirebaseAssetUrl(`/data/svgs/${sign.filename}`),
           description: descriptionsData[sign.signNumber] || sign.description || '',
           superseded: supSet.has(String(sign.signNumber))
-        }));
+        })));
 
         // Process Road Markings
-        const processedRm = (rmData || []).map(rm => ({
+        const processedRm = await Promise.all((rmData || []).map(async rm => ({
           ...rm,
-          imageUrl: getFirebaseAssetUrl(`/data/svgs/${rm.filename}`),
+          imageUrl: await getFirebaseAssetUrl(`/data/svgs/${rm.filename}`),
           description: descriptionsData[rm.signNumber] || descriptionsData[rm.id] || rm.description || '',
           superseded: supSet.has(String(rm.signNumber || rm.id))
-        }));
+        })));
 
         setSigns(processedSigns);
         setRoadMarkings(processedRm);

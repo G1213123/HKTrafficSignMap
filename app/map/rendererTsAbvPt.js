@@ -15,14 +15,14 @@ export const normalizeTsSignId = (signId) => {
     return raw.replace(/^TS[_-]?/i, '');
 };
 
-export const getTsPreviewUrl = (signId) => {
+export const getTsPreviewUrl = async (signId) => {
     const normalized = normalizeTsSignId(signId);
     if (!normalized) return null;
     return getFirebaseAssetUrl(`/data/svgs/TS_${normalized}.svg`);
 };
 
-export const buildTsAbvPreviewHtml = (signId) => {
-    const previewIcon = getTsPreviewUrl(signId);
+export const buildTsAbvPreviewHtml = async (signId) => {
+    const previewIcon = await getTsPreviewUrl(signId);
     return previewIcon
         ? `<div style="display:flex; justify-content:center; margin: 0 0 10px 0;"><img src="${previewIcon}" alt="${escapeHtml(signId || '')}" style="width:75%; max-width:75%; height:auto; display:block;" /></div>`
         : '';
@@ -111,7 +111,7 @@ const getAttachedAbvPosition = (feature, points, poleFeatures) => {
     };
 };
 
-export const renderTsAbvPt = (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false, options = {}) => {
+export const renderTsAbvPt = async (map, typeName, points, markersRef, activeLayersRef, showRawPoints = false, options = {}) => {
     const themeColor = getThemeColor(options.isDarkMode === true);
     const poleData = options.layerDataRef?.current?.['csdi:DTAD_TS_POLE_PT'];
     const poleFeatures = Array.isArray(poleData?.features) ? poleData.features : [];
@@ -120,7 +120,7 @@ export const renderTsAbvPt = (map, typeName, points, markersRef, activeLayersRef
         markersRef.current[typeName] = [];
     }
 
-    points.forEach(feature => {
+    await Promise.all(points.map(async feature => {
         const signId = feature.properties?.SIGNID ? String(feature.properties.SIGNID) : '';
         const isSeparator = signId.trim().toUpperCase() === 'TSSEPA';
 
@@ -133,7 +133,7 @@ export const renderTsAbvPt = (map, typeName, points, markersRef, activeLayersRef
         const textAngle = getUprightTsAbvAngle(angle, map.getBearing(), symbolOffset);
 
         const el = createMarkerElement({ className: 'custom-svg-icon-wrapper ts-abv-text-wrapper', width: '0px', height: '0px' });
-        const previewIcon = !isSeparator && options.showTsAbvSymbols ? getTsPreviewUrl(signId) : null;
+        const previewIcon = !isSeparator && options.showTsAbvSymbols ? await getTsPreviewUrl(signId) : null;
         const text = isSeparator ? '/' : (signId ? escapeHtml(signId) : 'TS');
         const markerContent = previewIcon
             ? `<img src="${previewIcon}" alt="${escapeHtml(signId)}" style="width: calc(30px * var(--map-icon-scale, 1) * var(--ts-abv-symbol-scale, 1)); height: calc(30px * var(--map-icon-scale, 1) * var(--ts-abv-symbol-scale, 1)); object-fit: contain; display: block; transform: rotate(180deg);" />`
@@ -162,7 +162,7 @@ export const renderTsAbvPt = (map, typeName, points, markersRef, activeLayersRef
         }
 
         if (!isSeparator) {
-            const previewHtml = buildTsAbvPreviewHtml(signId);
+            const previewHtml = await buildTsAbvPreviewHtml(signId);
             attachMarkerPopup(el, map, coords, buildPopupContentWithPreview(typeName, feature.properties || {}, previewHtml));
         }
 
@@ -172,5 +172,5 @@ export const renderTsAbvPt = (map, typeName, points, markersRef, activeLayersRef
         }
         markersRef.current[typeName].push(marker);
         if (rawMarker) markersRef.current[typeName].push(rawMarker);
-    });
+    }));
 };
