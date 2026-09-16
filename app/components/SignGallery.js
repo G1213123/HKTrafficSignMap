@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useI18n } from './I18nProvider';
 import { normalizeDownloadAsset } from './signDownloadUtils';
+import { getFirebaseAssetUrl } from '../map/mapUtils';
 
 const lazyLoadScrollState = {
   isScrolling: false,
@@ -292,12 +293,10 @@ export default function SignGallery() {
         }, {});
         setRmDimensions(dimMap);
 
-        // Construct imageUrl since JSON only has filename and mtime
-        // Use local SVGs in development, Google Cloud Storage in production
-        const getProxyUrl = (assetPath) => `/api/proxy?asset=${encodeURIComponent(assetPath)}`
+        // Construct imageUrl since JSON only has filename and mtime.
         const processedSigns = signsData.map(sign => ({
           ...sign,
-          imageUrl: getProxyUrl(`/data/svgs/${sign.filename}`),
+          imageUrl: getFirebaseAssetUrl(`/data/svgs/${sign.filename}`),
           description: descriptionsData[sign.signNumber] || sign.description || '',
           superseded: supSet.has(String(sign.signNumber))
         }));
@@ -305,7 +304,7 @@ export default function SignGallery() {
         // Process Road Markings
         const processedRm = (rmData || []).map(rm => ({
           ...rm,
-          imageUrl: getProxyUrl(`/data/svgs/${rm.filename}`),
+          imageUrl: getFirebaseAssetUrl(`/data/svgs/${rm.filename}`),
           description: descriptionsData[rm.signNumber] || descriptionsData[rm.id] || rm.description || '',
           superseded: supSet.has(String(rm.signNumber || rm.id))
         }));

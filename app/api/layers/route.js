@@ -7,7 +7,11 @@ import { generateSignedUrlGoogle } from '../../lib/generateSignedUrlGoogle';
 import { readMvtManifest, getMvtBuildRootDir } from '../mvt-manifest/mvtManifest.js';
 
 const layerCache = globalThis.__layerApiCache || new Map();
+const layerFetches = globalThis.__layerApiFetches || new Map();
 globalThis.__layerApiCache = layerCache;
+globalThis.__layerApiFetches = layerFetches;
+const CLOUD_TILE_CACHE_TTL_MS = 5 * 60 * 1000;
+const MAX_LAYER_CACHE_ENTRIES = 512;
 // WFS only supports zoom level 18 - force all requests to use this level
 const FORCED_ZOOM = 18;
 const MIN_MVT_ZOOM = Number.parseInt(process.env.MVT_MIN_ZOOM || '18', 10);
@@ -135,6 +139,13 @@ function getTile(lon, lat, zoom) {
   return { x, y };
 }
 
+function setCloudTileCache(cacheKey, featureCollection) {
+  if (layerCache.size >= MAX_LAYER_CACHE_ENTRIES) {
+    layerCache.delete(layerCache.keys().next().value);
+  }
+  layerCache.set(cacheKey, { expiresAt: Date.now() + CLOUD_TILE_CACHE_TTL_MS, featureCollection });
+}
+
 
 
 async function getLayerTileFromCache(typeName, z, x, y, buildDate) {
@@ -189,6 +200,11 @@ async function getLayerTileFromCache(typeName, z, x, y, buildDate) {
 
   // In production (cloud mode), fetch from Google Cloud Storage using a signed URL (no public fallback)
   try {
+    const cached = layerCache.get(cacheKey);
+    if (cached && cached.expiresAt > Date.now()) return cached.featureCollection;
+    if (layerFetches.has(cacheKey)) return layerFetches.get(cacheKey);
+
+    const tileFetch = (async () => {
     const bucketName = process.env.GCS_BUCKET_NAME || 'road-sign-factory-asset';
     const objectName = buildDate
       ? `public/data/mvt/${buildDate}/${dirName}/${z}/${x}/${filename}`
@@ -206,7 +222,7 @@ async function getLayerTileFromCache(typeName, z, x, y, buildDate) {
           y,
           z,
         );
-        layerCache.set(cacheKey, { mtimeMs: Date.now(), featureCollection });
+        setCloudTileCache(cacheKey, featureCollection);
         return featureCollection;
       }
       console.warn(`Cloud fetch returned ${response.status} for tile ${cacheKey}`);
@@ -214,6 +230,13 @@ async function getLayerTileFromCache(typeName, z, x, y, buildDate) {
     } catch (signErr) {
       console.error(`Signing or fetch failed for tile ${cacheKey}:`, signErr);
       return null;
+    }
+    })();
+    layerFetches.set(cacheKey, tileFetch);
+    try {
+      return await tileFetch;
+    } finally {
+      layerFetches.delete(cacheKey);
     }
   } catch (cloudErr) {
     console.warn(`Error fetching from cloud for tile ${cacheKey}:`, cloudErr);

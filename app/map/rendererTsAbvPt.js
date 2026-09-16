@@ -1,6 +1,6 @@
 import maplibregl from 'maplibre-gl';
 import { attachMarkerPopup, buildPopupContentWithPreview, createMarkerElement } from './markerDom';
-import { getThemeColor } from './mapUtils';
+import { getFirebaseAssetUrl, getThemeColor } from './mapUtils';
 
 const escapeHtml = (value = '') => String(value)
     .replace(/&/g, '&amp;')
@@ -18,7 +18,7 @@ export const normalizeTsSignId = (signId) => {
 export const getTsPreviewUrl = (signId) => {
     const normalized = normalizeTsSignId(signId);
     if (!normalized) return null;
-    return `/api/proxy?asset=${encodeURIComponent(`/data/svgs/TS_${normalized}.svg`)}`;
+    return getFirebaseAssetUrl(`/data/svgs/TS_${normalized}.svg`);
 };
 
 export const buildTsAbvPreviewHtml = (signId) => {

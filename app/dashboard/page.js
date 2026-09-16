@@ -7,6 +7,8 @@ import { useI18n } from '../components/I18nProvider';
 import { onAuthStateChanged, signOut } from '../../lib/firebase/auth';
 import { db, firebaseConfig } from '../../lib/firebase/clientApp';
 import { collection, query, where, getDocs, orderBy, doc, getDoc, addDoc, updateDoc, deleteDoc, setDoc } from 'firebase/firestore';
+import { getFirebaseAssetUrl } from '../map/mapUtils';
+import { normalizeDownloadAsset } from '../components/signDownloadUtils';
 import './dashboard.css';
 
 export default function UserDashboard() {
@@ -264,7 +266,9 @@ export default function UserDashboard() {
                   >
                     <div className="card-snapshot">
                       <img
-                        src={design.snapshot || '/api/proxy?asset=%2Fdata%2Fsvgs%2FTS_115.svg'}
+                        src={design.snapshot
+                          ? normalizeDownloadAsset(design.snapshot)
+                          : getFirebaseAssetUrl('/data/svgs/TS_115.svg')}
                         alt={design.title}
                       />
                     </div>

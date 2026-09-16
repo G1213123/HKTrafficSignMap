@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "update-version": "node scripts/update-version.js",
+    "migrate-svg-assets": "node scripts/migrate-svg-assets-to-firebase.mjs",
     "sync-wfs": "python3 jobs/sync_wfs_layers.py",
     "build-mvt": "node --max-old-space-size=7168 jobs/build_vector_tiles.js",
     "dev": "npm run update-version && next dev",

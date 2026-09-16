@@ -13,6 +13,8 @@ function getMvtManifestBucketName() {
 let manifestCache = null;
 let manifestMtimeMs = 0;
 let manifestUrlCache = null;
+let manifestFetch = null;
+const MANIFEST_CACHE_TTL_MS = 5 * 60 * 1000;
 
 async function readManifestFromFile() {
     const stat = await fs.stat(MVT_MANIFEST_PATH);
@@ -31,25 +33,33 @@ async function readManifestFromFile() {
 async function readManifestFromUrl() {
     const bucketName = getMvtManifestBucketName();
     const cacheKey = `cloud:${bucketName}:${MVT_MANIFEST_OBJECT_NAME}`;
-    if (manifestCache && manifestUrlCache === cacheKey) {
+    if (manifestCache && manifestUrlCache === cacheKey && Date.now() - manifestMtimeMs < MANIFEST_CACHE_TTL_MS) {
         return manifestCache;
     }
 
-    const signedUrl = await generateSignedUrlGoogle({
-        bucketName,
-        objectName: MVT_MANIFEST_OBJECT_NAME,
-    });
+    if (manifestFetch) return manifestFetch;
 
-    const response = await fetch(signedUrl, { cache: 'no-store' });
-    if (!response.ok) {
-        return null;
+    manifestFetch = (async () => {
+        const signedUrl = await generateSignedUrlGoogle({
+            bucketName,
+            objectName: MVT_MANIFEST_OBJECT_NAME,
+        });
+
+        const response = await fetch(signedUrl, { cache: 'no-store' });
+        if (!response.ok) return null;
+
+        const manifest = await response.json();
+        manifestCache = manifest;
+        manifestMtimeMs = Date.now();
+        manifestUrlCache = cacheKey;
+        return manifest;
+    })();
+
+    try {
+        return await manifestFetch;
+    } finally {
+        manifestFetch = null;
     }
-
-    const manifest = await response.json();
-    manifestCache = manifest;
-    manifestMtimeMs = Date.now();
-    manifestUrlCache = cacheKey;
-    return manifest;
 }
 
 export async function readMvtManifest() {

@@ -1,6 +1,13 @@
 import { NextResponse } from 'next/server';
 import { generateSignedUrlGoogle, toBucketObjectName } from '../../lib/generateSignedUrlGoogle';
 
+const assetResponseCache = globalThis.__assetResponseCache || new Map();
+const assetFetches = globalThis.__assetFetches || new Map();
+globalThis.__assetResponseCache = assetResponseCache;
+globalThis.__assetFetches = assetFetches;
+const ASSET_CACHE_TTL_MS = 60 * 60 * 1000;
+const MAX_ASSET_CACHE_ENTRIES = 256;
+
 function getDataSource() {
   return process.env.NODE_ENV === 'development' ? 'local' : 'cloud';
 }
@@ -26,6 +33,27 @@ function resolveAssetUrl(assetPath) {
   const expiresMs = 15 * 60 * 1000; // 15 minutes
   // Return a promise-like placeholder; callers will await when needed
   return { __signedUrlRequest: true, bucketName, objectName, expiresMs };
+}
+
+function cacheAssetResponse(cacheKey, asset) {
+  if (assetResponseCache.size >= MAX_ASSET_CACHE_ENTRIES) {
+    assetResponseCache.delete(assetResponseCache.keys().next().value);
+  }
+
+  assetResponseCache.set(cacheKey, {
+    body: asset.body,
+    contentType: asset.contentType,
+    expiresAt: Date.now() + ASSET_CACHE_TTL_MS,
+  });
+}
+
+function buildAssetHeaders(contentType) {
+  const headers = new Headers({
+    'Access-Control-Allow-Origin': '*',
+    'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400',
+  });
+  if (contentType) headers.set('content-type', contentType);
+  return headers;
 }
 
 export async function GET(request) {
@@ -66,6 +94,7 @@ export async function GET(request) {
         }
         
         headers.set('Access-Control-Allow-Origin', '*');
+        headers.set('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
         
         return new NextResponse(fileData, {
           status: 200,
@@ -79,18 +108,60 @@ export async function GET(request) {
     
     // Handle remote URLs (Google Cloud Storage)
     if (resolvedUrl && resolvedUrl.__signedUrlRequest) {
-      try {
-        const signedUrl = await generateSignedUrlGoogle({
-          bucketName: resolvedUrl.bucketName,
-          objectName: resolvedUrl.objectName,
-          expiresMs: resolvedUrl.expiresMs,
+      const cacheKey = `${resolvedUrl.bucketName}:${resolvedUrl.objectName}`;
+      const cached = assetResponseCache.get(cacheKey);
+      if (cached && cached.expiresAt > Date.now()) {
+        return new NextResponse(cached.body.slice(), {
+          status: 200,
+          headers: buildAssetHeaders(cached.contentType),
         });
-
-        response = await fetch(signedUrl);
-      } catch (signErr) {
-        console.error('Failed to generate or fetch signed URL:', signErr);
-        return new NextResponse('Internal Server Error (signing failed)', { status: 500 });
       }
+
+      let assetFetch = assetFetches.get(cacheKey);
+      if (!assetFetch) {
+        assetFetch = (async () => {
+          const signedUrl = await generateSignedUrlGoogle({
+            bucketName: resolvedUrl.bucketName,
+            objectName: resolvedUrl.objectName,
+            expiresMs: resolvedUrl.expiresMs,
+          });
+
+          const remoteResponse = await fetch(signedUrl);
+          if (!remoteResponse.ok) {
+            return {
+              status: remoteResponse.status,
+              statusText: remoteResponse.statusText,
+              body: null,
+              contentType: null,
+            };
+          }
+
+          return {
+            status: remoteResponse.status,
+            statusText: remoteResponse.statusText,
+            body: new Uint8Array(await remoteResponse.arrayBuffer()),
+            contentType: remoteResponse.headers.get('content-type'),
+          };
+        })();
+        assetFetches.set(cacheKey, assetFetch);
+        try {
+          response = await assetFetch;
+        } finally {
+          assetFetches.delete(cacheKey);
+        }
+      } else {
+        response = await assetFetch;
+      }
+
+      if (response.body) {
+        cacheAssetResponse(cacheKey, response);
+        return new NextResponse(response.body.slice(), {
+          status: response.status,
+          headers: buildAssetHeaders(response.contentType),
+        });
+      }
+
+      return new NextResponse(`Failed to fetch image: ${response.statusText}`, { status: response.status });
     } else {
       response = await fetch(resolvedUrl);
     }
@@ -106,6 +177,7 @@ export async function GET(request) {
     
     // Ensure CORS headers allow usage on canvas
     headers.set('Access-Control-Allow-Origin', '*'); 
+    headers.set('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
     
     return new NextResponse(response.body, {
       status: 200,

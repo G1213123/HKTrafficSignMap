@@ -1,3 +1,5 @@
+import { getFirebaseAssetUrl } from '../map/mapUtils';
+
 export function normalizeDownloadAsset(imageUrl, fallbackFilename, origin = 'http://localhost') {
   const resolveAssetPath = (value) => {
     if (!value) return null;
@@ -29,7 +31,7 @@ export function normalizeDownloadAsset(imageUrl, fallbackFilename, origin = 'htt
 
   const assetPath = resolveAssetPath(imageUrl);
   if (assetPath) {
-    return `/api/proxy?asset=${encodeURIComponent(assetPath)}`;
+    return getFirebaseAssetUrl(assetPath);
   }
 
   if (typeof imageUrl === 'string' && /^https?:\/\//i.test(imageUrl)) {
@@ -37,7 +39,7 @@ export function normalizeDownloadAsset(imageUrl, fallbackFilename, origin = 'htt
   }
 
   if (fallbackFilename) {
-    return `/api/proxy?asset=${encodeURIComponent(`/data/svgs/${fallbackFilename}`)}`;
+    return getFirebaseAssetUrl(`/data/svgs/${fallbackFilename}`);
   }
 
   return imageUrl;
