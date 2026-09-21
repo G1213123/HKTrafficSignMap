@@ -376,17 +376,20 @@ export default function Map() {
             .then(url => fetch(url))
             .then(res => (res.ok ? res.json() : null))
             .then(manifest => {
-                if (cancelled || !manifest) return;
+                if (cancelled || !manifest) return false;
                 const latestBuildDate = manifest.latestBuildDate || '';
+                if (!latestBuildDate) return false;
+                mvtBuildDateRef.current = latestBuildDate;
                 setMvtBuildDate(latestBuildDate);
                 setSelectedBuildDate(latestBuildDate);
                 if (manifest.builds) {
                     setAvailableBuilds(manifest.builds);
                 }
+                return true;
             })
             .catch(err => console.warn('Failed to load MVT manifest:', err))
-            .finally(() => {
-                if (!cancelled) setMvtManifestReady(true);
+            .then(manifestReady => {
+                if (!cancelled && manifestReady === true) setMvtManifestReady(true);
             });
 
         return () => {
