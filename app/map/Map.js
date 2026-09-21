@@ -372,8 +372,7 @@ export default function Map() {
     useEffect(() => {
         let cancelled = false;
 
-        getMvtUrl('manifest.json')
-            .then(url => fetch(url))
+        fetch('/api/mvt-manifest')
             .then(res => (res.ok ? res.json() : null))
             .then(manifest => {
                 if (cancelled || !manifest) return false;
