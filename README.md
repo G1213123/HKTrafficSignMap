@@ -61,6 +61,10 @@ Due to browser security restrictions (CORS), you may not be able to fetch the da
       MVT_MIN_ZOOM=10 MVT_MAX_ZOOM=18 npm run build-mvt
       ```
 
+## MVT Browser Loading
+- The map loads `manifest.json` and PBF tiles directly from Firebase Storage using `getDownloadURL`.
+- MVT objects are read from `public/data/mvt/` in the same Firebase Storage bucket as the SVG assets.
+
 ## Internal Layer API
 - Endpoint: `GET /api/layers?typeName=<layer>&bbox=<south,west,north,east>`
 - `typeName` is required.

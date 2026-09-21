@@ -1,4 +1,4 @@
-import { fetchWithRetry } from './mapUtils';
+import { fetchMvtLayerData } from './mapUtils';
 import { layersConfig } from './layerConfig';
 import { renderLines } from './rendererLine';
 import { renderPoints } from './rendererPoint';
@@ -102,12 +102,7 @@ export const loadLayerData = (typeName, { map, abortControllers, markersRef, act
     abortControllers.current[typeName] = controller;
 
     const bounds = map.getBounds();
-    const bbox = `${bounds.getSouth()},${bounds.getWest()},${bounds.getNorth()},${bounds.getEast()}`;
-    // WFS only supports zoom level 18 - force all requests to zoom 18
-    const z = 18;
-    const layerUrl = `/api/layers?typeName=${encodeURIComponent(typeName)}&bbox=${encodeURIComponent(bbox)}&format=pbf&z=${z}${buildDate ? `&buildDate=${encodeURIComponent(buildDate)}` : ''}`;
-
-    return fetchWithRetry(layerUrl, { signal: controller.signal }, 2).then(data => {
+    return fetchMvtLayerData(typeName, bounds, buildDate, { signal: controller.signal }).then(data => {
         if (!data || !data.features || !map) return;
         return data;
 

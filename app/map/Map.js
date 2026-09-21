@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { getMetersPerPixel } from './mapUtils';
+import { getMetersPerPixel, getMvtUrl } from './mapUtils';
 import { layersConfig, layerLegendDict } from './layerConfig';
 import proj4 from 'proj4';
 import Navbar from '../components/Navbar';
@@ -372,7 +372,8 @@ export default function Map() {
     useEffect(() => {
         let cancelled = false;
 
-        fetch('/api/mvt-manifest')
+        getMvtUrl('manifest.json')
+            .then(url => fetch(url))
             .then(res => (res.ok ? res.json() : null))
             .then(manifest => {
                 if (cancelled || !manifest) return;
